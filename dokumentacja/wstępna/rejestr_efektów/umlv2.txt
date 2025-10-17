@@ -1,0 +1,85 @@
+@startuml
+allowmixing
+skinparam linetype ortho
+skinparam ranksep 25
+skinparam nodesep 25
+
+' ======================
+' Namespace & Classes
+' ======================
+
+namespace EffectSystem {
+
+class EffectRegistry {
+    - Graph<Element> registry
+    - bool shouldMutate
+
+    + void effectRegistryBuilder()
+    + bool loadRegistry(string filepath)
+    + bool saveRegistry(string filepath)
+    + bool putPreMadeElement(List<int> parentsId, Element element)
+
+    + Element generateChildElementFromParents(List<Element> parents)
+    + void setMutateSeedRule(bool value)
+
+    + Element accessElementByName(string name)
+    + Element accessElementByRelation(List<Element> parents)
+    + IEnumerable<Element> traverseDescendants(Element root, int maxDepth = -1)
+
+    + void printRegistryMap()
+    + void printElementDetails(string name)
+    + void clearRegistry()
+    + int countElements()
+}
+
+class Element {
+    + string name
+    - int id
+    + Dictionary<string, float> effects
+    + Metadata? meta
+}
+
+class Metadata {
+    + string source
+    + List<string> tags
+    + DateTime createdAt
+}
+
+class FastGraph {
+    + void AddNode(Element element)
+    + void AddEdge(Element parent, Element child)
+    + List<Element> GetParents(Element element)
+    + List<Element> GetChildren(Element element)
+}
+
+class ROOT {
+    + "Węzeł bazowy grafu"
+}
+
+}
+
+' ======================
+' External Data Files
+' ======================
+
+package "Registry Data Files" {
+    artifact "registry.json" as RegistryJson
+    artifact "premade_elements.json" as PremadeJson
+}
+
+' ======================
+' Relations
+' ======================
+
+EffectSystem.EffectRegistry *-- EffectSystem.Element : zawiera
+EffectSystem.EffectRegistry *-- EffectSystem.FastGraph : wykorzystuje
+EffectSystem.EffectRegistry o-- EffectSystem.ROOT : root node
+EffectSystem.Element *-- EffectSystem.Metadata : opcjonalnie
+
+' --- Relacje grafowe ---
+EffectSystem.Element --> EffectSystem.Element : «relacja rodzic–dziecko»\n(DAG)
+
+' --- Relacje z plikami ---
+EffectSystem.EffectRegistry -down-> RegistryJson : «reads / writes»
+EffectSystem.EffectRegistry -down-> PremadeJson : «reads»
+@enduml
