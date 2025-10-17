@@ -1,0 +1,99 @@
+@startuml
+allowmixing
+skinparam linetype ortho
+skinparam ranksep 20
+skinparam nodesep 20
+
+' ======================
+' Namespace & Classes
+' ======================
+
+namespace TextProcedularGeneration {
+
+class MarkovChain {
+    - Dictionary<string, int> pairCounts
+    - Dictionary<string, double> pairProbabilities
+    - Dictionary<char, int> prefixCounts
+
+    - List<string> forcedPrefixes
+    - List<string> forcedSuffixes
+    - Dictionary<string, double> prefixWeights
+    - Dictionary<string, double> suffixWeights
+
+    + void Train(string text)
+    - void CalculateProbabilities()
+    + string Generate(int length, bool prefix = false, bool suffix = false, char? start = null)
+    - char GetRandomPrefix(Seed s1)
+    - char? GetNextChar(char prefix, Seed s1)
+    + void AddPrefixRule(string prefix, double weight = 1.0)
+    + void AddSuffixRule(string suffix, double weight = 1.0)
+    + void PrintProbabilities()
+    + void Load(string path)
+    + MarkovChain Save(string path)
+}
+
+class SentenceFiller {
+    - List<string> sentenceTemplates
+    - List<string> nounList
+    - List<string> verbList
+    - List<string> adjectiveList
+    - List<string> locationList
+    - List<string> titlesList
+
+    + void AddSentenceTemplate(string template)
+    + void AddNoun(string noun)
+    + void AddVerb(string verb)
+    + void AddAdjective(string adjective)
+    + void AddLocation(string location)
+    + void AddTitle(string title)
+    + string GenerateBiography(string charName, string pronoun, Seed s1)
+    - string FillTemplate(string template, string charName, string pronoun, Seed s1)
+    - string GetRandom(List<string> list, Seed s1)
+    + void PrintTemplates()
+}
+
+class Seed
+}
+
+' ======================
+' External Data Files BELOW
+' ======================
+
+' --- Markov Files ---
+package "Markov Data Files" {
+    artifact "names.txt" as NamesTxt
+    artifact "prefixes.json" as PrefixJson
+    artifact "suffixes.json" as SuffixJson
+}
+
+' --- Sentence Files ---
+package "Sentence Data Files" {
+    artifact "sentences.txt" as SentencesTxt
+    artifact "nouns.txt" as NounsTxt
+    artifact "verbs.txt" as VerbsTxt
+    artifact "adjectives.txt" as AdjectivesTxt
+    artifact "locations.txt" as LocationsTxt
+    artifact "titles.txt" as TitlesTxt
+}
+
+' ======================
+' Relations
+' ======================
+
+Seed <.. TextProcedularGeneration.MarkovChain : uses
+Seed <.. TextProcedularGeneration.SentenceFiller : uses
+
+' Place data files BELOW classes
+TextProcedularGeneration.MarkovChain -down-> NamesTxt : «reads»
+TextProcedularGeneration.MarkovChain -down-> PrefixJson : «reads»
+TextProcedularGeneration.MarkovChain -down-> SuffixJson : «reads»
+
+TextProcedularGeneration.SentenceFiller -down-> SentencesTxt : «reads»
+TextProcedularGeneration.SentenceFiller -down-> NounsTxt : «reads»
+TextProcedularGeneration.SentenceFiller -down-> VerbsTxt : «reads»
+TextProcedularGeneration.SentenceFiller -down-> AdjectivesTxt : «reads»
+TextProcedularGeneration.SentenceFiller -down-> LocationsTxt : «reads»
+TextProcedularGeneration.SentenceFiller -down-> TitlesTxt : «reads»
+
+@enduml
+
