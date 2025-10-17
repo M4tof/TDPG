@@ -1,0 +1,117 @@
+@startuml
+allowmixing
+skinparam linetype ortho
+skinparam ranksep 20
+skinparam nodesep 20
+
+' ======================
+' Namespace & Classes
+' ======================
+
+namespace AudioVisualProcedularGeneration {
+
+class AudioMod {
+    -- Data and Loading --
+    - FastNoiseLite noise
+    - AudioClip savedSample
+    - AudioClip currentAudio
+    + bool loadData(FastNoiseLite noise, string filepath)
+
+    -- Modification --
+    + AudioClip fullMix()
+    + AudioClip pitchMix(float? value)
+    + AudioClip amplitudeMix(float? value)
+    + AudioClip durationMix(float? value)
+    + AudioClip phaseMix(float? value)
+
+    -- Parameters and Configuration --
+    - float basePitch
+    - float maxAmplitude
+    - int sampleRate
+    + void setParameter(string name, float value)
+
+    -- Generation / Synthesis Helpers --
+    + AudioClip generateTone(float frequency, float duration)
+    + AudioClip generateNoise()
+    - AudioClip mixClips(AudioClip a, AudioClip b, float ratio)
+
+    -- Save / Restore --
+    + void rememberCurrent()
+    + void restoreSaved()
+    + AudioClip getSavedSample()
+
+    -- Utilities / Debug --
+    + void printInfo()
+    + void exportCurrent(string path)
+}
+
+class VisualMod {
+    -- Data and Loading --
+    - FastNoiseLite noise
+    - Sprite baseModel
+    - Dictionary<string, Dictionary<Color, Color>> pallets
+    + bool loadData(FastNoiseLite noise, string filepathBaseModel, string? filepathDefaultPalette = null)
+    + void addColorPallete(string filepath)
+
+    -- Generation --
+    + void applyPalete(int paletteID)
+    + Dictionary<Color, Color> generatePalete(Seed s1)
+
+    -- Face Generation (optional) --
+    + FaceParams GenerateRandomFaceParams(FastNoiseLite noise)
+    + Texture2D RenderFaceToTexture(FaceParams p, int width, int height)
+    + bool SaveFaceParams(string path, FaceParams p)
+    + FaceParams LoadFaceParams(string path)
+    - bool ValidateFaceParams(FaceParams p)
+    + void StorePreset(string name, FaceParams p)
+
+    -- Utilities / Debug --
+    + void PrintPallets()
+    + void PrintBaseModelInfo()
+    + void SaveCurrentModel(string path)
+    + void LoadModelFromFile(string path)
+    + Texture2D VisualizePalette(string paletteName)
+    + Texture2D RunFullPipeline()
+}
+
+class FaceParams {
+    float eyeSize
+    float eyeOffset
+    float eyeRotation
+    float mouthWidth
+    float mouthCurve
+    float mouthOpen
+    float browLift
+    float browAngle
+    float noseLength
+    float noseWidth
+    Color skinColor
+    Color eyeColor
+    Color hairColor
+    float symmetry
+}
+
+class FastNoiseLite
+class AudioClip
+class Texture2D
+class Seed
+class Color
+class Vector2Int
+class ShapeTemplate
+}
+
+' ======================
+' Relations
+' ======================
+
+AudioVisualProcedularGeneration.AudioMod --> FastNoiseLite : uses
+AudioVisualProcedularGeneration.AudioMod --> AudioClip : manipulates
+
+AudioVisualProcedularGeneration.VisualMod --> FastNoiseLite : uses
+AudioVisualProcedularGeneration.VisualMod --> Texture2D : generates
+AudioVisualProcedularGeneration.VisualMod --> Color : maps
+AudioVisualProcedularGeneration.VisualMod --> Vector2Int : uses
+AudioVisualProcedularGeneration.VisualMod --> Seed : uses
+AudioVisualProcedularGeneration.VisualMod --> ShapeTemplate : composes
+AudioVisualProcedularGeneration.VisualMod --> FaceParams : uses
+@enduml
