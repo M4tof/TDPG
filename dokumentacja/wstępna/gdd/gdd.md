@@ -45,7 +45,7 @@ Celem gracza jest nie dopuszczenie aby przeciwnicy zniszczyli kamień filozoficz
 
 4. Fale - Przed falą gracz będzie miał czas aby przygotować obronę. Gracz ma możliwość przyspieszyć wystąpienie fali. Gracz będzie atakowany przez hordy przeciwników. Kiedy gracz wybije wszystkich przeciwników fala zakończy się i gracz otrzyma nagrodę w postaci kart ulepszeń. Gracz wygrywa kiedy pokona 20 falę i następnie ma możliwość kontynuowania gry w trybie nieskończonym. Z każdą falą pojawiają się coraz silniejsi przeciwnicy
 
-5. Złoto - Zabicie przeciwnika będzie generowało złoto za które będzie można naprawiać, budować lub ulepszać wieże
+5. Mana - Zabicie przeciwnika będzie generowało mana za które będzie można naprawiać, budować lub ulepszać wieże
 
 6. Wieże - Posiadają zasięg i atakują przeciwnika skupiając się na jednym celu dopóki jest w zasięgu. Mogą zostać zburzone przez przeciwników.
 
