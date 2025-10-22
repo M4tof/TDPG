@@ -1,6 +1,6 @@
 using NUnit.Framework;
 using NUnit.Framework.Internal;
-using TowerDefenseProceduralGeneration.Generators.FastNoiseLite;
+using TDPG.Generators.FastNoiseLite;
 
 namespace Tests
 {
