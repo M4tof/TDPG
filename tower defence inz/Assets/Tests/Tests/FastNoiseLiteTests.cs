@@ -1,6 +1,8 @@
 using NUnit.Framework;
+using NUnit.Framework.Internal;
+using TowerDefenseProceduralGeneration.Generators.FastNoiseLite;
 
-namespace TowerDefenceProceduralGeneration.Tests
+namespace Tests
 {
     [TestFixture]
     public class GeneratorsTests
@@ -8,7 +10,8 @@ namespace TowerDefenceProceduralGeneration.Tests
         [Test]
         public void FastNoiseLite_GeneratesConsistentValue()
         {
-            // Arrange
+            // Arrange 
+            
             var noise = new FastNoiseLite();
             noise.SetSeed(42);
             noise.SetFrequency(0.05f);
@@ -26,7 +29,7 @@ namespace TowerDefenceProceduralGeneration.Tests
         public void FastNoiseLite_GeneratesDifferentValuesForDifferentInputs()
         {
             // Arrange
-            var noise = new FastNoiseLite();
+            var noise = new FastNoiseLite();;
             noise.SetSeed(42);
             noise.SetFrequency(0.05f);
 
