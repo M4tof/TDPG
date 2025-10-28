@@ -5,7 +5,7 @@ using TDPG.Generators.FastNoiseLite;
 namespace Tests
 {
     [TestFixture]
-    public class GeneratorsTests
+    public class NoiseGeneratorsTests
     {
         [Test]
         public void FastNoiseLite_GeneratesConsistentValue()
