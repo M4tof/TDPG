@@ -1,8 +1,7 @@
 using NUnit.Framework;
-using NUnit.Framework.Internal;
 using TDPG.Generators.FastNoiseLite;
 
-namespace Tests
+namespace Tests.NoiseTests
 {
     [TestFixture]
     public class NoiseGeneratorsTests
