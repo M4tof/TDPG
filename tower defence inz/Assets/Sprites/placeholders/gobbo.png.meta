@@ -185,7 +185,9 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      gobbo_0: 6180547344300440527
+      gobbo_1: -1463744183462588852
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
