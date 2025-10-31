@@ -512,6 +512,7 @@ RectTransform:
   m_LocalScale: {x: 0, y: 0, z: 0}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 1178710142}
   - {fileID: 1540347281}
   - {fileID: 984293947}
   - {fileID: 334626515}
@@ -605,8 +606,9 @@ GameObject:
   - component: {fileID: 334626518}
   - component: {fileID: 334626517}
   - component: {fileID: 334626519}
+  - component: {fileID: 334626520}
   m_Layer: 5
-  m_Name: SettingsMenu
+  m_Name: _SettingsMenu
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -698,6 +700,18 @@ MonoBehaviour:
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 0
+--- !u!114 &334626520
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 334626514}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 786a4c429e7c8f358bd442cf8ab34ca9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &348850614
 GameObject:
   m_ObjectHideFlags: 0
@@ -783,12 +797,12 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 1178710143}
-        m_TargetAssemblyTypeName: NewMonoBehaviourScript, Assembly-CSharp
+        m_TargetAssemblyTypeName: UIManager, Assembly-CSharp
         m_MethodName: OnLoadPress
         m_Mode: 2
         m_Arguments:
           m_ObjectArgument: {fileID: 348850619}
-          m_ObjectArgumentAssemblyTypeName: LoadButton, Assembly-CSharp
+          m_ObjectArgumentAssemblyTypeName: SaveLoadButton, Assembly-CSharp
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
@@ -846,6 +860,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _savePath: Dummy/path/2
   _slotNumber: 2
+  _slotType: Load
 --- !u!1 &362516550
 GameObject:
   m_ObjectHideFlags: 0
@@ -2419,22 +2434,10 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 334626514}
-        m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
-        m_MethodName: SetActive
-        m_Mode: 6
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 984293946}
-        m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
-        m_MethodName: SetActive
-        m_Mode: 6
+      - m_Target: {fileID: 334626520}
+        m_TargetAssemblyTypeName: SettingsMenu, Assembly-CSharp
+        m_MethodName: CloseMenu
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -3243,12 +3246,12 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 1178710143}
-        m_TargetAssemblyTypeName: NewMonoBehaviourScript, Assembly-CSharp
+        m_TargetAssemblyTypeName: UIManager, Assembly-CSharp
         m_MethodName: OnLoadPress
         m_Mode: 2
         m_Arguments:
           m_ObjectArgument: {fileID: 1080128432}
-          m_ObjectArgumentAssemblyTypeName: LoadButton, Assembly-CSharp
+          m_ObjectArgumentAssemblyTypeName: SaveLoadButton, Assembly-CSharp
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
@@ -3306,6 +3309,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _savePath: Dummy/path/1
   _slotNumber: 1
+  _slotType: Load
 --- !u!1 &1088513560
 GameObject:
   m_ObjectHideFlags: 0
@@ -3616,7 +3620,7 @@ GameObject:
   - component: {fileID: 1178710142}
   - component: {fileID: 1178710143}
   m_Layer: 0
-  m_Name: UIManager
+  m_Name: _UIManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3630,12 +3634,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1178710140}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 791.9795, y: 355.85007, z: -14.034234}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 166.17221, y: 3.9375687, z: -14.353193}
+  m_LocalScale: {x: 1.0227273, y: 1.0227273, z: 1.0227273}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 184852111}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1178710143
 MonoBehaviour:
@@ -3734,12 +3738,12 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 1178710143}
-        m_TargetAssemblyTypeName: NewMonoBehaviourScript, Assembly-CSharp
+        m_TargetAssemblyTypeName: UIManager, Assembly-CSharp
         m_MethodName: OnLoadPress
         m_Mode: 2
         m_Arguments:
           m_ObjectArgument: {fileID: 1246140330}
-          m_ObjectArgumentAssemblyTypeName: LoadButton, Assembly-CSharp
+          m_ObjectArgumentAssemblyTypeName: SaveLoadButton, Assembly-CSharp
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
@@ -3797,6 +3801,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _savePath: Dummy/path/3
   _slotNumber: 3
+  _slotType: Load
 --- !u!1 &1310627971
 GameObject:
   m_ObjectHideFlags: 0
@@ -4152,25 +4157,13 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 984293946}
-        m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
-        m_MethodName: SetActive
-        m_Mode: 6
+      - m_Target: {fileID: 334626520}
+        m_TargetAssemblyTypeName: SettingsMenu, Assembly-CSharp
+        m_MethodName: OpenMenu
+        m_Mode: 2
         m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 334626514}
-        m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
-        m_MethodName: SetActive
-        m_Mode: 6
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_ObjectArgument: {fileID: 984293946}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.GameObject, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
@@ -6661,4 +6654,3 @@ SceneRoots:
   - {fileID: 362516553}
   - {fileID: 184852111}
   - {fileID: 2134096456}
-  - {fileID: 1178710142}

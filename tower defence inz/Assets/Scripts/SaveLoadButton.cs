@@ -1,7 +1,7 @@
 using UnityEngine;
 using TMPro;
 
-public class LoadButton : MonoBehaviour
+public class SaveLoadButton : MonoBehaviour
 {
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -10,7 +10,7 @@ public class LoadButton : MonoBehaviour
 
         if (tmpText != null)
         {
-            tmpText.text = $"Load slot {_slotNumber}";
+            tmpText.text = $"{_slotType} slot {_slotNumber}";
 
         }
         else
@@ -29,13 +29,17 @@ public class LoadButton : MonoBehaviour
     [SerializeField] private string _savePath;
     [SerializeField] private int _slotNumber;
 
+    [SerializeField] private string _slotType;
+
     public string SavePath => _savePath;
     public int SlotNumber => _slotNumber;
 
-    public void SetData(string path, int number)
+    public string SlotType => _slotType;
+    public void SetData(string path, int number, string type)
     {
         _savePath = path;
         _slotNumber = number;
+        _slotType = type;
     }
 
 }

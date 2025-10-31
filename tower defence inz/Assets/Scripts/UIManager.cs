@@ -5,6 +5,27 @@ using Debug = UnityEngine.Debug;
 
 public class UIManager : MonoBehaviour
 {
+    public static UIManager Instance { get; private set; }
+
+    void Awake()
+    {
+        // Singleton pattern to ensure only one instance exists
+        if (Instance != null && Instance != this)
+        {
+            // If another GameManager already exists, destroy this one
+            Destroy(gameObject);
+            Debug.LogWarning("Duplicate UIManager destroyed. Only one instance allowed.");
+        }
+        else
+        {
+            // If this is the first GameManager, make it the instance
+            Instance = this;
+            // Prevents the GameObject from being destroyed when reloading a scene
+            DontDestroyOnLoad(gameObject);
+            Debug.Log("UIManager created and set to not destroy on load.");
+        }
+    }
+    
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -22,11 +43,17 @@ public class UIManager : MonoBehaviour
         Debug.Log("New Game Pressed");
         SceneManager.LoadScene("InitializeNewGame");
     }
-    
-    public void OnLoadPress(LoadButton caller)
+
+    public void OnLoadPress(SaveLoadButton caller)
     {
         Debug.Log($"Load Pressed, loading {caller.SavePath}");
         // TODO: Implement loading logic here
         SceneManager.LoadScene("MainGame");
+    }
+
+    public void OnSavePress(SaveLoadButton caller)
+    {
+        Debug.Log($"Save Pressed, saving to {caller.SavePath}");
+        // TODO: Implement saving logic here
     }
 }
