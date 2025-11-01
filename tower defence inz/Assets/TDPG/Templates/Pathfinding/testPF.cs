@@ -36,17 +36,22 @@ public class Script : MonoBehaviour
         lineRenderer.endColor = pathColor;
         lineRenderer.positionCount = 0;
         lineRenderer.sortingOrder = 10;
+        
+        Debug.Log($"Starting BFS from {charObj.position} to {destObj.position}");
+        RunBfsAndDrawPath();
+        pathIndex = 0;
+        moving = true;
     }
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.P))
-        {
-            Debug.Log($"Starting BFS from {charObj.position} to {destObj.position}");
-            RunBfsAndDrawPath();
-            pathIndex = 0;
-            moving = true;
-        }
+        // if (Input.GetKeyDown(KeyCode.P))
+        // {
+        //     Debug.Log($"Starting BFS from {charObj.position} to {destObj.position}");
+        //     RunBfsAndDrawPath();
+        //     pathIndex = 0;
+        //     moving = true;
+        // }
 
         if (moving && currentPath != null && pathIndex < currentPath.Count)
         {
