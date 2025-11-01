@@ -5,14 +5,13 @@ using UnityEngine.InputSystem;
 [RequireComponent(typeof(BasicProjectileSpawner))]
 public class PlayerInput : MonoBehaviour
 {
-    //TODO add scriptable object for player's parameters 
-    //TODO add delay between shooting
     
     [SerializeField] private float speed = 1;
     
     [Header("Required elements")]
     [SerializeField] private SpriteRenderer spriteRenderer;
     [SerializeField] private Camera mainCamera;
+    [SerializeField] private PauseMenu pauseMenu;
     
     private Rigidbody2D rb;
     private BasicProjectileSpawner projectileSpawner;
@@ -51,8 +50,16 @@ public class PlayerInput : MonoBehaviour
             Vector3 worldMousePosition = mainCamera.ScreenToWorldPoint(mousePosition);
             projectileSpawner.Shoot(transform.position, worldMousePosition);
         }
-        //mousePosition = mainCamera.ScreenToWorldPoint(Input.mousePosition);
-        //projectileSpawner.Shoot(transform.position,mousePosition);
+    }
+
+    public void onPause(InputAction.CallbackContext context)
+    {
+        //Debug.Log("PAUSZA");
+        if (context.performed)
+        {
+            pauseMenu.SwitchMenu();
+        }
+
     }
     
     //Rotates player's sprite to correct direction
