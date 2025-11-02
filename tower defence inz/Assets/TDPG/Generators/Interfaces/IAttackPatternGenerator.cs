@@ -1,12 +1,7 @@
-﻿using Assets.TDPG.Generators.Scalars;
-using Assets.TDPG.Generators.AttackPatterns;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using TDPG.Generators.AttackPatterns;
+using TDPG.Generators.Scalars;
 
-namespace Assets.TDPG.Generators.Interfaces
+namespace TDPG.Generators.Interfaces
 {
     public interface IAttackPatternGenerator : IGenerator<AttackPattern>
     {

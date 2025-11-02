@@ -1,13 +1,8 @@
-﻿using Assets.TDPG.Generators.Interfaces;
-using Assets.TDPG.Generators.Scalars;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using TDPG.Generators.Seed;
+﻿using System;
+using TDPG.Generators.Interfaces;
+using TDPG.Generators.Scalars;
 
-namespace Assets.TDPG.Generators.AttackPatterns
+namespace TDPG.Generators.AttackPatterns
 {
     [Serializable]
     public abstract class AbstractAttackPatternGenerator : IAttackPatternGenerator
@@ -17,7 +12,7 @@ namespace Assets.TDPG.Generators.AttackPatterns
 
         public abstract AttackPattern Generate(IRandomSource source);
 
-        public virtual AttackPattern Generate(Seed seed, string context = null)
+        public virtual AttackPattern Generate(Seed.Seed seed, string context = null)
         {
             var local = new SplitMix64Random(seed.GetBaseValue());
             return Generate(local);

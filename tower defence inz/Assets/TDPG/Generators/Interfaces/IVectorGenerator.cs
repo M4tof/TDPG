@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
-namespace Assets.TDPG.Generators.Interfaces
+namespace TDPG.Generators.Interfaces
 {
     public interface IVectorGenerator<TScalar> : IGenerator<List<TScalar>>
     {

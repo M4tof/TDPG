@@ -1,13 +1,7 @@
-﻿using Assets.TDPG.Generators.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using TDPG.Generators.Seed;
-using UnityEngine;
+﻿using System;
+using TDPG.Generators.Interfaces;
 
-namespace Assets.TDPG.Generators.Scalars
+namespace TDPG.Generators.Scalars
 {
     [Serializable]
     public class FloatGenerator : IGenerator<float>
@@ -17,7 +11,7 @@ namespace Assets.TDPG.Generators.Scalars
         public float min, max;
         public float mean, stdDev;
         public int steps;
-        public Func<float, float> curveFunc = null;
+        public Func<float, float> CurveFunc = null;
 
 
         public float Generate(IRandomSource source)
@@ -35,14 +29,14 @@ namespace Assets.TDPG.Generators.Scalars
                 case Mode.Curve:
                     {
                         float u = (float)source.NextFloat();
-                        float mapped = curveFunc != null ? curveFunc(u) : u;
+                        float mapped = CurveFunc != null ? CurveFunc(u) : u;
                         return Lerp(min, max, mapped);
                     }
                 default:
                     return Uniform(source, min, max);
             }
         }
-        public float Generate(Seed seed, string context = null)
+        public float Generate(Seed.Seed seed, string context = null)
         {
             var local = new SplitMix64Random(seed.GetBaseValue());
             return Generate(local);

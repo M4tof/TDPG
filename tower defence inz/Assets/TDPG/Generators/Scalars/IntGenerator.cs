@@ -1,12 +1,7 @@
-﻿using Assets.TDPG.Generators.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using TDPG.Generators.Seed;
+﻿using System;
+using TDPG.Generators.Interfaces;
 
-namespace Assets.TDPG.Generators.Scalars
+namespace TDPG.Generators.Scalars
 {
     [Serializable]
     public class IntGenerator : IGenerator<int>
@@ -24,7 +19,7 @@ namespace Assets.TDPG.Generators.Scalars
             return (int)val;
         }
 
-        public int Generate(Seed seed, string context = null)
+        public int Generate(Seed.Seed seed, string context = null)
         {
             var local = new SplitMix64Random(seed.GetBaseValue());
             return Generate(local);

@@ -1,13 +1,9 @@
-﻿using Assets.TDPG.Generators.Interfaces;
-using Assets.TDPG.Generators.Scalars;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using TDPG.Generators.Seed;
+using TDPG.Generators.Interfaces;
+using TDPG.Generators.Scalars;
 
-namespace Assets.TDPG.Generators.Vectors
+namespace TDPG.Generators.Vectors
 {
     [Serializable]
     public class VectorGenerator<TScalar> : IGenerator<List<TScalar>>
@@ -34,7 +30,7 @@ namespace Assets.TDPG.Generators.Vectors
             return list;
         }
 
-        public List<TScalar> Generate(Seed seed, string context = null)
+        public List<TScalar> Generate(Seed.Seed seed, string context = null)
         {
             var local = new SplitMix64Random(seed.GetBaseValue());
             return Generate(local);

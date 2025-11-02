@@ -1,13 +1,9 @@
-﻿using Assets.TDPG.Generators.Interfaces;
-using Assets.TDPG.Generators.Scalars;
-using Assets.TDPG.Generators.Vectors;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System;
+using TDPG.Generators.Interfaces;
+using TDPG.Generators.Scalars;
+using TDPG.Generators.Vectors;
 
-namespace Assets.TDPG.Generators.AttackPatterns
+namespace TDPG.Generators.AttackPatterns
 {
     [Serializable]
     public class BurstAttackPatternGenerator : AbstractAttackPatternGenerator
