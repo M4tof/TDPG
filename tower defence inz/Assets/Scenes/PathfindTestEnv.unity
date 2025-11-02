@@ -514,7 +514,7 @@ MonoBehaviour:
   destObj: {fileID: 986791772}
   pathColor: {r: 1, g: 0, b: 0, a: 1}
   lineWidth: 0.05
-  moveSpeed: 1
+  moveSpeed: 0.5
 --- !u!4 &1682057513
 Transform:
   m_ObjectHideFlags: 0
@@ -591,7 +591,7 @@ MonoBehaviour:
   width: 10
   height: 10
   cellSize: 1
-  mapData: {fileID: 11400000, guid: 795218da5e76ca39eb3fadc975e90cac, type: 2}
+  mapData: {fileID: 11400000, guid: 5e05b1376ddd1d19aa02dff0954dd4f2, type: 2}
   charObj: {fileID: 1926540529}
   destObj: {fileID: 986791772}
 --- !u!1 &1926540526
