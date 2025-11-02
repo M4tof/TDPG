@@ -1,19 +1,14 @@
-﻿using Assets.TDPG.Generators.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using TDPG.Generators.Interfaces;
 
-namespace Assets.TDPG.Generators.Scalars
+namespace TDPG.Generators.Scalars
 {
     public class SplitMix64Random : IRandomSource
     {
         private ulong state;
 
-        public SplitMix64Random(ulong seed)
+        public SplitMix64Random(ulong intiValue)
         {
-            state = seed;
+            state = intiValue;
         }
 
         public ulong NextUInt64()

@@ -1,12 +1,9 @@
-﻿using Assets.TDPG.Generators.Interfaces;
-using Assets.TDPG.Generators.Scalars;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using TDPG.Generators.Interfaces;
+using TDPG.Generators.Scalars;
 
-namespace Assets.TDPG.Generators.AttackPatterns
+namespace TDPG.Generators.AttackPatterns
 {
     public class BurstLayout : IAttackPatternLayout
     {
