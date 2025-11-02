@@ -7,7 +7,10 @@ public class GridHelper : MonoBehaviour
     public int width = 10;
     public int height = 10;
     public float cellSize = 1f;
-
+    
+    [Header("Map Settings")]
+    public MapData mapData;
+    
     [Header("References")]
     public Transform charObj;
     public Transform destObj;
@@ -17,8 +20,40 @@ public class GridHelper : MonoBehaviour
 
     private void Awake()
     {
-        GenerateTestMap();
+        if (mapData != null)
+        {
+            LoadMapFromData();
+        }
+        else
+        {
+            GenerateTestMap();
+        }
         PlaceObjects();
+    }
+
+    private void LoadMapFromData()
+    {
+        if (mapData.mapBitmap == null || mapData.mapBitmap.Length == 0)
+        {
+            Debug.LogError("[GridHelper] MapData bitmap is empty!");
+            GenerateTestMap();
+            return;
+        }
+
+        height = mapData.mapBitmap.Length;
+        width = mapData.mapBitmap[0].row.Length;
+        map = new int[width, height];
+
+        // Copy data from ScriptableObject into map
+        for (int y = 0; y < height; y++)
+        {
+            for (int x = 0; x < width; x++)
+            {
+                map[x, y] = mapData.mapBitmap[y].row[x];
+            }
+        }
+
+        Debug.Log($"[GridHelper] Loaded map from ScriptableObject {width}x{height}.");
     }
 
     private void GenerateTestMap()
@@ -26,7 +61,7 @@ public class GridHelper : MonoBehaviour
         // Example of a custom layout: 0 = walkable, 1 = wall
         int[,] layout = new int[,]
         {
-            {0,0,0,0,0,0,1,1,1,0},
+            {0,0,0,0,0,0,1,1,1,1},
             {1,1,0,0,0,0,0,0,1,1},
             {1,1,1,1,0,1,0,0,1,0},
             {0,0,0,1,0,1,0,0,0,0},
@@ -51,7 +86,6 @@ public class GridHelper : MonoBehaviour
 
         Debug.Log($"[GridHelper] Loaded custom map {width}x{height}.");
     }
-
 
     private void PlaceObjects()
     {
@@ -169,4 +203,37 @@ public class GridHelper : MonoBehaviour
             Gizmos.DrawSphere(destObj.position, 0.2f);
         }
     }
+
+    private Vector3 randomCell()
+    {
+        int X = Random.Range(0, width);
+        int Y = Random.Range(0, height);
+        
+        Vector3 randomcell = CellToWorld(new Vector3Int(X, Y, 0));
+        
+        return randomcell; 
+    }
+    
+    public void changeDestPosition()
+    {
+        Vector3 pos = randomCell();
+        Vector3Int cell = WorldToCell(pos);
+        
+        if (InBounds(cell) && IsWalkable(cell))
+        {
+            destObj.position = pos;
+            Debug.Log($"[GridHelper] Changed destination at {cell}");
+        }
+    }
+    
+    // Public method to reload map from ScriptableObject at runtime
+    public void ReloadMap()
+    {
+        if (mapData != null)
+        {
+            LoadMapFromData();
+            PlaceObjects();
+        }
+    }
+    
 }

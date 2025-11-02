@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -11,13 +12,15 @@ public class Script : MonoBehaviour
     [Header("Visualization Settings")]
     public Color pathColor = Color.red;
     public float lineWidth = 0.05f;
-    public float moveSpeed = 2f;
+    public float moveSpeed = 1f;
 
     private bool moving = false;
     private int pathIndex = 0;
+    
     private List<Vector3Int> currentPath;
     private LineRenderer lineRenderer;
 
+    [Obsolete("Obsolete")]
     void Start()
     {
         if (grid == null)
@@ -56,15 +59,25 @@ public class Script : MonoBehaviour
         if (moving && currentPath != null && pathIndex < currentPath.Count)
         {
             Vector3 targetPos = grid.CellToWorld(currentPath[pathIndex]);
+            
             charObj.position = Vector3.MoveTowards(charObj.position, targetPos, moveSpeed * Time.deltaTime);
 
             if (Vector3.Distance(charObj.position, targetPos) < 0.05f)
+            {
+                Debug.Log($"Reached stop at {targetPos}");
                 pathIndex++;
+            }
 
             if (pathIndex >= currentPath.Count)
             {
-                moving = false;
+                // moving = false;
                 Debug.Log("Reached destination!");
+            }
+
+            if (grid.destObj.position != currentPath[currentPath.Count - 1])
+            {
+                Debug.Log("Detected change of dest!");
+                RunBfsAndDrawPath();
             }
         }
     }
@@ -84,6 +97,8 @@ public class Script : MonoBehaviour
         }
 
         Vector3[] worldPositions = new Vector3[currentPath.Count];
+        
+        //Translate from grid to world pos
         for (int i = 0; i < currentPath.Count; i++)
             worldPositions[i] = grid.CellToWorld(currentPath[i]);
 
