@@ -1,7 +1,11 @@
 using System;
+using System.Threading;
 using NUnit.Framework;
+using TDPG.Generators.Scalars;
 using TDPG.Generators.Seed;
+using TDPG.Generators.Vectors;
 using UnityEngine;
+using static TDPG.Generators.Scalars.InitializerFromDate;
 
 namespace Tests.SeedTests
 {
@@ -163,7 +167,81 @@ namespace Tests.SeedTests
              Debug.Log($"thirdSubSeed: {newGs.GetSubSeed(2).Value} {newGs.GetSubSeed(2).Id}");
              Assert.NotNull(newGs.GetSubSeed(2),"Should be some subSeed 3");
          }
-         
+
+         [Test]
+         public void FakeGamePipelineTest()
+         {
+             // Make test parameters configurable
+             const int EXPECTED_MIN_DIFFERENCE_PERCENT = 40;
+             const int VECTOR_DIMENSION = 10;
+             const int DELAY_MS = 1;
+             const int SUBSNUM = 1000;
+             
+             // Arrange
+                //Save game 1
+             var initVal1 = QuickGenerate(1);
+             var gs1 = new GlobalSeed(initVal1,"SaveSlot1GlobalSeed","Global Seed created for slot1, from initVal1");
+             var g1 = new FloatGenerator { mode = FloatGenerator.Mode.Uniform, min = 0f, max = 10f };
+             var vg1 = new VectorGenerator<float>(g1, dimension: VECTOR_DIMENSION);
+             
+             for (int i = 0; i < SUBSNUM; i++)
+             {
+                 string key1 = DateTime.Now.Ticks.ToString();
+                 gs1.NextSubSeed(key1);
+             }
+             string hash1 = gs1.ToShortHash();
+             string serialGs1 = gs1.Serialize();
+             var list1 = vg1.Generate(gs1.GetSubSeed(0));
+             
+             // Assume at least some second between game creations
+             Thread.Sleep(DELAY_MS);
+             
+                //Save game 2
+             var initVal2 = QuickGenerate(2); 
+             var gs2 = new GlobalSeed(initVal2,"SaveSlot2GlobalSeed","Global Seed created for slot2, from initVal2"); 
+             var g2 = new FloatGenerator { mode = FloatGenerator.Mode.Uniform, min = 0f, max = 10f };
+             var vg2 = new VectorGenerator<float>(g2, dimension: VECTOR_DIMENSION); 
+             
+             for (int i = 0; i < SUBSNUM; i++) 
+             { 
+                 string key2 = DateTime.Now.Ticks.ToString(); 
+                 gs2.NextSubSeed(key2);
+             }
+             string hash2 = gs2.ToShortHash(); 
+             string serialGs2 = gs2.Serialize(); 
+             var list2 = vg2.Generate(gs2.GetSubSeed(0));       
+             
+             // Assert
+             
+             Debug.Log($"Initial values: {initVal1} vs {initVal2}");
+             // Verify that initial values are different
+             Assert.That(initVal2, Is.Not.EqualTo(initVal1), "Initial values should be different");
+             
+             Debug.Log($"Hash1: {hash1}, Hash2: {hash2}");
+             // Verify that the global seed hashes are different
+             Assert.That(hash2, Is.Not.EqualTo(hash1), "Global seed hashes should be different");
         
+             // Verify that the serialized global seeds are different
+             Assert.That(serialGs2, Is.Not.EqualTo(serialGs1), "Serialized global seeds should be different");
+             
+             // Check that at least 40% of the values are different
+             int differentCount = 0;
+             for (int i = 0; i < list1.Count; i++)
+             {
+                 if (!Mathf.Approximately(list2[i], list1[i]))
+                 {
+                     differentCount++;
+                 }
+             }
+             double differencePercentage = (double)differentCount / list1.Count * 100;
+             Debug.Log($"Difference percentage: {differencePercentage:F1}%");
+             Assert.That(differencePercentage, Is.GreaterThanOrEqualTo(EXPECTED_MIN_DIFFERENCE_PERCENT), 
+                 $"At least {EXPECTED_MIN_DIFFERENCE_PERCENT}% of values should be different, but only {differencePercentage:F1}% were different");
+             
+             // Verify that the generated lists are different
+             Assert.That(list2, Is.Not.EqualTo(list1), "Generated value lists should be different");
+         }
+         
+         
     }
 }

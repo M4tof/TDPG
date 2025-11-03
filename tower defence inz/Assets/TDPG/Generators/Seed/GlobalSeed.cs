@@ -21,7 +21,7 @@ namespace TDPG.Generators.Seed
 
         public GlobalSeed(ulong baseSeed, string name = null, string description = null)
         {
-            Base = baseSeed;   //TODO: cast RandomSource to Ulong when available
+            Base = baseSeed;
             Name = name;
             Description = description;
             subSeeds = new List<Seed>();
