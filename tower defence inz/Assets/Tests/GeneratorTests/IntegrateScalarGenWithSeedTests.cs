@@ -12,7 +12,7 @@ namespace Tests.GeneratorTests
         public void CreateSeedWithInitializer()
         {
             // Arrange
-            var initVal = QuickGenerate();
+            var initVal = QuickGenerate(1);
             var gs = new GlobalSeed(initVal,"testGS","testDescription");
             string key = DateTime.Now.Ticks.ToString();
             gs.NextSubSeed(key);
