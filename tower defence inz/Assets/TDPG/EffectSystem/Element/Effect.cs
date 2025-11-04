@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace TDPG.EffectSystem.Element
@@ -6,18 +7,20 @@ namespace TDPG.EffectSystem.Element
     public abstract class Effect
     {
         public string Name { get; protected set; }
-        public float Value { get; protected set; }
-        
+        protected float[] Values { get; set; } 
         public string  Description { get; protected set; }
 
-        protected Effect(string name, float value, string description)
+        protected Effect(string name, string description, params float[] values)
         {
             Name = name;
-            Value = value;
+            Values = values;
             Description = description;
         }
 
-        public abstract void Apply(GameObject target);
+        public abstract void Apply(GameObject target);  // Actually apply the effect
+
+        // Transfer structured data
+        public abstract Dictionary<EffectParameter, float> LogicTransfer();  //Transfer Effect definition, for use in the planner
     }
     
 }

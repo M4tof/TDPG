@@ -8,9 +8,7 @@ namespace TDPG.EffectSystem.Element
     {
         public string Name { get; private set; }
         public int Id { get; private set; }
-        public IReadOnlyList<Effect> Effects => _effects;
-
-        private readonly List<Effect> _effects = new();
+        private readonly List<Effect> effects = new();
         public List<string> MetaData { get; private set; } = new();
 
         
@@ -24,22 +22,24 @@ namespace TDPG.EffectSystem.Element
         {
             Name = name;
             Id = id;
-            _effects = effects ?? new List<Effect>();
+            this.effects = effects ?? new List<Effect>();
         }
         
         
-        public void AddEffect(Effect effect) => _effects.Add(effect);
-        public void RemoveEffect(Effect effect) => _effects.Remove(effect);
+        public void AddEffect(Effect effect) => effects.Add(effect);
+        public void RemoveEffect(Effect effect) => effects.Remove(effect);
 
         public void AddMetaData(string metaData) => MetaData.Add(metaData);
 
         public void ApplyEffects(GameObject target)
         {
-            foreach (Effect effect in _effects)
+            foreach (Effect effect in effects)
             {
                 effect.Apply(target);
             }
         }
+        
+        public List<Effect> GetEffects() => effects;
         
         
     }
