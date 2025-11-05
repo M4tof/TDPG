@@ -76,4 +76,17 @@ public class PlayerInput : MonoBehaviour
         }
     }
     
+    void OnValidate()
+    {
+        if (pauseMenu == null)
+        {
+            Debug.LogWarning("Pause Menu is not assigned", this);
+        }
+        if (mainCamera == null)
+        {
+            Debug.LogWarning("Main Camera is not assigned", this);
+        }
+    }
 }
+
+
