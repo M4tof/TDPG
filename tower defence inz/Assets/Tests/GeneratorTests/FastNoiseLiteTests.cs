@@ -1,7 +1,7 @@
 using NUnit.Framework;
 using TDPG.Generators.FastNoiseLite;
 
-namespace Tests.NoiseTests
+namespace Tests.GeneratorTests
 {
     [TestFixture]
     public class NoiseGeneratorsTests
@@ -28,7 +28,7 @@ namespace Tests.NoiseTests
         public void FastNoiseLite_GeneratesDifferentValuesForDifferentInputs()
         {
             // Arrange
-            var noise = new FastNoiseLite();;
+            var noise = new FastNoiseLite();
             noise.SetSeed(42);
             noise.SetFrequency(0.05f);
 
