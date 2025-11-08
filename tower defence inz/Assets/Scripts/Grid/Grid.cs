@@ -79,15 +79,23 @@ public class Grid
         }
         typeGrid[x, y] = value;
     }
-
-    //Print in console grid tile on given position
-    public void PrintGridCell(Vector3 worldPosition)
+    
+    //return type of tile
+    public int getValue(Vector3 worldPosition)
     {
-        Debug.Log(GetXY(worldPosition));
+        Vector2Int position =  GetXY(worldPosition);
+        return grid[position.x, position.y];
+    }
+    
+    //return type of tile
+    public TileType getTileType(Vector3 worldPosition)
+    {
+        Vector2Int position =  GetXY(worldPosition);
+        return typeGrid[position.x, position.y];
     }
     
     //Get Tile based on given position
-    private Vector2Int GetXY(Vector3 worldPosition)
+    public Vector2Int GetXY(Vector3 worldPosition)
     {
         return new Vector2Int(Mathf.FloorToInt(worldPosition.x/cellSize), Mathf.FloorToInt(worldPosition.y/cellSize));
     }
@@ -97,6 +105,10 @@ public class Grid
     {
         return new Vector3(x, y) * cellSize;
     }
-
     
+    //Print in console grid tile on given position
+    public void PrintGridCell(Vector3 worldPosition)
+    {
+        Debug.Log(GetXY(worldPosition));
+    }
 }
