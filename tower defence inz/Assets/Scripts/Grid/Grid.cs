@@ -28,11 +28,13 @@ public class Grid
         Debug.DrawLine(GetWorldPosition(width,0),GetWorldPosition(width,height),Color.yellow,100f);
     }
 
+    //convert grid to position into world (real) position 
     private Vector3 GetWorldPosition(int x, int y)
     {
         return new Vector3(x, y) * cellSize;
     }
     
+    //Set value of given tile 
     public void SetValue(int x, int y, int value)
     {
         if (x < 0 || x >= width || y < 0 || y >= height)
@@ -42,11 +44,13 @@ public class Grid
         grid[x, y] = value;
     }
 
+    //Get Tile based on given position
     private Vector2Int GetXY(Vector3 worldPosition)
     {
         return new Vector2Int(Mathf.FloorToInt(worldPosition.x/cellSize), Mathf.FloorToInt(worldPosition.y/cellSize));
     }
 
+    //Set value for tile on grid based on world position
     public void SetValue(Vector3 worldPosition, int value)
     {
         Vector2Int position;
@@ -54,6 +58,7 @@ public class Grid
         SetValue(position.x, position.y, value);
     }
     
+    //Print in console grid tile on given position
     public void PrintGridCell(Vector3 worldPosition)
     {
         Debug.Log(GetXY(worldPosition));
