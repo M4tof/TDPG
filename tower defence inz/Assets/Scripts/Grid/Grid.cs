@@ -2,6 +2,7 @@ using UnityEngine;
 
 
 
+
 public class Grid
 {
     private int width;
@@ -9,6 +10,7 @@ public class Grid
     private float cellSize;
     private int[,] grid;
     private TileType[,] typeGrid;
+    //TODO dodać grid dla budynków kiedy będzie można je tworzyć
     
     public enum TileType
     {
