@@ -80,7 +80,7 @@ public class Grid
         typeGrid[x, y] = value;
     }
     
-    //return type of tile
+    //return value of tile
     public int getValue(Vector3 worldPosition)
     {
         Vector2Int position =  GetXY(worldPosition);
