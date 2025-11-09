@@ -29,6 +29,20 @@ public class GridManager : MonoBehaviour
         }
     }
     
+    //Return tile postition on grid
+    public Vector2 GetGridTilePosition(Vector3 position)
+    {
+        return grid.GetXY(position);
+    }
+    
+    //Return tile world postition on grid
+    public Vector2 GetGridWorldTilePosition(Vector3 position)
+    {
+        Vector2 tile = grid.GetXY(position);
+        tile *= cellSize;
+        return tile;
+    }
+    
     void OnValidate()
     {
         if (mainCamera == null)

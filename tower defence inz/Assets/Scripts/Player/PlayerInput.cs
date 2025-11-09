@@ -3,6 +3,7 @@ using UnityEngine.InputSystem;
 
 [RequireComponent(typeof(Rigidbody2D))]
 [RequireComponent(typeof(BasicProjectileSpawner))]
+[RequireComponent(typeof(TurretSpawner))]
 public class PlayerInput : MonoBehaviour
 {
     
@@ -16,12 +17,14 @@ public class PlayerInput : MonoBehaviour
     
     private Rigidbody2D rb;
     private BasicProjectileSpawner projectileSpawner;
+    private TurretSpawner turretSpawner;
     
     private Vector3 moveDirection;
     private Vector3 mousePosition;
     private Vector3 projectileRotation;
 
-    [SerializeField] private bool inMenu;
+    private bool inMenu;
+    private GameObject buildingToBuild; 
     
     //Initial
     void Start()
@@ -29,15 +32,20 @@ public class PlayerInput : MonoBehaviour
         inMenu = false;
         rb = GetComponent<Rigidbody2D>();
         projectileSpawner = GetComponent<BasicProjectileSpawner>();
+        turretSpawner = GetComponent<TurretSpawner>();
     }
     
     //Updates every frame
     void Update()
     {
+        //Move player
         rb.linearVelocity = moveDirection * speed;
         RotateSprite();
+        
+        //Move building preview
+        turretSpawner.UpdateVisualizerPosition(mainCamera.ScreenToWorldPoint(Mouse.current.position.ReadValue()));
     }
-
+    
     //Set player direction based on input system
     public void onMove(InputAction.CallbackContext context)
     {
@@ -47,12 +55,22 @@ public class PlayerInput : MonoBehaviour
     //Shoot if player press shoot button
     public void onShoot(InputAction.CallbackContext context)
     {
-        if (context.performed && !inMenu)
+        if (context.performed)
         {
             mousePosition = Mouse.current.position.ReadValue();
             Vector3 worldMousePosition = mainCamera.ScreenToWorldPoint(mousePosition);
-            projectileSpawner.Shoot(transform.position, worldMousePosition);
+            if (!inMenu)
+            {
+                projectileSpawner.Shoot(transform.position, worldMousePosition);
+                return;
+            }
+
+            if (buildingMenu.GetIsActive() && turretSpawner.GetTurretToSpawn() != null)
+            {
+                turretSpawner.SpawnTurret(worldMousePosition);
+            }
         }
+        
     }
 
     //When Player press building button it switch building Panel
@@ -77,6 +95,11 @@ public class PlayerInput : MonoBehaviour
         {
             if (buildingMenu.GetIsActive())
             {
+                if (turretSpawner.GetTurretToSpawn() != null)
+                {
+                    turretSpawner.SetTurretToSpawn(null);
+                    return;
+                }
                 buildingMenu.CloseBuildingPanel();
                 inMenu = false;
                 return;
@@ -115,7 +138,6 @@ public class PlayerInput : MonoBehaviour
         {
             Debug.LogWarning("Building Menu is not assigned", this);
         }
-        
     }
 }
 
