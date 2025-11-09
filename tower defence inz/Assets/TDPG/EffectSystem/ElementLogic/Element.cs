@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace TDPG.EffectSystem.Element
+namespace TDPG.EffectSystem.ElementLogic
 {
     // This is structure holding a set of effects to apply, ex. Fire
     public class Element

@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace TDPG.EffectSystem.Element
+namespace TDPG.EffectSystem.ElementLogic
 {
     // This is abstract of the actual effect applied in game, ex. SlowDown
     public abstract class Effect

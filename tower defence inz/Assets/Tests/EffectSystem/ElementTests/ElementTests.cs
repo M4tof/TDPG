@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
-using TDPG.EffectSystem.Element;
+using TDPG.EffectSystem.ElementLogic;
 using UnityEngine;
 
 namespace Tests.EffectSystem.ElementTests

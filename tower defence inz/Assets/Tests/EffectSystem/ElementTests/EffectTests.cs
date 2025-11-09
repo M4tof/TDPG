@@ -1,6 +1,6 @@
 using NUnit.Framework;
 using System.Collections.Generic;
-using TDPG.EffectSystem.Element;
+using TDPG.EffectSystem.ElementLogic;
 using UnityEngine;
 
 namespace Tests.EffectSystem.ElementTests

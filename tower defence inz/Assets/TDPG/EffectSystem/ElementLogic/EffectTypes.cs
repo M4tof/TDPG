@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace TDPG.EffectSystem.Element
+namespace TDPG.EffectSystem.ElementLogic
 {
 
     public class SlowDown : Effect
