@@ -12,6 +12,7 @@ public class PlayerInput : MonoBehaviour
     [SerializeField] private SpriteRenderer spriteRenderer;
     [SerializeField] private Camera mainCamera;
     [SerializeField] private PauseMenu pauseMenu;
+    [SerializeField] private BuildingMenu buildingMenu;
     
     private Rigidbody2D rb;
     private BasicProjectileSpawner projectileSpawner;
@@ -52,6 +53,16 @@ public class PlayerInput : MonoBehaviour
         }
     }
 
+    //When Player press building button it switch building Panel
+    public void onBuilding(InputAction.CallbackContext context)
+    {
+        if (context.performed)
+        {
+            buildingMenu.SwitchBuildingPanel();
+            mainCamera.GetComponent<CameraController>().SetDynamicCameraMovement(!buildingMenu.GetIsActive());
+        }
+    }
+    
     public void onPause(InputAction.CallbackContext context)
     {
         //Debug.Log("PAUSZA");
