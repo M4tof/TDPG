@@ -2626,9 +2626,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mainCamera: {fileID: 1727038319}
-  width: 10
-  height: 10
-  cellSize: 10
+  width: 40
+  height: 40
+  cellSize: 5
 --- !u!4 &1339975573
 Transform:
   m_ObjectHideFlags: 0
@@ -3230,7 +3230,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_Sprite: {fileID: 0}
-  m_Color: {r: 0.22780338, g: 0.4110227, b: 0.89433956, a: 0.21176471}
+  m_Color: {r: 0.22780338, g: 0.4110227, b: 0.89433956, a: 0.60784316}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -5322,6 +5322,18 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6215233159336792188, guid: 2e379847961094c44b4a734e4b4a77a2, type: 3}
+      propertyPath: tileSize.x
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 6215233159336792188, guid: 2e379847961094c44b4a734e4b4a77a2, type: 3}
+      propertyPath: tileSize.y
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 6215233159336792188, guid: 2e379847961094c44b4a734e4b4a77a2, type: 3}
+      propertyPath: multiplayer
+      value: 2.5
+      objectReference: {fileID: 0}
     - target: {fileID: 7408951562071587175, guid: 2e379847961094c44b4a734e4b4a77a2, type: 3}
       propertyPath: m_Name
       value: NOTTurret 1
@@ -5834,6 +5846,18 @@ PrefabInstance:
     - target: {fileID: 1221148439404082517, guid: 3a05aa285982c3244a134e66278cd12c, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6215233159336792188, guid: 3a05aa285982c3244a134e66278cd12c, type: 3}
+      propertyPath: tileSize.x
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6215233159336792188, guid: 3a05aa285982c3244a134e66278cd12c, type: 3}
+      propertyPath: tileSize.y
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6215233159336792188, guid: 3a05aa285982c3244a134e66278cd12c, type: 3}
+      propertyPath: multiplayer
+      value: 2.5
       objectReference: {fileID: 0}
     - target: {fileID: 7408951562071587175, guid: 3a05aa285982c3244a134e66278cd12c, type: 3}
       propertyPath: m_Name

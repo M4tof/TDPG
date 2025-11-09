@@ -42,6 +42,18 @@ public class GridManager : MonoBehaviour
         tile *= cellSize;
         return tile;
     }
+
+    //Check if world point is on Grid
+    public bool IsOnGrid(Vector3 position)
+    {
+        Vector2 tile = grid.GetXY(position);
+        if (tile.x < 0 || tile.x >= width || tile.y < 0 || tile.y >= height)
+        {
+            return false;
+        }
+
+        return true;
+    }
     
     void OnValidate()
     {

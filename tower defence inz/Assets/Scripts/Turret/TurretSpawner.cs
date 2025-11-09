@@ -25,7 +25,6 @@ public class TurretSpawner : MonoBehaviour
         if (turretToSpawn == null)
         {
             TurretVisualizer.gameObject.SetActive(false);
-            Debug.Log("TURRET_TO_SPAWN NULL");
             return;
         }
         //Set copy parameters from turret to spawn to preview
@@ -33,7 +32,6 @@ public class TurretSpawner : MonoBehaviour
         TurretBase turret = this.turretToSpawn.GetComponent<TurretBase>();
         if (turret == null)
         {
-            Debug.Log("TURRET NULL");
             TurretVisualizer.gameObject.SetActive(false);
             return;
         }
@@ -51,7 +49,7 @@ public class TurretSpawner : MonoBehaviour
     //Spawn turret on given position
     public GameObject SpawnTurret(Vector3 position)
     {
-        if (turretToSpawn != null)
+        if (turretToSpawn != null && gridManager.IsOnGrid(position))
         {
             position.z = 0f;
             GameObject newTurret = Instantiate(turretToSpawn,gridManager.GetGridWorldTilePosition(position),Quaternion.identity);
@@ -65,11 +63,15 @@ public class TurretSpawner : MonoBehaviour
 
     public void UpdateVisualizerPosition(Vector3 position)
     {
-        if (turretToSpawn != null)
+        if (turretToSpawn != null && gridManager.IsOnGrid(position))
         {
             position.z = 0f;
             TurretVisualizer.transform.position = gridManager.GetGridWorldTilePosition(position);
+            TurretVisualizer.gameObject.SetActive(true);
+            return;
         }
+        TurretVisualizer.gameObject.SetActive(false);
+        
     }
 
     //Validation
