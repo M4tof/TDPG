@@ -20,10 +20,13 @@ public class PlayerInput : MonoBehaviour
     private Vector3 moveDirection;
     private Vector3 mousePosition;
     private Vector3 projectileRotation;
+
+    [SerializeField] private bool inMenu;
     
     //Initial
     void Start()
     {
+        inMenu = false;
         rb = GetComponent<Rigidbody2D>();
         projectileSpawner = GetComponent<BasicProjectileSpawner>();
     }
@@ -31,7 +34,6 @@ public class PlayerInput : MonoBehaviour
     //Updates every frame
     void Update()
     {
-        
         rb.linearVelocity = moveDirection * speed;
         RotateSprite();
     }
@@ -45,7 +47,7 @@ public class PlayerInput : MonoBehaviour
     //Shoot if player press shoot button
     public void onShoot(InputAction.CallbackContext context)
     {
-        if (context.performed)
+        if (context.performed && !inMenu)
         {
             mousePosition = Mouse.current.position.ReadValue();
             Vector3 worldMousePosition = mainCamera.ScreenToWorldPoint(mousePosition);
@@ -58,17 +60,29 @@ public class PlayerInput : MonoBehaviour
     {
         if (context.performed)
         {
+            if (pauseMenu.GetMenuActive())
+            {
+                return;
+            }
             buildingMenu.SwitchBuildingPanel();
             mainCamera.GetComponent<CameraController>().SetDynamicCameraMovement(!buildingMenu.GetIsActive());
+            inMenu = !inMenu;
         }
     }
     
     public void onPause(InputAction.CallbackContext context)
     {
-        //Debug.Log("PAUSZA");
+        
         if (context.performed)
         {
+            if (buildingMenu.GetIsActive())
+            {
+                buildingMenu.CloseBuildingPanel();
+                inMenu = false;
+                return;
+            }
             pauseMenu.SwitchMenu();
+            inMenu = !inMenu;
         }
 
     }
@@ -97,6 +111,11 @@ public class PlayerInput : MonoBehaviour
         {
             Debug.LogWarning("Main Camera is not assigned", this);
         }
+        if (buildingMenu == null)
+        {
+            Debug.LogWarning("Building Menu is not assigned", this);
+        }
+        
     }
 }
 

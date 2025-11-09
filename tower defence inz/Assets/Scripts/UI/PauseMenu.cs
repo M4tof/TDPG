@@ -41,4 +41,9 @@ public class PauseMenu : MonoBehaviour
         }
         OpenFirstPage();
     }
+
+    public bool GetMenuActive()
+    {
+        return menuActive;
+    }
 }
