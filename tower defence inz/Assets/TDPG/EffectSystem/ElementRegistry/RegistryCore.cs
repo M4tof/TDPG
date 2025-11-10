@@ -29,7 +29,7 @@ namespace TDPG.EffectSystem.ElementRegistry
             registryGraph = new BidirectionalGraph<Element, Edge<Element>>(true);
 
             // Create a fake root element (ID = 0)
-            rootElement = new Element("Root", 0, new Seed(0, 0, "Root"));
+            rootElement = new Element("Root", 0, new Seed(0, -1, "Root"));
 
             // Add root element as the base of the registry
             registryGraph.AddVertex(rootElement);
@@ -52,19 +52,21 @@ namespace TDPG.EffectSystem.ElementRegistry
             }
 
             // Find parent elements by ID
-            var parentElements = registryGraph.Vertices.Where(v => parentsId.Contains(v.Id)).ToList();
+            List<Element> parentElements = registryGraph.Vertices.Where(v => parentsId.Contains(v.Id)).ToList();
             if (parentElements.Count == 0)
             {
                 Debug.LogWarning($"No parent elements found for IDs [{string.Join(",", parentsId)}].");
                 return false;
             }
 
+            newElement.Id = CountElements(); //ensure ID is next in line
+
             // Add new element if it's not already in the graph
             if (!registryGraph.ContainsVertex(newElement))
                 registryGraph.AddVertex(newElement);
 
-            // Create edges (parent → child)
-            foreach (var parent in parentElements)
+            // Create edges (parent -> child)
+            foreach (Element parent in parentElements)
             {
                 if (!registryGraph.ContainsEdge(parent, newElement))
                     registryGraph.AddEdge(new Edge<Element>(parent, newElement));
@@ -76,7 +78,7 @@ namespace TDPG.EffectSystem.ElementRegistry
         public Element GenerateChildElementFromParents(List<int> parentsId)
         {
             // Find parent elements
-            var parentElements = registryGraph.Vertices.Where(v => parentsId.Contains(v.Id)).ToList();
+            List<Element> parentElements = registryGraph.Vertices.Where(v => parentsId.Contains(v.Id)).ToList();
             if (parentElements.Count == 0)
             {
                 Debug.LogWarning($"No parent elements found for IDs [{string.Join(",", parentsId)}].");
@@ -86,10 +88,10 @@ namespace TDPG.EffectSystem.ElementRegistry
             // Combine DNA and Gather all effects from parents
             List<Effect> effects = new List<Effect>();
             Seed newSeed = new Seed(0, -1, "GeneratedFromParents");
-            foreach (var parent in parentElements)
+            foreach (Element parent in parentElements)
             {
                 newSeed += parent.GetDna();
-                var parentEffects = parent.GetEffects();
+                List<Effect> parentEffects = parent.GetEffects();
                 if (parentEffects is { Count: > 0 })
                     effects.AddRange(parentEffects);
             }
@@ -144,18 +146,18 @@ namespace TDPG.EffectSystem.ElementRegistry
             ApplySeedBoosts(finalEffects, baseValue);
             
             // Create a unique ID for the new element
-            int currId = registryGraph.VertexCount;
+            int currId = CountElements();
             
             // Create new element  
-            Element newElement = new Element($"CustomElement:{currId}", currId, finalEffects, newSeed);
+            Element newElement = new Element($"CustomElement:{currId}", currId, newSeed, finalEffects);
             
             // Add to registry and link with parents
             if (!registryGraph.ContainsVertex(newElement))
                 registryGraph.AddVertex(newElement);
             
-            foreach (var parent in parentElements)
+            foreach (Element parent in parentElements)
             {
-                // Parent → Child
+                // Parent -> Child
                 if (!registryGraph.ContainsEdge(parent, newElement))
                     registryGraph.AddEdge(new Edge<Element>(parent, newElement));
             }

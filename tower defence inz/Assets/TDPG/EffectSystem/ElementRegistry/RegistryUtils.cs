@@ -85,7 +85,7 @@ namespace TDPG.EffectSystem.ElementRegistry
                       $"Parents: {parentNames}\n" +
                       $"Children: {childNames}\n" +
                       $"Seed: {tmpRead.GetDna()}\n" +
-                      $"Effects: {string.Join(", ", tmpRead.GetEffects()?.Select(e => e.Name) ?? new List<string>())}\n" +
+                      $"Effect_Names: {string.Join(", ", tmpRead.GetEffects()?.Select(e => e.Name) ?? new List<string>())}\n" +
                       $"========================");
         }
         public void ClearRegistry()
@@ -166,7 +166,7 @@ namespace TDPG.EffectSystem.ElementRegistry
 
                     values[v] += boost;
 
-                    // Clamp for sanity if needed (optional)
+                    // Clamp for sanity
                     values[v] = Mathf.Clamp(values[v], 0f, 999f);
                 }
 

@@ -56,7 +56,7 @@ namespace Tests.EffectSystem.ElementTests
             var burn = new HealthDown(1.2f);
             var effects = new List<Effect> { slow, burn };
             
-            var element = new Element("Fire", 1, effects, simpleSeed);
+            var element = new Element("Fire", 1, simpleSeed, effects);
             
             Assert.AreEqual("Fire", element.Name);
             Assert.AreEqual(1, element.Id);

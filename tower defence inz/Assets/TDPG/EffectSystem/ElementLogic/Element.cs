@@ -8,7 +8,7 @@ namespace TDPG.EffectSystem.ElementLogic
     public class Element
     {
         public string Name { get; private set; }
-        public int Id { get; private set; }
+        public int Id { get; internal set; }
         private readonly List<Effect> effects = new();
         public List<string> MetaData { get; private set; } = new();
         private readonly Seed dna;
@@ -22,7 +22,7 @@ namespace TDPG.EffectSystem.ElementLogic
             MetaData = new List<string> { dna.ToString() };
         }
         
-        public Element(string name, int id, List<Effect> effects, Seed dna)
+        public Element(string name, int id, Seed dna, List<Effect> effects)
         {
             Name = name;
             Id = id;

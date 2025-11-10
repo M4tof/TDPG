@@ -143,20 +143,23 @@ namespace Tests.EffectSystem.ElementTests
             //    A  |   B
             //     \ |  / \
             //       C     D
-            //        \   /
-            //          E
-            //           \
-            //            F
+            //       |    /
+            //       |   E
+            //       |  /  
+            //       F       
 
             // --- Setup ---
             var root = registry.RootElement;
 
-            var a = new Element("A", 1, new Seed(1, 0, "A"));
-            var b = new Element("B", 2, new Seed(2, 0, "B"));
-            var c = new Element("C", 3, new Seed(3, 0, "C"));
+            Effect slowDown = new SlowDown(2, 2);
+            Effect hit = new  HealthDown(1 );
+            
+            var a = new Element("A", 1, new Seed(1, 0, "A"),new List<Effect>{slowDown});
+            var b = new Element("B", 2, new Seed(2, 0, "B"), new List<Effect>{hit});
+            var c = new Element("C", 3, new Seed(3, 0, "C"),new List<Effect>{slowDown, hit});
             var d = new Element("D", 4, new Seed(4, 0, "D"));
             var e = new Element("E", 5, new Seed(5, 0, "E"));
-            var f = new Element("F", 6, new Seed(6, 0, "F"));
+            var f = new Element("F", 6, new Seed(6, 0, "F"),new List<Effect>{slowDown, hit});
 
             // Root → A, B, C
             registry.PutPreMadeElement(new List<int> { root.Id }, a);
