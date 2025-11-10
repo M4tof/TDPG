@@ -3,8 +3,8 @@ using UnityEngine;
 public class TurretBase : MonoBehaviour
 {
 
-    [Header("Parameters")] [SerializeField]
-    private Vector2 tileSize = new Vector2(1, 1);
+    [Header("Parameters")] 
+    [SerializeField] private Vector2 tileSize = new Vector2(1, 1);
     [SerializeField] private float multiplayer = 5.0f;
     
     [SerializeField] private GameObject spriteObject;
@@ -34,6 +34,12 @@ public class TurretBase : MonoBehaviour
         this.multiplayer = multiplayer;
         spriteObject.transform.localPosition = new Vector2(tileSize.x * multiplayer, tileSize.x * multiplayer);
     }
+    
+    //Get Multiplayer
+    public float GetMultiplayer()
+    {
+        return multiplayer;
+    }
 
     public void SetSprite(Sprite sprite)
     {
@@ -45,10 +51,9 @@ public class TurretBase : MonoBehaviour
         return spriteObject.GetComponent<SpriteRenderer>().sprite;
     }
 
-    //Get Multiplayer
-    public float GetMultiplayer()
+    public SpriteRenderer GetSpriteRenderer()
     {
-        return multiplayer;
+        return spriteObject.GetComponent<SpriteRenderer>();
     }
     
     void OnValidate()

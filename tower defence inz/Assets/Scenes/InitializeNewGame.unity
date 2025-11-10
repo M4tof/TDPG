@@ -2626,8 +2626,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mainCamera: {fileID: 1727038319}
-  width: 40
-  height: 40
+  width: 10
+  height: 10
   cellSize: 5
 --- !u!4 &1339975573
 Transform:

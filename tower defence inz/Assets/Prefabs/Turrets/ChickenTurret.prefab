@@ -132,6 +132,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8413f4eec9cf7e046a89191a3475d7b7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tileSize: {x: 1, y: 1}
-  multiplayer: 5
+  tileSize: {x: 2, y: 2}
+  multiplayer: 2.5
   spriteObject: {fileID: 5591873773380164164}

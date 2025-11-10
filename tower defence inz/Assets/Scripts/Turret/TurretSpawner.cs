@@ -15,7 +15,7 @@ public class TurretSpawner : MonoBehaviour
     [SerializeField] TurretBase TurretVisualizer;
     
     private GameObject turretToSpawn;
-    
+    private bool canSpawnTurret = true;
 
     //Set Turret to Spawn
     public void SetTurretToSpawn(GameObject turretToSpawn)
@@ -47,13 +47,14 @@ public class TurretSpawner : MonoBehaviour
     }
 
     //Spawn turret on given position
-    public GameObject SpawnTurret(Vector3 position)
+    public GameObject SpawnTurret(Vector3 worldPosition)
     {
-        if (turretToSpawn != null && gridManager.IsOnGrid(position))
+        if (turretToSpawn != null && canSpawnTurret)
         {
-            position.z = 0f;
-            GameObject newTurret = Instantiate(turretToSpawn,gridManager.GetGridWorldTilePosition(position),Quaternion.identity);
+            worldPosition.z = 0f;
+            GameObject newTurret = Instantiate(turretToSpawn,gridManager.GetGridWorldTilePosition(worldPosition),Quaternion.identity);
             newTurret.transform.SetParent(TurretBox.transform);
+            gridManager.PlaceTurret(worldPosition, newTurret);
             SetTurretToSpawn(null);
             return newTurret;
         }
@@ -68,7 +69,16 @@ public class TurretSpawner : MonoBehaviour
             position.z = 0f;
             TurretVisualizer.transform.position = gridManager.GetGridWorldTilePosition(position);
             TurretVisualizer.gameObject.SetActive(true);
+            if (gridManager.CanPlaceTurret(position,TurretVisualizer.GetTileSize()))
+            {
+                TurretVisualizer.GetSpriteRenderer().color = Color.blue;
+                canSpawnTurret = true;
+                return;
+            }
+            TurretVisualizer.GetSpriteRenderer().color = Color.red; 
+            canSpawnTurret =  false;
             return;
+            
         }
         TurretVisualizer.gameObject.SetActive(false);
         
