@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
 using TDPG.EffectSystem.ElementLogic;
+using TDPG.Generators.Seed;
 using UnityEngine;
 
 namespace Tests.EffectSystem.ElementTests
@@ -11,7 +12,8 @@ namespace Tests.EffectSystem.ElementTests
         [Test]
         public void Element_Constructor_AssignsNameAndId()
         {
-            var element = new Element("Fire", 1);
+            Seed simpleSeed = new Seed(123,1);
+            var element = new Element("Fire", 1,simpleSeed);
             Assert.AreEqual("Fire", element.Name);
             Assert.AreEqual(1, element.Id);
             Assert.IsEmpty(element.GetEffects());
@@ -20,16 +22,21 @@ namespace Tests.EffectSystem.ElementTests
         [Test]
         public void Element_MetaDataTest()
         {
-            var element = new Element("Thunder", 3);
+            Seed simpleSeed = new Seed(123,1);
+            var element = new Element("Thunder", 3,simpleSeed);
             element.AddMetaData("Created: NOW!");
-            Assert.AreEqual("Created: NOW!", element.MetaData[0]);
-            Assert.AreEqual(1, element.MetaData.Count);
+            
+            Assert.AreEqual("Created: NOW!", element.MetaData[1]);
+            Assert.AreEqual(2, element.MetaData.Count);
+            
+            Assert.AreEqual("Value: 123, Id: 1, Parent: ", element.MetaData[0]);
         }
 
         [Test]
         public void Element_AddsAndRemovesEffectsCorrectly()
         {
-            var element = new Element("Ice", 2);
+            Seed simpleSeed = new Seed(123,1);
+            var element = new Element("Ice", 2,simpleSeed);
             var slow = new SlowDown(0.25f, 2f);
 
             element.AddEffect(slow);
@@ -44,11 +51,12 @@ namespace Tests.EffectSystem.ElementTests
         [Test]
         public void Element_Constructor_WithEffectList_AssignsEffects()
         {
+            Seed simpleSeed = new Seed(123,1);
             var slow = new SlowDown(0.25f, 3f);
             var burn = new HealthDown(1.2f);
             var effects = new List<Effect> { slow, burn };
             
-            var element = new Element("Fire", 1, effects);
+            var element = new Element("Fire", 1, effects, simpleSeed);
             
             Assert.AreEqual("Fire", element.Name);
             Assert.AreEqual(1, element.Id);
@@ -61,8 +69,9 @@ namespace Tests.EffectSystem.ElementTests
         [Test]
         public void Element_CanStoreAndApplyEffects()
         {
+            Seed simpleSeed = new Seed(123,1);
             var dummyTarget = new GameObject("Dummy");
-            var element = new Element("Fire", 1);
+            var element = new Element("Fire", 1,simpleSeed);
             var burn = new HealthDown(5f);
             var heal = new Heal(10f);
             var slow = new SlowDown(0.25f, 2f);
@@ -80,7 +89,8 @@ namespace Tests.EffectSystem.ElementTests
         [Test]
         public void Element_CanHoldMultipleEffectsWithUniqueLogicTransfers()
         {
-            var element = new Element("Arcane", 42);
+            Seed simpleSeed = new Seed(123,1);
+            var element = new Element("Arcane", 42,simpleSeed);
             element.AddEffect(new Heal(10f));
             element.AddEffect(new HealthDown(5f));
             element.AddEffect(new SlowDown(0.2f, 4f));

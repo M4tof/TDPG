@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using TDPG.Generators.Seed;
 using UnityEngine;
 
 namespace TDPG.EffectSystem.ElementLogic
@@ -10,19 +11,25 @@ namespace TDPG.EffectSystem.ElementLogic
         public int Id { get; private set; }
         private readonly List<Effect> effects = new();
         public List<string> MetaData { get; private set; } = new();
-
+        private readonly Seed dna;
         
-        public Element(string name, int id)
+        public Element(string name, int id, Seed dna)
         {
             Name = name;
             Id = id;
+            this.dna = dna;
+            
+            MetaData = new List<string> { dna.ToString() };
         }
         
-        public Element(string name, int id, List<Effect> effects)
+        public Element(string name, int id, List<Effect> effects, Seed dna)
         {
             Name = name;
             Id = id;
             this.effects = effects ?? new List<Effect>();
+            this.dna = dna;
+            
+            MetaData = new List<string> { dna.ToString() };
         }
         
         
@@ -41,6 +48,11 @@ namespace TDPG.EffectSystem.ElementLogic
         
         public List<Effect> GetEffects() => effects;
         
-        
+        public Seed GetDna() => dna;
+
+        public override string ToString()
+        {
+            return $"Name: {Name}, Id: {Id},  MetaData: {string.Join(",", MetaData)}, Seed: {dna}";
+        }
     }
 }

@@ -102,7 +102,7 @@ namespace TDPG.Generators.Seed
                 return mutated;
             }
             
-            else
+            if (type == MutateTypes.Random)
             { //Random mutation is undeterministic, gives each byte a chance to be flipped
                 Random randomizer = new Random();
                 
@@ -117,7 +117,11 @@ namespace TDPG.Generators.Seed
                 Seed mutated = new Seed(BitConverter.ToUInt64(mutatedMap, 0),original.Id,original.ParentName);
                 return mutated;
             }
-            
+
+            else
+            {
+                return original;
+            }
         }
         
         private static bool PassesHammingDistance(Seed child, ISeed[] parents)

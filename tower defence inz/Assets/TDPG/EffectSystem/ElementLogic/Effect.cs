@@ -3,12 +3,12 @@ using UnityEngine;
 
 namespace TDPG.EffectSystem.ElementLogic
 {
-    // This is abstract of the actual effect applied in game, ex. SlowDown
+    // This is abstract of the actual effect applied in game, e.g., SlowDown
     public abstract class Effect
     {
         public string Name { get; protected set; }
         protected float[] Values { get; set; } 
-        public string  Description { get; protected set; }
+        public string Description { get; protected set; }
 
         protected Effect(string name, string description, params float[] values)
         {
@@ -17,10 +17,16 @@ namespace TDPG.EffectSystem.ElementLogic
             Description = description;
         }
 
-        public abstract void Apply(GameObject target);  // Actually apply the effect
+        public abstract void Apply(GameObject target); // Actually apply the effect
 
         // Transfer structured data
-        public abstract Dictionary<EffectParameter, float> LogicTransfer();  //Transfer Effect definition, for use in the planner
+        public abstract Dictionary<EffectParameter, float> LogicTransfer(); // For use in planners, etc.
+        public abstract int ParamNum(); // How many parameters (Values.Length)
+
+        public float[] GetValues() => Values;
+
+        // Cloning & reconstruction API
+        public abstract Effect Clone();
+        public abstract Effect WithValues(float[] newValues);
     }
-    
 }

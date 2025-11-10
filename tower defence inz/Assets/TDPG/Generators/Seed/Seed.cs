@@ -40,6 +40,32 @@ namespace TDPG.Generators.Seed
         {
             return (a as ISeed) + (b as ISeed);
         }
+
+        public override string ToString()
+        {
+            return $"Value: {value}, Id: {Id}, Parent: {ParentName}";
+        }
+        
+        public void NormalizeSeedValue()
+        {
+            ulong normalizeSeedValue = value;
+            // if it's already long enough (>= 1_000_000_000), don't touch it
+            if (normalizeSeedValue >= 1_000_000_000)
+                this.value = normalizeSeedValue;
+
+            int digits = normalizeSeedValue == 0 ? 1 : (int)Math.Floor(Math.Log10(normalizeSeedValue)) + 1;
+            int zerosToAdd = Math.Max(0, 9 - digits); // we want total ~10 digits
+            ulong multiplier = (ulong)Math.Pow(10, zerosToAdd);
+
+            this.value =  normalizeSeedValue * multiplier;
+        }
+        
+        public bool IsBitSet(int bitIndex)
+        {
+            return (value & ((ulong)1 << bitIndex)) != 0;
+        }
+
+
         
     }
 }

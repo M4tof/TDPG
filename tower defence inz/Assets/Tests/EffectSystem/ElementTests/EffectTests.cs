@@ -13,7 +13,7 @@ namespace Tests.EffectSystem.ElementTests
             var heal = new Heal(10f);
 
             Assert.AreEqual("Heal", heal.Name);
-            Assert.IsTrue(heal.Description.Contains("Heal the target"));
+            Assert.IsTrue(heal.Description.Contains("Heals the target"));
             Assert.AreEqual(10f, GetPrivateValues(heal)[0]);
         }
 
@@ -23,7 +23,7 @@ namespace Tests.EffectSystem.ElementTests
             var healthDown = new HealthDown(5f);
 
             Assert.AreEqual("HealthDown", healthDown.Name);
-            Assert.IsTrue(healthDown.Description.Contains("Lower health"));
+            Assert.IsTrue(healthDown.Description.Contains("Lowers health of the target"));
             Assert.AreEqual(5f, GetPrivateValues(healthDown)[0], "Should be change by 5hp (- is implicit by name 'health DOWN'"); 
         }
 
