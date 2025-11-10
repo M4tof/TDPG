@@ -1,9 +1,11 @@
-using System;
+using System.Collections.Generic;
+using System.Linq;
 using NUnit.Framework;
 using TDPG.Generators.Seed;
 using UnityEngine;
+using static Tests.TestUtils;
 
-namespace Tests.SeedTests
+namespace Tests.GeneratorTests.SeedTests
 {
         [TestFixture]
         public class SeedGeneticsTests
@@ -21,28 +23,29 @@ namespace Tests.SeedTests
                 Assert.AreNotEqual(seed2.Value, child.Value);
             }
             
-            //Makes new child from 5 Seeds
+            //Makes new child from N Seeds
             [Test]
-            public void FiveParentsTest()
+            public void MultipleParentsTest([NUnit.Framework.Range(3, 100, 10)] int n)
             {
-                Seed seed1 = new Seed(122,1);
-                Seed seed2 = new Seed(123,2);
-                Seed seed3 = new Seed(321,3);
-                Seed seed4 = new Seed(2401,4);
-                Seed seed5 = new Seed(08976,5);
-                
-                var child = Genetic.CreateChildSeed(new ISeed[]{seed1, seed2, seed3, seed4, seed5});
-                
-                Assert.That(child, Is.TypeOf<Seed>(),"Should be a Seed");
-                
-                var parentValues = new[] { seed1.Value, seed2.Value, seed3.Value, seed4.Value, seed5.Value };
-                Assert.That(parentValues, Does.Not.Contain(child.Value.ToString()),"Should be different");
-                
-                var child2 = Genetic.CreateChildSeed(new ISeed[]{seed1, seed2, seed3, seed4, seed5});
-                Assert.That(child2.Value, Is.EqualTo(child.Value),"Should be deterministic");
-                
-                Debug.Log(child.Value);
-                Debug.Log(child2.Value);
+                // Generate N parent seeds dynamically
+                var parents = new List<ISeed>();
+                for (int i = 0; i < n; i++)
+                {
+                    parents.Add(new Seed((ulong)(1000 + i * 37), i)); // arbitrary but deterministic variation
+                }
+
+                // Create first child
+                var child = Genetic.CreateChildSeed(parents.ToArray());
+                Assert.That(child, Is.TypeOf<Seed>(), "Should be a Seed");
+
+                var parentValues = parents.Select(p => p.GetBaseValue().ToString()).ToArray();
+                Assert.That(parentValues, Does.Not.Contain(child.Value.ToString()), "Child value should differ from all parents");
+
+                // Create second child with same parents to test determinism
+                var child2 = Genetic.CreateChildSeed(parents.ToArray());
+                Assert.That(child2.Value, Is.EqualTo(child.Value), "Should be deterministic");
+
+                Debug.Log($"Parents: {n}, Child1: {child.Value}, Child2: {child2.Value}");
             }
             
             //Makes new child from Seed and GlobalSeed
@@ -92,17 +95,7 @@ namespace Tests.SeedTests
                 Assert.AreNotEqual(mutation3.Value, mutation1.Value,"Different crossovers_map result in different outputs");
             }
             
-            // HammingDistance Helpers Test
-            private static int CallPrivateCalculateHammingDistance(byte[] a, byte[] b)
-            {
-                var method = typeof(Genetic).GetMethod("CalculateHammingDistance", 
-                    System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
-    
-                if (method == null)
-                    throw new Exception("Method not found");
-    
-                return (int)method.Invoke(null, new object[] { a, b });
-            }
+
             
             [Test]
             public void HammingDistanceTest0()

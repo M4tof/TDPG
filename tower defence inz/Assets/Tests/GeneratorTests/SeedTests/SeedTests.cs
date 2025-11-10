@@ -1,7 +1,7 @@
 using NUnit.Framework;
 using TDPG.Generators.Seed;
 
-namespace Tests.SeedTests
+namespace Tests.GeneratorTests.SeedTests
 {
     [TestFixture]
     public class SeedTests

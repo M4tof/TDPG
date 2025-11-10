@@ -2,6 +2,7 @@ using NUnit.Framework;
 using System.Collections.Generic;
 using TDPG.EffectSystem.Element;
 using UnityEngine;
+using static Tests.TestUtils;
 
 namespace Tests.EffectSystem.ElementTests
 {
@@ -14,7 +15,7 @@ namespace Tests.EffectSystem.ElementTests
 
             Assert.AreEqual("Heal", heal.Name);
             Assert.IsTrue(heal.Description.Contains("Heal the target"));
-            Assert.AreEqual(10f, GetPrivateValues(heal)[0]);
+            Assert.AreEqual(10f, GetPrivateValues_Effect(heal)[0]);
         }
 
         [Test]
@@ -24,7 +25,7 @@ namespace Tests.EffectSystem.ElementTests
 
             Assert.AreEqual("HealthDown", healthDown.Name);
             Assert.IsTrue(healthDown.Description.Contains("Lower health"));
-            Assert.AreEqual(5f, GetPrivateValues(healthDown)[0], "Should be change by 5hp (- is implicit by name 'health DOWN'"); 
+            Assert.AreEqual(5f, GetPrivateValues_Effect(healthDown)[0], "Should be change by 5hp (- is implicit by name 'health DOWN'"); 
         }
 
         [Test]
@@ -36,7 +37,7 @@ namespace Tests.EffectSystem.ElementTests
             StringAssert.Contains("30%", slow.Description); // because factor * 100
             StringAssert.Contains("2", slow.Description);
 
-            float[] values = GetPrivateValues(slow);
+            float[] values = GetPrivateValues_Effect(slow);
             Assert.AreEqual(0.3f, values[0]);
             Assert.AreEqual(2f, values[1]);
         }
@@ -81,26 +82,6 @@ namespace Tests.EffectSystem.ElementTests
             Assert.DoesNotThrow(() => heal.Apply(dummyTarget));
             Assert.DoesNotThrow(() => slow.Apply(dummyTarget));
         }
-
-        /// <summary>
-        /// Helper to reflectively access protected float[] Values in tests
-        /// </summary>
-        private static float[] GetPrivateValues(Effect effect)
-        {
-            var type = typeof(Effect);
-
-            // Try to get it as a field first
-            var fieldInfo = type.GetField("Values",
-                System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-
-            if (fieldInfo != null)
-                return (float[])fieldInfo.GetValue(effect);
-
-            // If it's a property, handle that
-            var propInfo = type.GetProperty("Values",
-                System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-
-            return propInfo != null ? (float[])propInfo.GetValue(effect) : null;
-        }
+        
     }
 }
