@@ -7,7 +7,7 @@ using TDPG.Generators.Vectors;
 using UnityEngine;
 using static TDPG.Generators.Scalars.InitializerFromDate;
 
-namespace Tests.SeedTests
+namespace Tests.GeneratorTests.SeedTests
 {
     
     [TestFixture]
@@ -169,13 +169,17 @@ namespace Tests.SeedTests
          }
 
          [Test]
-         public void FakeGamePipelineTest()
-         {
+         public void FakeGamePipelineTest(       
+             [NUnit.Framework.Range(10, 1000, 500)] int x,
+             [NUnit.Framework.Range(1, 10, 9)] int y,
+             [NUnit.Framework.Range(10, 1000, 500)] int z
+             ) {
+             
              // Make test parameters configurable
-             const int EXPECTED_MIN_DIFFERENCE_PERCENT = 40;
-             const int VECTOR_DIMENSION = 10;
-             const int DELAY_MS = 1;
-             const int SUBSNUM = 1000;
+             const int EXPECTED_MIN_DIFFERENCE_PERCENT = 80;
+             int VECTOR_DIMENSION = x;
+             int DELAY_MS = y;
+             int SUBSNUM = z;
              
              // Arrange
                 //Save game 1
