@@ -1,5 +1,5 @@
 using System;
-using TDPG.EffectSystem.Element;
+using TDPG.EffectSystem.ElementLogic;
 using TDPG.Generators.Seed;
 using UnityEngine;
 

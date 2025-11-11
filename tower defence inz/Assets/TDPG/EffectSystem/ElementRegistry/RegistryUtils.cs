@@ -25,7 +25,7 @@ namespace TDPG.EffectSystem.ElementRegistry
 
                 var children = registryGraph.Edges
                     .Where(e => e.Source.Equals(element))
-                    .Select(e => e.Target.Name)
+                    .Select<Edge<Element>, object>(e => e.Target.Name)
                     .Distinct()
                     .ToList();
 
