@@ -16,8 +16,7 @@ namespace TDPG.EffectSystem.ElementRegistry
         public Element RootElement => rootElement;
         
         // The effect registryGraph storing relationships between effect elements
-        [SerializeField]
-        private BidirectionalGraph<Element, Edge<Element>> registryGraph;
+        [SerializeField] internal BidirectionalGraph<Element, Edge<Element>> registryGraph;
         
         [SerializeField]
         private MutateTypes mutateType = MutateTypes.Deterministic;
@@ -59,7 +58,8 @@ namespace TDPG.EffectSystem.ElementRegistry
                 return false;
             }
 
-            newElement.Id = CountElements(); //ensure ID is next in line
+            if (newElement.Id == 0)
+                newElement.Id = CountElements(); // only auto-assign if ID not set
 
             // Add new element if it's not already in the graph
             if (!registryGraph.ContainsVertex(newElement))

@@ -204,5 +204,6 @@ namespace TDPG.EffectSystem.ElementRegistry
             return descendants;
         }
         
+        
     }
 }

@@ -1,9 +1,11 @@
 using System.Collections.Generic;
 using System.Linq;
+using Newtonsoft.Json;
 using NUnit.Framework;
 using TDPG.EffectSystem.ElementRegistry;
 using TDPG.EffectSystem.ElementLogic;
 using TDPG.Generators.Seed;
+using UnityEngine;
 
 namespace Tests.EffectSystem.ElementTests
 {
@@ -216,6 +218,183 @@ namespace Tests.EffectSystem.ElementTests
             // --- Test 5: Total count ---
             Assert.AreEqual(7, registry.CountElements(), "Registry should contain Root, A, B, C, D, E, F");
         }
+
+        [Test]
+        public void SimpleGraph_SerializeDeserialize()
+        {
+            var settings = new JsonSerializerSettings
+            {
+                Formatting = Formatting.Indented,
+                Converters = new List<JsonConverter>
+                {
+                    new EffectConverter(),
+                    new ElementConverter(),
+                    new SeedConverter(),
+                    new RegistryConverter()
+                }
+            };
+
+            var registry = new Registry();
+            var e1 = new Element("E1", 1, new Seed(1, -1, "E1"));
+            bool added = registry.PutPreMadeElement(new List<int> { 0 }, e1);
+            Assert.IsTrue(added);
+
+            registry.PrintRegistryMap();
+
+            string json = JsonConvert.SerializeObject(registry, settings);
+            Assert.NotNull(json);
+
+            var deserialized = JsonConvert.DeserializeObject<Registry>(json, settings);
+            Assert.IsNotNull(deserialized);
+            deserialized.PrintRegistryMap();
+
+            Debug.Log("Serialized registry\n" + json);
+
+            // --- Basic sanity checks ---
+            Assert.AreEqual(registry.CountElements(), deserialized.CountElements());
+
+            // --- Map original elements by ID for comparison ---
+            var originalElementsById = registry.GetAllElements().ToDictionary(e => e.Id);
+            var deserializedElementsById = deserialized.GetAllElements().ToDictionary(e => e.Id);
+
+            CollectionAssert.AreEquivalent(originalElementsById.Keys, deserializedElementsById.Keys);
+
+            // --- Check edges/children match by IDs ---
+            foreach (var origElement in originalElementsById.Values)
+            {
+                var origChildrenIds = registry.GetElementsFromParents(new List<Element> { origElement })
+                                              .Select(e => e.Id)
+                                              .OrderBy(id => id)
+                                              .ToList();
+
+                var deserElement = deserializedElementsById[origElement.Id];
+
+                // Use IDs to fetch children in deserialized registry
+                var deserChildrenIds = deserialized.GetElementsFromParents(
+                                            new List<Element> { deserializedElementsById[origElement.Id] })
+                                            .Select(e => e.Id)
+                                            .OrderBy(id => id)
+                                            .ToList();
+
+                CollectionAssert.AreEqual(origChildrenIds, deserChildrenIds, 
+                    $"Children mismatch for element ID {origElement.Id} ({origElement.Name})");
+            }
+
+            // --- Optional: check DNA and effects match ---
+            foreach (var origElement in originalElementsById.Values)
+            {
+                var deserElement = deserializedElementsById[origElement.Id];
+
+                Assert.AreEqual(origElement.GetDna().Value, deserElement.GetDna().Value);
+                Assert.AreEqual(origElement.GetEffects().Count, deserElement.GetEffects().Count);
+
+                for (int i = 0; i < origElement.GetEffects().Count; i++)
+                {
+                    var origEffect = origElement.GetEffects()[i];
+                    var deserEffect = deserElement.GetEffects()[i];
+
+                    Assert.AreEqual(origEffect.Name, deserEffect.Name);
+                    CollectionAssert.AreEqual(origEffect.GetValues(), deserEffect.GetValues());
+                }
+            }
+        }
+        
+        [Test]
+        public void ComplexGraph_SerializeDeserialize()
+        {
+            var settings = new JsonSerializerSettings
+            {
+                Formatting = Formatting.Indented,
+                Converters = new List<JsonConverter>
+                {
+                    new EffectConverter(),
+                    new ElementConverter(),
+                    new SeedConverter(),
+                    new RegistryConverter()
+                }
+            };
+            
+            var registry = new Registry();
+            var root = registry.RootElement;
+
+            // --- Setup Effects ---
+            Effect slowDown = new SlowDown(2, 2);
+            Effect hit = new HealthDown(1);
+
+            // --- Setup Elements ---
+            var a = new Element("A", 0, new Seed(1, 0, "A"), new List<Effect>{slowDown});
+            var b = new Element("B", 0, new Seed(2, 0, "B"), new List<Effect>{hit});
+            var c = new Element("C", 0, new Seed(3, 0, "C"), new List<Effect>{slowDown, hit});
+            var d = new Element("D", 0, new Seed(4, 0, "D"));
+            var e = new Element("E", 0, new Seed(5, 0, "E"));
+            var f = new Element("F", 0, new Seed(6, 0, "F"), new List<Effect>{slowDown, hit});
+
+            // --- Build Graph ---
+            registry.PutPreMadeElement(new List<int> { root.Id }, a);
+            registry.PutPreMadeElement(new List<int> { root.Id }, b);
+            registry.PutPreMadeElement(new List<int> { root.Id }, c);
+
+            registry.PutPreMadeElement(new List<int> { a.Id, b.Id }, c);  // A → C // B → C
+            registry.PutPreMadeElement(new List<int> { b.Id }, d);        // B → D
+            registry.PutPreMadeElement(new List<int> { d.Id }, e);        // D → E
+            registry.PutPreMadeElement(new List<int> { c.Id, e.Id }, f);  // C,E → F
+
+            registry.PrintRegistryMap();
+            
+            // --- Serialize / Deserialize ---
+            string json = JsonConvert.SerializeObject(registry, settings);
+            Assert.NotNull(json);
+
+            var deserialized = JsonConvert.DeserializeObject<Registry>(json, settings);
+            Assert.IsNotNull(deserialized);
+            deserialized.PrintRegistryMap();
+
+            // --- Map elements by ID for easy lookup ---
+            var origElementsById = registry.GetAllElements().ToDictionary(e => e.Id);
+            var deserElementsById = deserialized.GetAllElements().ToDictionary(e => e.Id);
+
+            CollectionAssert.AreEquivalent(origElementsById.Keys, deserElementsById.Keys);
+
+            // --- Verify all edges / children ---
+            foreach (var origElement in origElementsById.Values)
+            {
+                var origChildrenIds = registry.GetElementsFromParents(new List<Element> { origElement })
+                    .Select(e => e.Id)
+                    .OrderBy(id => id)
+                    .ToList();
+
+                var deserChildrenIds = deserialized.GetElementsFromParents(new List<Element> { deserElementsById[origElement.Id] })
+                    .Select(e => e.Id)
+                    .OrderBy(id => id)
+                    .ToList();
+
+                CollectionAssert.AreEqual(origChildrenIds, deserChildrenIds, 
+                    $"Children mismatch for element ID {origElement.Id} ({origElement.Name})");
+            }
+            
+            // --- Optional: verify effects ---
+            foreach (var origElement in origElementsById.Values)
+            {
+                var deserElement = deserElementsById[origElement.Id];
+
+                Assert.AreEqual(origElement.GetEffects().Count, deserElement.GetEffects().Count);
+
+                for (int i = 0; i < origElement.GetEffects().Count; i++)
+                {
+                    var origEffect = origElement.GetEffects()[i];
+                    var deserEffect = deserElement.GetEffects()[i];
+
+                    Assert.AreEqual(origEffect.Name, deserEffect.Name);
+                    CollectionAssert.AreEqual(origEffect.GetValues(), deserEffect.GetValues());
+                }
+            }
+        }
+        
+        
+        
+        
+        
+        
         
     }
 }
