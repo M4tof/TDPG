@@ -2,7 +2,7 @@
     "name": "TDPG",
     "rootNamespace": "",
     "references": [
-        "QuickGraph.dll"
+        "QuikGraph.dll"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

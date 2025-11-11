@@ -10,7 +10,7 @@ namespace TDPG.EffectSystem.ElementLogic
         public string Name { get; private set; }
         public int Id { get; internal set; }
         private readonly List<Effect> effects = new();
-        public List<string> MetaData { get; private set; } = new();
+        public List<string> MetaData { get; internal set; } = new();
         private readonly Seed dna;
         
         public Element(string name, int id, Seed dna)

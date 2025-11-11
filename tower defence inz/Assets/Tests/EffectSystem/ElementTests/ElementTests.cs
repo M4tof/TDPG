@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using Newtonsoft.Json;
 using NUnit.Framework;
 using TDPG.EffectSystem.ElementLogic;
 using TDPG.Generators.Seed;
@@ -116,7 +117,42 @@ namespace Tests.EffectSystem.ElementTests
             }
         }
         
-        
+        [Test]
+        public void Element_SerializeDeserialize_SerializesCorrectly()
+        {
+            var settings = new JsonSerializerSettings
+            {
+                Formatting = Formatting.Indented,
+                Converters = new List<JsonConverter>
+                {
+                    new EffectConverter(),
+                    new ElementConverter(),
+                    new SeedConverter()
+                }
+            };
+
+            var seed = new Seed(123,-1,"FakeSeed");
+
+            var element = new Element("Ice", 2, seed);
+                
+            element.AddEffect(new SlowDown(0.8f, 5f));
+            element.AddEffect(new HealthDown(20f));
+            
+            element.AddMetaData("Cold");
+
+            string json = JsonConvert.SerializeObject(element, settings);
+            Debug.Log(json);
+
+            Element restored = JsonConvert.DeserializeObject<Element>(json, settings);
+
+            Assert.IsNotNull(restored);
+            Assert.AreEqual(element.Name, restored.Name);
+            Assert.AreEqual(element.Id, restored.Id);
+            Assert.AreEqual(element.GetEffects().Count, restored.GetEffects().Count);
+            Assert.AreEqual(element.MetaData.Count, restored.MetaData.Count);
+            Assert.AreEqual(seed.ToString(), restored.GetDna().ToString());
+        }
+
         
         
     }

@@ -1,7 +1,10 @@
 using NUnit.Framework;
 using System.Collections.Generic;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using TDPG.EffectSystem.ElementLogic;
 using UnityEngine;
+using Formatting = System.Xml.Formatting;
 
 namespace Tests.EffectSystem.ElementTests
 {
@@ -71,7 +74,7 @@ namespace Tests.EffectSystem.ElementTests
 
         [Test]
         public void Effects_CanBeAppliedWithoutError()
-        {   //fake test until they actually do apply to an target
+        {   //fake test until they actually do apply to a target
             var dummyTarget = new GameObject("Dummy");
             var burn = new HealthDown(5f);
             var heal = new Heal(10f);
@@ -80,6 +83,48 @@ namespace Tests.EffectSystem.ElementTests
             Assert.DoesNotThrow(() => burn.Apply(dummyTarget));
             Assert.DoesNotThrow(() => heal.Apply(dummyTarget));
             Assert.DoesNotThrow(() => slow.Apply(dummyTarget));
+        }
+
+        [Test]
+        public void Effect_SerializeDeserialize_SerializesCorrectly()
+        {
+            // Arrange
+            var settings = new JsonSerializerSettings
+            {
+                Formatting = (Newtonsoft.Json.Formatting)Formatting.Indented,
+                Converters = new List<JsonConverter> { new EffectConverter() }
+            };
+
+            Effect original = new SlowDown(0.5f, 3f);
+
+            // Act: Serialize
+            string json = JsonConvert.SerializeObject(original, settings);
+            Debug.Log($"Serialized JSON:\n{json}");
+
+            // Act: Deserialize
+            Effect restored = JsonConvert.DeserializeObject<Effect>(json, settings);
+            Debug.Log($"Restored: {restored.Name} ({restored.GetType().Name})");
+            
+            // Assert
+            Assert.IsNotNull(restored, "Deserialized effect should not be null.");
+            Assert.AreEqual(original.GetType(), restored.GetType(), "Deserialized type should match original type.");
+            Assert.AreEqual(original.Name, restored.Name, "Name should match.");
+            Assert.AreEqual(original.Description, restored.Description, "Description should match.");
+
+            float[] originalValues = original.GetValues();
+            float[] restoredValues = restored.GetValues();
+
+            Assert.AreEqual(originalValues.Length, restoredValues.Length, "Values length should match.");
+            for (int i = 0; i < originalValues.Length; i++)
+                Assert.AreEqual(originalValues[i], restoredValues[i], 0.0001f, $"Value {i} should match.");
+
+            // sanity check on LogicTransfer
+            var origLogic = original.LogicTransfer();
+            var restoredLogic = restored.LogicTransfer();
+            Assert.AreEqual(origLogic.Count, restoredLogic.Count, "LogicTransfer should have same param count.");
+
+            foreach (var kvp in origLogic)
+                Assert.AreEqual(kvp.Value, restoredLogic[kvp.Key], 0.0001f, $"LogicTransfer param {kvp.Key} should match.");
         }
 
         /// <summary>

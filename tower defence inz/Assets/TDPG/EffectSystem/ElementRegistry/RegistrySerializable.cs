@@ -1,3 +1,5 @@
+using Newtonsoft;
+
 namespace TDPG.EffectSystem.ElementRegistry
 {
 
