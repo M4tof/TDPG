@@ -105,7 +105,7 @@ namespace TDPG.EffectSystem.ElementRegistry
 
             return commonChildren.First();
         }
-        public IEnumerable<Element> GetElementsFromParents(List<Element> parents)
+        public IEnumerable<Element> GetElementsFromParents(List<Element> parents) //All kids of multiple parents
         {
             if (parents == null || parents.Count == 0)
             {
@@ -203,7 +203,6 @@ namespace TDPG.EffectSystem.ElementRegistry
 
             return descendants;
         }
-        
         
     }
 }

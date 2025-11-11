@@ -372,7 +372,7 @@ namespace Tests.EffectSystem.ElementTests
                     $"Children mismatch for element ID {origElement.Id} ({origElement.Name})");
             }
             
-            // --- Optional: verify effects ---
+            // --- verify effects ---
             foreach (var origElement in origElementsById.Values)
             {
                 var deserElement = deserElementsById[origElement.Id];

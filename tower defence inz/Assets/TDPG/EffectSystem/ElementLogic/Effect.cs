@@ -27,7 +27,7 @@ namespace TDPG.EffectSystem.ElementLogic
         public float[] GetValues() => Values;
 
         // Cloning & reconstruction API
-        public abstract Effect Clone();
+        public abstract Effect Clone(); // return copy of self
         public abstract Effect WithValues(float[] newValues);
     }
 }

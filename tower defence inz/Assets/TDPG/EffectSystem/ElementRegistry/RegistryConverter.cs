@@ -20,11 +20,11 @@ public class RegistryConverter : JsonConverter<Registry>
             };
 
             // Serialize all vertices (elements)
-            var elements = value.GetAllElements().ToList();
+            List<Element> elements = value.GetAllElements().ToList();
             jo["Elements"] = JArray.FromObject(elements, serializer);
 
             // Serialize all edges
-            var edges = value.GetEdges()
+            List<JObject> edges = value.GetEdges()
                 .Select(e => new JObject
                 {
                     ["SourceId"] = e.Source.Id,
@@ -41,9 +41,9 @@ public class RegistryConverter : JsonConverter<Registry>
             JObject jo = JObject.Load(reader);
 
             var mutateTypeStr = jo["MutateType"]?.ToObject<string>();
-            var mutateType = Enum.TryParse(mutateTypeStr, out MutateTypes mt) ? mt : MutateTypes.Deterministic;
+            MutateTypes mutateType = Enum.TryParse(mutateTypeStr, out MutateTypes mt) ? mt : MutateTypes.Deterministic;
 
-            var registry = new Registry();
+            Registry registry = new Registry();
             registry.SetMutateSeedRule(mutateType);
 
             // Deserialize all elements
@@ -52,7 +52,7 @@ public class RegistryConverter : JsonConverter<Registry>
             {
                 if (el.Id == 0 && el.Name == "Root")
                 {
-                    registry.OverrideRootElement(el); // already adds it to graph
+                    registry.OverrideRootElement(el); // replace default root from constructor
                 }
                 else
                 {
@@ -66,8 +66,8 @@ public class RegistryConverter : JsonConverter<Registry>
 
             foreach (var edge in edges)
             {
-                var source = registry.GetElement(edge.SourceId);
-                var target = registry.GetElement(edge.TargetId);
+                Element source = registry.GetElement(edge.SourceId);
+                Element target = registry.GetElement(edge.TargetId);
 
                 if (source != null && target != null)
                 {
