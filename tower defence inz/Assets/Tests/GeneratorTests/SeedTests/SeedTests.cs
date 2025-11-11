@@ -1,5 +1,8 @@
+using System;
+using System.Linq;
 using NUnit.Framework;
 using TDPG.Generators.Seed;
+using UnityEngine;
 
 namespace Tests.GeneratorTests.SeedTests
 {
@@ -45,6 +48,96 @@ namespace Tests.GeneratorTests.SeedTests
             Assert.AreEqual(seed.GetBaseValue(), seed2.GetBaseValue(),"Should hold same value");
         }
         
+        [Test]
+        public void Seed_Addition()
+        {
+            // Arrange
+            byte[] aBytes = { 0b_10101010, 0b_00001111, 0b_11110000, 0b_01010101, 0, 0, 0, 0 };
+            byte[] bBytes = { 0b_11110000, 0b_00110011, 0b_00001111, 0b_11001100, 0, 0, 0, 0 };
+            // or should be FA 3F FF DD 00 00 00 00
+
+            ulong aValue = BitConverter.ToUInt64(aBytes, 0);
+            ulong bValue = BitConverter.ToUInt64(bBytes, 0);
+
+            Seed seedA = new Seed(aValue, id: 1, parentName: "A");
+            Seed seedB = new Seed(bValue, id: 2, parentName: "B");
+
+            // Act
+            Seed result = seedA + seedB;
+
+            // Compute expected XOR manually
+            byte[] expectedBytes = new byte[aBytes.Length];
+            for (int i = 0; i < aBytes.Length; i++)
+                expectedBytes[i] = (byte)(aBytes[i] | bBytes[i]);
+            
+            Debug.Log(BitConverter.ToString(expectedBytes));
+            
+            ulong expectedValue = BitConverter.ToUInt64(expectedBytes, 0);
+
+            // Assert
+            Assert.AreEqual(expectedValue, result.GetBaseValue(), 
+                "Result value should be OR of both seeds.");
+
+            StringAssert.Contains("A", result.GetName());
+            StringAssert.Contains("B", result.GetName());
+            Assert.AreEqual(-1, result.Id);
+        }
         
+        [Test]
+        public void Seed_Multiplication()
+        {
+            // Arrange
+            byte[] aBytes = { 0b_10101010, 0b_00001111, 0b_11110000, 0b_01010101, 0, 0, 0, 0 };
+            byte[] bBytes = { 0b_11110000, 0b_00110011, 0b_00001111, 0b_11001100, 0, 0, 0, 0 };
+            // xor 01011010 00111100 11111111 10011001 00000000 00000000 00000000 00000000 [5A 3C FF 99 00 00 00 00]
+            // shift [0x16, 0x8F, 0x3F, 0xE6, 0x40, 0x00, 0x00, 0x00]
+
+            ulong aValue = BitConverter.ToUInt64(aBytes, 0);
+            ulong bValue = BitConverter.ToUInt64(bBytes, 0);
+
+            Seed seedA = new Seed(aValue, id: 1, parentName: "A");
+            Seed seedB = new Seed(bValue, id: 2, parentName: "B");
+
+            // Act
+            Seed result = seedA * seedB;
+
+            // Reproduce ByteCrossover logic for expected value 
+            int maxLength = Math.Max(aBytes.Length, bBytes.Length);
+            byte[] valueXor = Enumerable.Range(0, maxLength)
+                .Select(i => (byte)
+                    ((i < aBytes.Length ? aBytes[i] : 0) ^
+                     (i < bBytes.Length ? bBytes[i] : 0)))
+                .ToArray();
+
+            byte[] finalValue = new byte[valueXor.Length];
+            byte carryOver = (byte)(valueXor[^1] << 6);
+
+            for (int i = 0; i < valueXor.Length; i++)
+            {
+                byte shifted = (byte)(valueXor[i] >> 2);
+                if (i > 0)
+                {
+                    shifted |= (byte)(valueXor[i - 1] << 6);
+                }
+                finalValue[i] = shifted;
+            }
+
+            finalValue[0] |= carryOver;
+            
+            Debug.Log(BitConverter.ToString(finalValue));
+
+            byte[] resultBytes = new byte[8];
+            Array.Copy(finalValue, resultBytes, Math.Min(finalValue.Length, 8));
+            ulong expectedValue = BitConverter.ToUInt64(resultBytes, 0);
+
+            // Assert 
+            Assert.AreEqual(expectedValue, result.GetBaseValue(),
+                $"Expected multiplication (XOR + shift) result to match computed value. Expected: {expectedValue:X}, Got: {result.GetBaseValue():X}");
+
+            StringAssert.Contains("A", result.GetName());
+            StringAssert.Contains("B", result.GetName());
+            Assert.AreEqual(-1, result.Id);
+        }
+    
     }
 }

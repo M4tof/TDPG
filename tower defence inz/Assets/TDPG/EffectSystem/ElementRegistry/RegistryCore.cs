@@ -90,7 +90,7 @@ namespace TDPG.EffectSystem.ElementRegistry
             Seed newSeed = new Seed(0, -1, "GeneratedFromParents");
             foreach (Element parent in parentElements)
             {
-                newSeed += parent.GetDna();
+                newSeed *= parent.GetDna();
                 List<Effect> parentEffects = parent.GetEffects();
                 if (parentEffects is { Count: > 0 })
                     effects.AddRange(parentEffects);

@@ -36,11 +36,36 @@ namespace TDPG.Generators.Seed
             return ParentName;
         }
         
-        public static Seed operator +(Seed a, Seed b) //needed if we want to explicitly add seed to seed instead of Iseed to seed
+        public static Seed operator *(Seed a, Seed b) //needed if we want to explicitly multiply seed to seed instead of Iseed to seed
         {
-            return (a as ISeed) + (b as ISeed);
+            a.NormalizeSeedValue();
+            b.NormalizeSeedValue();
+            return (a as ISeed) * (b as ISeed);
         }
 
+        public static Seed operator +(Seed a, Seed b)
+        {
+            string parentName = "_ChildOf:" + a.GetName() + b.GetName();
+            int id = -1;
+            
+            a.NormalizeSeedValue();
+            b.NormalizeSeedValue();
+            
+            byte[] aByte = BitConverter.GetBytes(a.GetBaseValue()); 
+            byte[] bByte = BitConverter.GetBytes(b.GetBaseValue());
+            
+            byte[] result = new byte[aByte.Length];
+            
+            for (int i = 0; i < aByte.Length; i++) { 
+                result[i] = (byte)(aByte[i] | bByte[i]); // Bitwise OR
+            } 
+            
+            byte[] resultBytes = new byte[8];
+            Array.Copy(result, resultBytes, Math.Min(result.Length, 8));
+            ulong value = BitConverter.ToUInt64(resultBytes, 0);
+            return new Seed(value, id, parentName);
+        }
+        
         public override string ToString()
         {
             return $"Value: {value}, Id: {Id}, Parent: {ParentName}";

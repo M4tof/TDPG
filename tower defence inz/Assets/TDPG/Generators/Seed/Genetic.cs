@@ -54,7 +54,7 @@ namespace TDPG.Generators.Seed
                 if(parent == parents[0]) { }
                 else
                 {
-                    tmpSeed += parent;
+                    tmpSeed *= parent;
                 }
             }
             
@@ -69,7 +69,7 @@ namespace TDPG.Generators.Seed
                 if(parent == parents[0]) { }
                 else
                 {
-                    tmpSeed += parent;
+                    tmpSeed *= parent;
                 }
             }
             
