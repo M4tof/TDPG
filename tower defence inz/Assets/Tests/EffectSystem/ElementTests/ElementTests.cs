@@ -30,7 +30,7 @@ namespace Tests.EffectSystem.ElementTests
             Assert.AreEqual("Created: NOW!", element.MetaData[1]);
             Assert.AreEqual(2, element.MetaData.Count);
             
-            Assert.AreEqual("Value: 123, Id: 1, Parent: ", element.MetaData[0]);
+            Assert.AreEqual("Value: 123000000, Id: 1, Parent: ", element.MetaData[0]); //normalized seed Value
         }
 
         [Test]
@@ -57,7 +57,7 @@ namespace Tests.EffectSystem.ElementTests
             var burn = new HealthDown(1.2f);
             var effects = new List<Effect> { slow, burn };
             
-            var element = new Element("Fire", 1, simpleSeed, effects);
+            var element = new Element("Fire", 1, effects);
             
             Assert.AreEqual("Fire", element.Name);
             Assert.AreEqual(1, element.Id);

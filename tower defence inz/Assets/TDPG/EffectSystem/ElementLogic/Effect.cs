@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using UnityEngine;
-using Unity.Plastic.Newtonsoft.Json;
 
 namespace TDPG.EffectSystem.ElementLogic
 {
@@ -8,7 +7,7 @@ namespace TDPG.EffectSystem.ElementLogic
     public abstract class Effect
     {
         public string Name { get; protected set; }
-        protected float[] Values { get; set; } 
+        protected internal float[] Values { get; set; } 
         public string Description { get; protected set; }
 
         protected Effect(string name, string description, params float[] values)

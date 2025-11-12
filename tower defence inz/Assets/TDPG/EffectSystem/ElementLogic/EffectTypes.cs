@@ -35,6 +35,7 @@ namespace TDPG.EffectSystem.ElementLogic
             if (newValues.Length < 2) newValues = new float[] { Values[0], Values[1] };
             return new SlowDown(newValues[0], newValues[1]);
         }
+        
     }
 
 
@@ -66,6 +67,7 @@ namespace TDPG.EffectSystem.ElementLogic
             if (newValues.Length < 1) newValues = new float[] { Values[0] };
             return new HealthDown(newValues[0]);
         }
+        
     }
 
     public class Heal : Effect
@@ -96,7 +98,8 @@ namespace TDPG.EffectSystem.ElementLogic
             if (newValues.Length < 1) newValues = new float[] { Values[0] };
             return new Heal(newValues[0]);
         }
+        
     }
     
-    //TODO: Write actual effects HERE
+    //TODO: LONG-TERM Write actual effects HERE
 }

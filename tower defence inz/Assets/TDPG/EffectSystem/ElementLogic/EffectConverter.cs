@@ -46,7 +46,7 @@ namespace TDPG.EffectSystem.ElementLogic
                 instance = new Heal(values[0]);
             else
                 throw new JsonSerializationException($"Unsupported effect type: {typeName}");
-            //TODO: expand with each new EffecType
+            //TODO: LONG-TERM expand with each new EffecType
 
             return instance;
         }
