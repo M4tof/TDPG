@@ -1,6 +1,10 @@
 using System;
+using System.Collections.Generic;
 using QuikGraph;
 using TDPG.EffectSystem.ElementLogic;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using TDPG.Generators.Seed;
 
 namespace TDPG.EffectSystem.ElementRegistry
 {
@@ -47,5 +51,21 @@ namespace TDPG.EffectSystem.ElementRegistry
                 TargetId = targetId;
             }
         }
+        
+        
+        private static JsonSerializerSettings DefaultSettings => new()
+        {
+            Formatting = Formatting.Indented,
+            Converters = new List<JsonConverter>
+            {
+                new EffectConverter(),
+                new ElementConverter(),
+                new SeedConverter(),
+                new RegistryConverter()
+            }
+        };
+
+        public string Serialize() => JsonConvert.SerializeObject(this, DefaultSettings);
+        public static Registry Deserialize(string json) => JsonConvert.DeserializeObject<Registry>(json, DefaultSettings);
     }
 }

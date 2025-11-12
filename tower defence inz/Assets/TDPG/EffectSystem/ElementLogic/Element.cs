@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using TDPG.Generators.Seed;
 using UnityEngine;
+using Newtonsoft.Json;
 
 namespace TDPG.EffectSystem.ElementLogic
 {
@@ -57,5 +58,19 @@ namespace TDPG.EffectSystem.ElementLogic
         {
             return $"Name: {Name}, Id: {Id},  MetaData: {string.Join(",", MetaData)}, Seed: {dna}";
         }
+
+        private static JsonSerializerSettings DefaultSettings => new()
+        {
+            Formatting = Formatting.Indented,
+            Converters = new List<JsonConverter>
+            {
+                new EffectConverter(),
+                new ElementConverter(),
+                new SeedConverter()
+            }
+        };
+
+        public string Serialize() => JsonConvert.SerializeObject(this, DefaultSettings);
+        public static Element Deserialize(string json) => JsonConvert.DeserializeObject<Element>(json, DefaultSettings);
     }
 }

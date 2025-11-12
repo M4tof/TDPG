@@ -76,7 +76,6 @@ namespace TDPG.EffectSystem.ElementRegistry
                     {
                         0 => AverageEffects(effects),
                         1 => effects.Last(),
-                        2 or 3 => effects.First(),
                         _ => effects.First()
                     };
                 },
@@ -86,11 +85,11 @@ namespace TDPG.EffectSystem.ElementRegistry
         
         
         private Element GenerateChildElementFromParentsCore(
-        List<int> parentsId,
-        Action<Seed, Seed> combineSeeds,
-        Func<List<Effect>, Effect> fallbackEffectSelector,
-        Func<int, List<Effect>, Effect> finalEffectSelectorMode,
-        string operationLabel)
+            List<int> parentsId,
+            Action<Seed, Seed> combineSeeds,
+            Func<List<Effect>, Effect> fallbackEffectSelector,
+            Func<int, List<Effect>, Effect> finalEffectSelectorMode,
+            string operationLabel)
     {
         // Find parent elements
         List<Element> parentElements = registryGraph.Vertices.Where(v => parentsId.Contains(v.Id)).ToList();
@@ -142,7 +141,8 @@ namespace TDPG.EffectSystem.ElementRegistry
                 finalEffects.Add(chosenEffect);
         }
 
-        ApplySeedBoosts(finalEffects, baseValue);
+        if(operationLabel == "crossing over")
+            ApplySeedBoosts(finalEffects, baseValue);
 
         // Create new element
         int currId = CountElements();
@@ -161,9 +161,6 @@ namespace TDPG.EffectSystem.ElementRegistry
         Debug.Log($"Generated new element '{newElement.Name}' (ID {currId}) from {operationLabel} parents [{string.Join(", ", parentElements.Select(p => p.Name))}]");
         return newElement;
     }
-
-        
-        
         
     }
 }
