@@ -28,8 +28,10 @@ namespace TDPG.EffectSystem.ElementLogic
             Name = name;
             Id = id;
             this.effects = effects ?? new List<Effect>();
-            this.dna = dna;
             //TODO: seed from effects
+            Seed effectsToSeed = new Seed();
+            
+            
             MetaData = new List<string> { dna.ToString() };
         }
         
