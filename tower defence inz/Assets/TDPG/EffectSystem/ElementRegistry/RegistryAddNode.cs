@@ -18,7 +18,7 @@ namespace TDPG.EffectSystem.ElementRegistry
                 Debug.LogError("Cannot add null element to registry.");
                 return false;
             }
-
+            
             // Find parent elements by ID
             List<Element> parentElements = registryGraph.Vertices.Where(v => parentsId.Contains(v.Id)).ToList();
             if (parentElements.Count == 0)
@@ -26,7 +26,9 @@ namespace TDPG.EffectSystem.ElementRegistry
                 Debug.LogWarning($"No parent elements found for IDs [{string.Join(",", parentsId)}].");
                 return false;
             }
-
+            
+            // TODO: check if child already exists return false
+            
             if (newElement.Id == 0)
                 newElement.Id = CountElements(); // only auto-assign if ID not set (RECOMMENDED NOT TO SET MANUALLY)
 
@@ -53,6 +55,8 @@ namespace TDPG.EffectSystem.ElementRegistry
                 Debug.LogWarning($"No parent elements found for IDs [{string.Join(",", parentsId)}].");
                 return null;
             }
+            
+            // TODO: check if child already exists return IT
 
             // Combine DNA and Gather all effects from parents
             List<Effect> effects = new List<Effect>();
