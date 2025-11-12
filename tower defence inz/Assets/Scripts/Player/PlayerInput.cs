@@ -24,6 +24,7 @@ public class PlayerInput : MonoBehaviour
     private Vector3 projectileRotation;
 
     private bool inMenu;
+    private bool inMap;
     private GameObject buildingToBuild; 
     
     //Initial
@@ -33,6 +34,7 @@ public class PlayerInput : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         projectileSpawner = GetComponent<BasicProjectileSpawner>();
         turretSpawner = GetComponent<TurretSpawner>();
+        inMap = false;
     }
     
     //Updates every frame
@@ -108,6 +110,32 @@ public class PlayerInput : MonoBehaviour
             inMenu = !inMenu;
         }
 
+    }
+    
+    public void onMap(InputAction.CallbackContext context)
+    {
+        if (context.performed)
+        {
+            Debug.Log("MMMMMMM");
+            if (pauseMenu.GetMenuActive())
+            {
+                return;
+            }
+            if (inMap)
+            {
+                mainCamera.GetComponent<CameraController>().SetStaticCamera(false);
+                if (!buildingMenu.GetIsActive())
+                {
+                    mainCamera.GetComponent<CameraController>().SetDynamicCameraMovement(true);
+                }
+
+                inMap = false;
+                return;
+            }
+            mainCamera.GetComponent<CameraController>().SetStaticCamera(true);
+            mainCamera.GetComponent<CameraController>().SetDynamicCameraMovement(false);
+            inMap = true;
+        }
     }
     
     //Rotates player's sprite to correct direction

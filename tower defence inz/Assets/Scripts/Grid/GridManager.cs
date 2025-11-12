@@ -16,6 +16,7 @@ public class GridManager : MonoBehaviour
     void Start()
     {
         grid = new Grid(width, height,cellSize);
+        mainCamera.GetComponent<CameraController>().SetStaticCameraPosition(new Vector2(cellSize*width/2,cellSize*height/2));
     }
 
     public void OnMouseClick(InputAction.CallbackContext context)
