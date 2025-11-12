@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using TDPG.Generators.Seed;
 using UnityEngine;
+using Newtonsoft.Json;
 
 namespace TDPG.EffectSystem.ElementLogic
 {
@@ -12,22 +13,25 @@ namespace TDPG.EffectSystem.ElementLogic
         private readonly List<Effect> effects = new();
         public List<string> MetaData { get; internal set; } = new();
         private readonly Seed dna;
+        private float[] values;
         
-        public Element(string name, int id, Seed dna)
+        public Element(string name, int id, Seed dna,  params float[] values)
         {
             Name = name;
             Id = id;
             this.dna = dna;
-            
+            //TODO: effects from seed and values
             MetaData = new List<string> { dna.ToString() };
         }
         
-        public Element(string name, int id, Seed dna, List<Effect> effects)
+        public Element(string name, int id, List<Effect> effects)
         {
             Name = name;
             Id = id;
             this.effects = effects ?? new List<Effect>();
-            this.dna = dna;
+            //TODO: seed from effects
+            Seed effectsToSeed = new Seed();
+            
             
             MetaData = new List<string> { dna.ToString() };
         }
@@ -54,5 +58,19 @@ namespace TDPG.EffectSystem.ElementLogic
         {
             return $"Name: {Name}, Id: {Id},  MetaData: {string.Join(",", MetaData)}, Seed: {dna}";
         }
+
+        private static JsonSerializerSettings DefaultSettings => new()
+        {
+            Formatting = Formatting.Indented,
+            Converters = new List<JsonConverter>
+            {
+                new EffectConverter(),
+                new ElementConverter(),
+                new SeedConverter()
+            }
+        };
+
+        public string Serialize() => JsonConvert.SerializeObject(this, DefaultSettings);
+        public static Element Deserialize(string json) => JsonConvert.DeserializeObject<Element>(json, DefaultSettings);
     }
 }

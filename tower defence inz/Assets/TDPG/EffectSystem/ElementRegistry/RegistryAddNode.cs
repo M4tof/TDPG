@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using QuikGraph;
@@ -18,7 +19,7 @@ namespace TDPG.EffectSystem.ElementRegistry
                 Debug.LogError("Cannot add null element to registry.");
                 return false;
             }
-            
+
             // Find parent elements by ID
             List<Element> parentElements = registryGraph.Vertices.Where(v => parentsId.Contains(v.Id)).ToList();
             if (parentElements.Count == 0)
@@ -26,9 +27,7 @@ namespace TDPG.EffectSystem.ElementRegistry
                 Debug.LogWarning($"No parent elements found for IDs [{string.Join(",", parentsId)}].");
                 return false;
             }
-            
-            // TODO: check if child already exists return false
-            
+
             if (newElement.Id == 0)
                 newElement.Id = CountElements(); // only auto-assign if ID not set (RECOMMENDED NOT TO SET MANUALLY)
 
@@ -46,98 +45,122 @@ namespace TDPG.EffectSystem.ElementRegistry
             Debug.Log($"Added element '{newElement.Name}' (ID {newElement.Id}) under parents [{string.Join(", ", parentElements.Select(p => p.Name))}]");
             return true;
         }
-        public Element GenerateChildElementFromParents(List<int> parentsId)
+        
+        public Element GenerateChildElementFromParents_Recombine(List<int> parentsId)
         {
-            // Find parent elements
-            List<Element> parentElements = registryGraph.Vertices.Where(v => parentsId.Contains(v.Id)).ToList();
-            if (parentElements.Count == 0)
-            {
-                Debug.LogWarning($"No parent elements found for IDs [{string.Join(",", parentsId)}].");
-                return null;
-            }
-            
-            // TODO: check if child already exists return IT
-
-            // Combine DNA and Gather all effects from parents
-            List<Effect> effects = new List<Effect>();
-            Seed newSeed = new Seed(0, -1, "GeneratedFromParents");
-            foreach (Element parent in parentElements)
-            {
-                newSeed *= parent.GetDna();   // might do += instead TODO?
-                List<Effect> parentEffects = parent.GetEffects();
-                if (parentEffects is { Count: > 0 })
-                    effects.AddRange(parentEffects);
-            }
-            
-            newSeed = MutateSeed(newSeed, mutateType);
-            
-            // Select which effects are passed down based on seed bits
-            newSeed.NormalizeSeedValue();
-            ulong baseValue = newSeed.GetBaseValue();
-            List<Effect> inheritedEffects = new List<Effect>();
-            for (int i = 0; i < effects.Count; i++)
-            {
-                if (newSeed.IsBitSet(i))            //go by all possible effects to inherit and ADD_GATE with bits in seed
-                    inheritedEffects.Add(effects[i]);
-            }
-            
-            // If no effects selected (e.g., all bits 0), pick at least one fallback
-            if (inheritedEffects.Count == 0 && effects.Count > 0)
-            {
-                inheritedEffects.Add(effects[0]);
-                Debug.LogWarning($"Seed {baseValue} produced no active bits — defaulted to first effect.");
-            }
-            
-            // Handle duplicate effects intelligently based on last 2 bits of seed
-            int mode = (int)(baseValue & 0b11);
-            List<Effect> finalEffects = new List<Effect>();
-
-            var grouped = inheritedEffects.GroupBy(e => e.Name);
-            foreach (var group in grouped)
-            {
-                var effectList = group.ToList();
-                Effect chosenEffect = null;
-
-                switch (mode)
+            return GenerateChildElementFromParentsCore(parentsId, 
+                combineSeeds: (seed, parentSeed) => seed *= parentSeed,
+                fallbackEffectSelector: effects => effects.First(),
+                finalEffectSelectorMode: (mode, effects) =>
                 {
-                    case 0:
-                        chosenEffect = effectList.First();
-                        break;
-                    case 1:
-                        chosenEffect = effectList.Last();
-                        break;
-                    case 2:
-                    case 3:
-                        chosenEffect = AverageEffects(effectList);
-                        break;
-                }
-
-                if (chosenEffect != null)
-                    finalEffects.Add(chosenEffect);
-            }
-            
-            ApplySeedBoosts(finalEffects, baseValue); 
-            
-            // Create a unique ID for the new element
-            int currId = CountElements();
-            
-            // Create new element  
-            Element newElement = new Element($"CustomElement:{currId}", currId, newSeed, finalEffects);
-            
-            // Add to registry and link with parents
-            if (!registryGraph.ContainsVertex(newElement))
-                registryGraph.AddVertex(newElement);
-            
-            foreach (Element parent in parentElements)
-            {
-                // Parent -> Child
-                if (!registryGraph.ContainsEdge(parent, newElement))
-                    registryGraph.AddEdge(new Edge<Element>(parent, newElement));
-            }
-
-            
-            Debug.Log($"Generated new element '{newElement.Name}' (ID {currId}) from parents [{string.Join(", ", parentElements.Select(p => p.Name))}]");
-            return newElement;
+                    return mode switch
+                    {
+                        0 => effects.First(),
+                        1 => effects.Last(),
+                        2 or 3 => AverageEffects(effects),
+                        _ => effects.First()
+                    };
+                },
+                operationLabel: "crossing over"
+            );
         }
+
+        public Element GenerateChildElementFromParents_Addition(List<int> parentsId)
+        {
+            return GenerateChildElementFromParentsCore(parentsId, 
+                combineSeeds: (seed, parentSeed) => seed += parentSeed,
+                fallbackEffectSelector: effects => effects.Last(),
+                finalEffectSelectorMode: (mode, effects) =>
+                {
+                    return mode switch
+                    {
+                        0 => AverageEffects(effects),
+                        1 => effects.Last(),
+                        _ => effects.First()
+                    };
+                },
+                operationLabel: "adding"
+            );
+        }
+        
+        
+        private Element GenerateChildElementFromParentsCore(
+            List<int> parentsId,
+            Action<Seed, Seed> combineSeeds,
+            Func<List<Effect>, Effect> fallbackEffectSelector,
+            Func<int, List<Effect>, Effect> finalEffectSelectorMode,
+            string operationLabel)
+    {
+        // Find parent elements
+        List<Element> parentElements = registryGraph.Vertices.Where(v => parentsId.Contains(v.Id)).ToList();
+        if (parentElements.Count == 0)
+        {
+            Debug.LogWarning($"No parent elements found for IDs [{string.Join(",", parentsId)}].");
+            return null;
+        }
+
+        // Combine DNA and gather all effects
+        List<Effect> effects = new List<Effect>();
+        Seed newSeed = new Seed(0, -1, "GeneratedFromParents");
+        foreach (Element parent in parentElements)
+        {
+            combineSeeds(newSeed, parent.GetDna());
+            List<Effect> parentEffects = parent.GetEffects();
+            if (parentEffects is { Count: > 0 })
+                effects.AddRange(parentEffects);
+        }
+
+        newSeed = MutateSeed(newSeed, mutateType);
+        newSeed.NormalizeSeedValue();
+        ulong baseValue = newSeed.GetBaseValue();
+
+        // Select inherited effects based on seed bits
+        List<Effect> inheritedEffects = new List<Effect>();
+        for (int i = 0; i < effects.Count; i++)
+        {
+            if (newSeed.IsBitSet(i))
+                inheritedEffects.Add(effects[i]);
+        }
+
+        // Fallback
+        if (inheritedEffects.Count == 0 && effects.Count > 0)
+        {
+            inheritedEffects.Add(fallbackEffectSelector(effects));
+            Debug.LogWarning($"Seed {baseValue} produced no active bits — defaulted to fallback effect.");
+        }
+
+        // Handle duplicates intelligently
+        int mode = (int)(baseValue & 0b11);
+        List<Effect> finalEffects = new List<Effect>();
+        var grouped = inheritedEffects.GroupBy(e => e.Name);
+        foreach (var group in grouped)
+        {
+            var effectList = group.ToList();
+            Effect chosenEffect = finalEffectSelectorMode(mode, effectList);
+            if (chosenEffect != null)
+                finalEffects.Add(chosenEffect);
+        }
+
+        if(operationLabel == "crossing over")
+            ApplySeedBoosts(finalEffects, baseValue);
+
+        // Create new element
+        int currId = CountElements();
+        Element newElement = new Element($"CustomElement:{currId}", currId, newSeed, finalEffects); //TODO: once refactor done use one constructor
+
+        // Add to registry and link parents
+        if (!registryGraph.ContainsVertex(newElement))
+            registryGraph.AddVertex(newElement);
+
+        foreach (Element parent in parentElements)
+        {
+            if (!registryGraph.ContainsEdge(parent, newElement))
+                registryGraph.AddEdge(new Edge<Element>(parent, newElement));
+        }
+
+        Debug.Log($"Generated new element '{newElement.Name}' (ID {currId}) from {operationLabel} parents [{string.Join(", ", parentElements.Select(p => p.Name))}]");
+        return newElement;
+    }
+        
     }
 }

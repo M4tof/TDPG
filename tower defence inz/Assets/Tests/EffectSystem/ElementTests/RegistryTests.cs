@@ -65,7 +65,7 @@ namespace Tests.EffectSystem.ElementTests
             Assert.IsTrue(registry.PutPreMadeElement(new List<int> { 0 }, p2));
 
             // Generate child using the two parents' IDs
-            var child = registry.GenerateChildElementFromParents(new List<int> { 1, 2 });
+            var child = registry.GenerateChildElementFromParents_Recombine(new List<int> { 1, 2 });
             Assert.IsNotNull(child);
 
             // Child should be retrievable and should appear as child of both parents
