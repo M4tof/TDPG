@@ -12,23 +12,24 @@ namespace TDPG.EffectSystem.ElementLogic
         private readonly List<Effect> effects = new();
         public List<string> MetaData { get; internal set; } = new();
         private readonly Seed dna;
+        private float[] values;
         
-        public Element(string name, int id, Seed dna)
+        public Element(string name, int id, Seed dna,  params float[] values)
         {
             Name = name;
             Id = id;
             this.dna = dna;
-            
+            //TODO: effects from seed and values
             MetaData = new List<string> { dna.ToString() };
         }
         
-        public Element(string name, int id, Seed dna, List<Effect> effects)
+        public Element(string name, int id, List<Effect> effects)
         {
             Name = name;
             Id = id;
             this.effects = effects ?? new List<Effect>();
             this.dna = dna;
-            
+            //TODO: seed from effects
             MetaData = new List<string> { dna.ToString() };
         }
         

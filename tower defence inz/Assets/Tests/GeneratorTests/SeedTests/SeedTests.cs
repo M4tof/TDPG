@@ -65,7 +65,7 @@ namespace Tests.GeneratorTests.SeedTests
             // Act
             Seed result = seedA + seedB;
 
-            // Compute expected XOR manually
+            // Compute expected OR manually
             byte[] expectedBytes = new byte[aBytes.Length];
             for (int i = 0; i < aBytes.Length; i++)
                 expectedBytes[i] = (byte)(aBytes[i] | bBytes[i]);
@@ -90,6 +90,7 @@ namespace Tests.GeneratorTests.SeedTests
             byte[] aBytes = { 0b_10101010, 0b_00001111, 0b_11110000, 0b_01010101, 0, 0, 0, 0 };
             byte[] bBytes = { 0b_11110000, 0b_00110011, 0b_00001111, 0b_11001100, 0, 0, 0, 0 };
             // xor 01011010 00111100 11111111 10011001 00000000 00000000 00000000 00000000 [5A 3C FF 99 00 00 00 00]
+            //0b_10000000
             // shift [0x16, 0x8F, 0x3F, 0xE6, 0x40, 0x00, 0x00, 0x00]
 
             ulong aValue = BitConverter.ToUInt64(aBytes, 0);
