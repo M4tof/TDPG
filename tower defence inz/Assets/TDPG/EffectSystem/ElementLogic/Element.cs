@@ -1,11 +1,12 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using TDPG.Generators.Seed;
 using UnityEngine;
 using Newtonsoft.Json;
 
 namespace TDPG.EffectSystem.ElementLogic
-{
+{ 
     // This is structure holding a set of effects to apply, ex. Fire
     public class Element
     {
@@ -16,67 +17,86 @@ namespace TDPG.EffectSystem.ElementLogic
         private readonly Seed dna;
         private float[] values;
         
-        private static readonly Dictionary<int, Func<float[], Effect>> EffectRegistry = new()
+        private static float[] NormalizeValues(float[] input, int needed)
         {
-            { 1, values => new SlowDown(values[0], values[1]) },
-            { 2, values => new HealthDown(values[0]) },
-            { 3, values => new Heal(values[0]) },
-            //todo: LONG-TERM EACH EFFECT NEEDS ENUM
-        };
+            if (input == null || input.Length == 0)
+                return Enumerable.Repeat(0.1f, needed).ToArray();
+
+            if (input.Length >= needed)
+                return input;
+
+            // repeat pattern until we reach needed count
+            List<float> extended = new List<float>(input);
+            while (extended.Count < needed)
+                extended.AddRange(input);
+            return extended.Take(needed).ToArray();
+        }
         
-        public Element(string name, int id, Seed dna,  params float[] values)
+        // --- Effect factory registry ---
+        public static readonly Dictionary<int, Func<float[], Effect>> EffectFactories = new()
+        {
+            {
+                1, values => {
+                    var v = NormalizeValues(values, 2);
+                    return new SlowDown(v[0], v[1]);
+                }
+            },
+            {
+                2, values => {
+                    var v = NormalizeValues(values, 1);
+                    return new HealthDown(v[0]);
+                }
+            },
+            {
+                3, values => {
+                    var v = NormalizeValues(values, 1);
+                    return new Heal(v[0]);
+                }
+            }
+        };
+        public Element(string name, int id, Seed dna, params float[] values)
         {
             Name = name;
             Id = id;
             this.dna = dna;
+            this.values = values ?? Array.Empty<float>();
 
             dna.NormalizeSeedValue();
+
             for (int i = 0; i < 64; i++)
             {
-                if (dna.IsBitSet(i)) //if a bit corresponding to effect of equal ID is 1
-                {
-                    if (EffectRegistry.TryGetValue(i, out var effectFactory))
-                    {
-                        Effect newEffect = effectFactory(values);
-                        effects.Add(newEffect);
-                    }
-                }
+                if (dna.IsBitSet(i) && EffectFactories.TryGetValue(i, out var factory))
+                    effects.Add(factory(this.values));
             }
-            
+
             MetaData = new List<string> { dna.ToString() };
         }
         
+        //TODO: LONG TERM FILL HERE
+        // --- Reverse lookup map (bit -> effect type) ---
+        public static readonly Dictionary<int, Type> EffectTypes = new()
+        {
+            { 1, typeof(SlowDown) },
+            { 2, typeof(HealthDown) },
+            { 3, typeof(Heal) }
+        };
         public Element(string name, int id, List<Effect> effects)
-        {  //TODO: Something wrong with effect lookup
+        {
             Name = name;
             Id = id;
-            this.effects = effects ?? new List<Effect>();
-            
-            // Reverse lookup: Effect type -> bit index
-            Dictionary<Type, int> reverseMap = new();
-            foreach (var kvp in EffectRegistry)
-            {
-                int bit = kvp.Key;
-                var effectType = kvp.Value.Invoke(Array.Empty<float>()).GetType();
-                reverseMap[effectType] = bit;
-            }
-            
+            this.effects.AddRange(effects ?? new());
+
             ulong seedValue = 0;
             foreach (var effect in this.effects)
             {
-                Type type = effect.GetType();
-
-                if (reverseMap.TryGetValue(type, out int bitIndex))
-                {
-                    seedValue |= (1UL << bitIndex);
-                }
+                var match = EffectTypes.FirstOrDefault(kvp => kvp.Value == effect.GetType());
+                if (!match.Equals(default(KeyValuePair<int, Type>)))
+                    seedValue |= (1UL << match.Key);
                 else
-                {
-                    Debug.LogWarning($"No registry entry found for effect type {type.Name} — skipping.");
-                }
+                    Debug.LogWarning($"[Element] No bit mapping for {effect.GetType().Name}, treats it as 0");
             }
+
             dna = new Seed(seedValue, -1, "SeedFromEffectList");
-            
             MetaData = new List<string> { dna.ToString() };
         }
 
@@ -86,18 +106,13 @@ namespace TDPG.EffectSystem.ElementLogic
         /// </summary>
         internal Element(string name, int id, Seed dna, List<Effect> effects)
         {
-            #if UNITY_EDITOR
             Debug.Log($"[Element] Deserialization constructor called for {name}");
-            #endif
             Name = name;
             Id = id;
             this.dna = dna;
             this.effects = effects ?? new List<Effect>();
             MetaData = new List<string> { dna.ToString() };
         }
-        
-        public void AddEffect(Effect effect) => effects.Add(effect);
-        public void RemoveEffect(Effect effect) => effects.Remove(effect);
 
         public void AddMetaData(string metaData) => MetaData.Add(metaData);
 
@@ -132,5 +147,12 @@ namespace TDPG.EffectSystem.ElementLogic
         public string Serialize() => JsonConvert.SerializeObject(this, DefaultSettings);
         public static Element Deserialize(string json) => JsonConvert.DeserializeObject<Element>(json, DefaultSettings);
 
+        public string ReNameElement(string newName)
+        {
+            string oldName = Name;
+            this.Name = newName;
+            return oldName;
+        }
+        
     }
 }

@@ -8,7 +8,7 @@ using UnityEngine;
 using static TDPG.Generators.Seed.Genetic;
 
 namespace TDPG.EffectSystem.ElementRegistry
-{
+{//TODO: ensure if you add new one, then it is identical to the old one and just adds nodes, or if different one but with same parents then discard/warn
     public partial class Registry
     { 
     //Add elements to registry

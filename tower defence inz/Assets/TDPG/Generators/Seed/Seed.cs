@@ -12,16 +12,19 @@ namespace TDPG.Generators.Seed
         private int id;
         [SerializeField]
         private string parentName;
+        [SerializeField] internal bool isBitBased = true;
 
         public ulong Value { get => value; private set => this.value = value; }
         public int Id { get => id; internal set => id = value; }
         public string ParentName { get => parentName; internal set => parentName = value; }
+        public bool IsBitBased { get => isBitBased; internal set => isBitBased = value; }
 
-        public Seed(ulong key, int id, string parentName = null)
+        public Seed(ulong key, int id, string parentName = null, bool isBitBased = true)
         {
             Value = key;
             Id = id;
             ParentName = parentName;
+            IsBitBased = isBitBased;
         }
 
         public Seed() { } // Parameterless constructor for serializing
@@ -38,8 +41,8 @@ namespace TDPG.Generators.Seed
         
         public static Seed operator *(Seed a, Seed b) //needed if we want to explicitly multiply seed to seed instead of Iseed to seed
         {
-            a.NormalizeSeedValue();
-            b.NormalizeSeedValue();
+            if (!a.IsBitBased) a.NormalizeSeedValue();
+            if (!b.IsBitBased) b.NormalizeSeedValue();
             return (a as ISeed) * (b as ISeed);
         }
 
@@ -48,8 +51,8 @@ namespace TDPG.Generators.Seed
             string parentName = "_ChildOf:" + a.GetName() + b.GetName();
             int id = -1;
             
-            a.NormalizeSeedValue();
-            b.NormalizeSeedValue();
+            if (!a.IsBitBased) a.NormalizeSeedValue();
+            if (!b.IsBitBased) b.NormalizeSeedValue();
             
             byte[] aByte = BitConverter.GetBytes(a.GetBaseValue()); 
             byte[] bByte = BitConverter.GetBytes(b.GetBaseValue());
@@ -73,6 +76,8 @@ namespace TDPG.Generators.Seed
         
         public void NormalizeSeedValue()
         {
+            if (IsBitBased) return;
+            
             ulong normalizeSeedValue = value;
             // if it's already long enough (>= 1_000_000_000), don't touch it
             if (normalizeSeedValue >= 1_000_000_000)
@@ -89,8 +94,6 @@ namespace TDPG.Generators.Seed
         {
             return (value & ((ulong)1 << bitIndex)) != 0;
         }
-
-
         
     }
 }

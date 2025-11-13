@@ -12,7 +12,8 @@ namespace TDPG.Generators.Seed
             {
                 ["Value"] = value.Value,
                 ["Id"] = value.Id,
-                ["ParentName"] = value.ParentName
+                ["ParentName"] = value.ParentName,
+                ["IsBitBased"] = value.IsBitBased
             };
             jo.WriteTo(writer);
         }
@@ -23,7 +24,8 @@ namespace TDPG.Generators.Seed
             ulong val = jo["Value"]?.ToObject<ulong>() ?? 0;
             int id = jo["Id"]?.ToObject<int>() ?? 0;
             string parent = jo["ParentName"]?.ToObject<string>();
-            return new Seed(val, id, parent);
+            bool bitBased = jo["IsBitBased"]?.ToObject<bool>() ?? false;
+            return new Seed(val, id, parent, bitBased);
         }
     }
 }
