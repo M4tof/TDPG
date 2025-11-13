@@ -47,7 +47,7 @@ namespace TDPG.EffectSystem.ElementLogic
         }
         
         public Element(string name, int id, List<Effect> effects)
-        {
+        {  //TODO: Something wrong with effect lookup
             Name = name;
             Id = id;
             this.effects = effects ?? new List<Effect>();

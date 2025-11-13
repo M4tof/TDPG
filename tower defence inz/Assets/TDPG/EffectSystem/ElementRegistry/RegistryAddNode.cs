@@ -122,7 +122,7 @@ namespace TDPG.EffectSystem.ElementRegistry
             List<Effect> childEffects = new();
             List<float> childValues = new();
             
-            for (int bit = 0; bit < 64; bit++)
+            for (int bit = 0; bit < 64; bit++)  //ulong 
             {
                 if (!newSeed.IsBitSet(bit))
                     continue;
@@ -132,7 +132,7 @@ namespace TDPG.EffectSystem.ElementRegistry
                 Type effectType = allParentEffects
                     .Select(e => e.GetType())
                     .Distinct()
-                    .ElementAtOrDefault(bit % allParentEffects.Select(e => e.GetType()).Distinct().Count());
+                    .ElementAtOrDefault(bit % allParentEffects.Select(e => e.GetType()).Distinct().Count()); //TODO: not divide by 0 ensure
 
                 if (effectType == null)
                     continue;
