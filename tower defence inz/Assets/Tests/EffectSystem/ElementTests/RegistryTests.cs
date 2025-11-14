@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
@@ -39,8 +40,8 @@ namespace Tests.EffectSystem.ElementTests
         {
             // create an element and add it under root (root id = 0)
             var e1 = new Element("E1", 1, new Seed(1, -1, "E1"));
-            bool added = registry.PutPreMadeElement(new List<int> { 0 }, e1);
-            Assert.IsTrue(added);
+            int added = registry.PutPreMadeElement(new List<int> { 0 }, e1);
+            Assert.IsTrue(Convert.ToBoolean(added));
 
             // CountElements should be >= 2 (root + e1)
             Assert.GreaterOrEqual(registry.CountElements(), 2);
@@ -61,8 +62,8 @@ namespace Tests.EffectSystem.ElementTests
             // Create two parents under root
             var p1 = new Element("P1", 1, new Seed(1, 0, "P1"));
             var p2 = new Element("P2", 2, new Seed(2, 0, "P2"));
-            Assert.IsTrue(registry.PutPreMadeElement(new List<int> { 0 }, p1));
-            Assert.IsTrue(registry.PutPreMadeElement(new List<int> { 0 }, p2));
+            Assert.That(registry.PutPreMadeElement(new List<int> { 0 }, p1) > 0);
+            Assert.IsTrue(registry.PutPreMadeElement(new List<int> { 0 }, p2) > 0);
 
             // Generate child using the two parents' IDs
             var child = registry.GenerateChildElementFromParents_Recombine(new List<int> { 1, 2 });
@@ -232,8 +233,8 @@ namespace Tests.EffectSystem.ElementTests
 
             var registry = new Registry();
             var e1 = new Element("E1", 1, new Seed(1, -1, "E1"));
-            bool added = registry.PutPreMadeElement(new List<int> { 0 }, e1);
-            Assert.IsTrue(added);
+            int added = registry.PutPreMadeElement(new List<int> { 0 }, e1);
+            Assert.That(added > 0 );
 
             registry.PrintRegistryMap();
 
@@ -396,10 +397,10 @@ namespace Tests.EffectSystem.ElementTests
             registry.PutPreMadeElement(new List<int> { 0 }, b);
 
             // X has parents {A, B}
-            Assert.IsTrue(registry.PutPreMadeElement(new List<int> { 1, 2 }, x));
+            Assert.IsTrue(registry.PutPreMadeElement(new List<int> { 1, 2 }, x) > 0);
 
             // Y tries the same → should fail
-            Assert.IsFalse(registry.PutPreMadeElement(new List<int> { 1, 2 }, y));
+            Assert.IsFalse(registry.PutPreMadeElement(new List<int> { 1, 2 }, y) > 0);
         }
         
         [Test]
@@ -411,7 +412,7 @@ namespace Tests.EffectSystem.ElementTests
             registry.PutPreMadeElement(new List<int> { 0 }, a);
 
             // A exists under {Root}
-            Assert.IsFalse(registry.PutPreMadeElement(new List<int> { 2 }, a));
+            Assert.IsFalse(registry.PutPreMadeElement(new List<int> { 2 }, a) > 0 );
         }
 
         [Test]
@@ -420,7 +421,7 @@ namespace Tests.EffectSystem.ElementTests
             for (int i = 1; i <= 10; i++)
             {
                 var e = new Element("R" + i, i, new Seed((ulong)i, 0, "R" + i));
-                Assert.IsTrue(registry.PutPreMadeElement(new List<int> { 0 }, e));
+                Assert.That(registry.PutPreMadeElement(new List<int> { 0 }, e) > 0);
             }
 
             Assert.AreEqual(11, registry.CountElements()); // root + 10 elems
@@ -454,7 +455,7 @@ namespace Tests.EffectSystem.ElementTests
             registry.PutPreMadeElement(new List<int> { 1 }, b);
 
             // Attempt to add A as a child of B → would create cycle
-            Assert.IsFalse(registry.PutPreMadeElement(new List<int> { 2 }, a));
+            Assert.That(registry.PutPreMadeElement(new List<int> { 2 }, a) == 0);  //is false '==0'
         }
 
         [Test]
@@ -469,7 +470,7 @@ namespace Tests.EffectSystem.ElementTests
             registry.PutPreMadeElement(new List<int> { 1 }, c); // C under A
 
             // Try to reassign C under B (should fail)
-            Assert.IsFalse(registry.PutPreMadeElement(new List<int> { 2 }, c));
+            Assert.That(registry.PutPreMadeElement(new List<int> { 2 }, c) == 0);
 
             // Descendants of B should NOT include C
             var bChildren = registry.GetDescendants(registry.GetElement(2), 1);
@@ -482,7 +483,84 @@ namespace Tests.EffectSystem.ElementTests
             var x = new Element("X", 1, new Seed(1, 0, "X"));
 
             // parent -99 does not exist
-            Assert.IsFalse(registry.PutPreMadeElement(new List<int> { -99 }, x));
+            Assert.That(registry.PutPreMadeElement(new List<int> { -99 }, x) == 0);
+        }
+
+        [Test]
+        public void Registry_Genetic_Test()
+        {
+            registry.SetMutateSeedRule(MutateTypes.None);
+
+            // --- Setup Effects ---
+            Effect slowDown = new SlowDown(2, 3);
+            Effect hit = new HealthDown(1);
+            Effect heal = new Heal(5);
+
+            // --- Setup Elements ---
+            var a = new Element("WatterBubble", 1,  new List<Effect>{heal}); // 4
+            var b = new Element("Ice", 2,  new List<Effect>{slowDown, hit}); // 3
+            var c = new Element("Fireball",3,  new List<Effect>{hit}); // 2
+            
+            registry.PutPreMadeElement(new List<int> { 0 }, a);
+            registry.PutPreMadeElement(new List<int> { 0 }, b);
+            registry.PutPreMadeElement(new List<int> { 0 }, c);
+            
+            // --- Addition Child ---
+            Element newElement = registry.GenerateChildElementFromParents_Addition(new List<int> { 1, 2, 3 });
+            List<Effect> effects = newElement.GetEffects();
+
+            // Assert that newElement has all the expected effects
+            Assert.IsTrue(effects.Any(e => e is SlowDown), "Child should have SlowDown effect.");
+            Assert.IsTrue(effects.Any(e => e is HealthDown), "Child should have HealthDown effect.");
+            Assert.IsTrue(effects.Any(e => e is Heal), "Child should have Heal effect.");
+            
+            // --- Recombine Child (XOR-like) ---
+            Element newElementXor = registry.GenerateChildElementFromParents_Recombine(new List<int> { 2, 3 });
+            List<Effect> xorEffects = newElementXor.GetEffects();
+            
+            // Assert recombine behavior
+            Assert.IsTrue(xorEffects.Any(e => e is SlowDown), "XOR child should have SlowDown.");
+            Assert.IsFalse(xorEffects.Any(e => e is HealthDown), "XOR child should NOT have HealthDown.");
+            Assert.IsFalse(xorEffects.Any(e => e is Heal), "XOR child should NOT have Heal.");
+            
+            // Assert recombined effect parameters are within parent bounds
+            foreach (var effect in xorEffects)
+            {
+                Debug.Log(effect.Name+effect.Description);
+                var parentValuesList = new List<float[]>();
+
+                foreach (var parentId in new List<int> { 2, 3 })
+                {
+                    parentValuesList.AddRange(
+                        registry.GetElement(parentId).GetEffects()
+                            .Where(e => e.GetType() == effect.GetType())
+                            .Select(e => e.GetValues())
+                    );
+                }
+
+                // For each parameter in this effect, check it doesn't exceed max among parents
+                for (int i = 0; i < effect.GetValues().Length; i++)
+                {
+                    float maxParentValue = parentValuesList.Count > 0
+                        ? parentValuesList.Max(vals => vals[i])
+                        : float.MinValue;
+
+                    Assert.LessOrEqual(effect.GetValues()[i], maxParentValue,
+                        $"Effect {effect.GetType().Name} param {i} should not exceed parent's maximum.");
+                }
+            }
+
+            
+            // --- Mutation Test ---
+            registry.SetMutateSeedRule(MutateTypes.Random);
+            Element lastElement = registry.GenerateChildElementFromParents_Addition(new List<int> { 1, 2 });
+
+            Seed dna = lastElement.GetDna();
+            Seed aPlusB = a.GetDna() + b.GetDna();
+
+            // Assert that mutation produced a different DNA
+            Assert.AreNotEqual(aPlusB, dna, "Mutation should produce different DNA than simple addition.");
+            
         }
 
         

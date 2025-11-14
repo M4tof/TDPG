@@ -39,14 +39,14 @@ namespace TDPG.Generators.Seed
             return ParentName;
         }
         
-        public static Seed operator *(Seed a, Seed b) //needed if we want to explicitly multiply seed to seed instead of Iseed to seed
+        public static Seed operator *(Seed a, Seed b) // cross over (xor and bit shift) a * b = rotateRight(a XOR b)
         {
             if (!a.IsBitBased) a.NormalizeSeedValue();
             if (!b.IsBitBased) b.NormalizeSeedValue();
             return (a as ISeed) * (b as ISeed);
         }
 
-        public static Seed operator +(Seed a, Seed b)
+        public static Seed operator +(Seed a, Seed b)// Bitwise OR
         {
             string parentName = "_ChildOf:" + a.GetName() + b.GetName();
             int id = -1;
@@ -60,7 +60,30 @@ namespace TDPG.Generators.Seed
             byte[] result = new byte[aByte.Length];
             
             for (int i = 0; i < aByte.Length; i++) { 
-                result[i] = (byte)(aByte[i] | bByte[i]); // Bitwise OR
+                result[i] = (byte)(aByte[i] | bByte[i]); 
+            } 
+            
+            byte[] resultBytes = new byte[8];
+            Array.Copy(result, resultBytes, Math.Min(result.Length, 8));
+            ulong value = BitConverter.ToUInt64(resultBytes, 0);
+            return new Seed(value, id, parentName);
+        }
+        
+        public static Seed operator ^(Seed a, Seed b)// Bitwise Xor
+        {
+            string parentName = "_ChildOf:" + a.GetName() + b.GetName();
+            int id = -1;
+            
+            if (!a.IsBitBased) a.NormalizeSeedValue();
+            if (!b.IsBitBased) b.NormalizeSeedValue();
+            
+            byte[] aByte = BitConverter.GetBytes(a.GetBaseValue()); 
+            byte[] bByte = BitConverter.GetBytes(b.GetBaseValue());
+            
+            byte[] result = new byte[aByte.Length];
+            
+            for (int i = 0; i < aByte.Length; i++) { 
+                result[i] = (byte)(aByte[i] ^ bByte[i]); 
             } 
             
             byte[] resultBytes = new byte[8];

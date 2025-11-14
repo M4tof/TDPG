@@ -12,12 +12,12 @@ namespace TDPG.EffectSystem.ElementRegistry
     public partial class Registry
     { 
     //Add elements to registry
-        public bool PutPreMadeElement(List<int> parentsId, Element newElement)
+        public int PutPreMadeElement(List<int> parentsId, Element newElement)
         {
             if (newElement == null)
             {
                 Debug.LogError("Cannot add null element to registry.");
-                return false;
+                return Convert.ToInt32(false);
             }
             
             // Lookup all parents
@@ -29,7 +29,7 @@ namespace TDPG.EffectSystem.ElementRegistry
             {
                 Debug.LogWarning(
                     $"No parent elements found for IDs [{string.Join(",", parentsId)}].");
-                return false;
+                return Convert.ToInt32(false);
             }
 
             var requestedParentSet = parentElements.Select(p => p.Id).ToHashSet();
@@ -58,7 +58,7 @@ namespace TDPG.EffectSystem.ElementRegistry
                         $"Cannot reassign element '{existingElement.Name}' (ID {existingElement.Id}). " +
                         $"Existing parents=[{string.Join(", ", existingParents)}], " +
                         $"Requested=[{string.Join(", ", requestedParentSet)}]");
-                    return false;
+                    return Convert.ToInt32(false);
                 }
                 newElement = existingElement; 
             }
@@ -69,7 +69,7 @@ namespace TDPG.EffectSystem.ElementRegistry
                 Debug.LogWarning(
                     $"Cannot add element '{newElement.Name}' because another element already has parents " +
                     $"[{string.Join(", ", requestedParentSet)}], and only {{Root}} is allowed to have duplicate children.");
-                return false;
+                return Convert.ToInt32(false);
             }
 
             if (newElement.Id == 0)
@@ -87,13 +87,13 @@ namespace TDPG.EffectSystem.ElementRegistry
             }
 
             Debug.Log($"Added element '{newElement.Name}' (ID {newElement.Id}) under parents [{string.Join(", ", parentElements.Select(p => p.Name))}]");
-            return true;
+            return newElement.Id;
         }
         
         public Element GenerateChildElementFromParents_Recombine(List<int> parentsId)
         {
             return GenerateChildElementFromParentsCore(parentsId, 
-                combineSeeds: (seed, parentSeed) => seed *= parentSeed,
+                combineSeeds: (seed, parentSeed) => seed ^ parentSeed,     // returns combined Seed
                 fallbackEffectSelector: effects => effects.First(),
                 finalEffectSelectorMode: (mode, effects) =>
                 {
@@ -112,7 +112,7 @@ namespace TDPG.EffectSystem.ElementRegistry
         public Element GenerateChildElementFromParents_Addition(List<int> parentsId)
         {
             return GenerateChildElementFromParentsCore(parentsId, 
-                combineSeeds: (seed, parentSeed) => seed += parentSeed,
+                combineSeeds: (seed, parentSeed) => seed + parentSeed,    // returns combined Seed
                 fallbackEffectSelector: effects => effects.Last(),
                 finalEffectSelectorMode: (mode, effects) =>
                 {
@@ -126,11 +126,12 @@ namespace TDPG.EffectSystem.ElementRegistry
                 operationLabel: "adding"
             );
         }
+
         
         
         private Element GenerateChildElementFromParentsCore(
             List<int> parentsId,
-            Action<Seed, Seed> combineSeeds,
+            Func<Seed, Seed, Seed> combineSeeds,
             Func<List<Effect>, Effect> fallbackEffectSelector,
             Func<int, List<Effect>, Effect> finalEffectSelectorMode,
             string operationLabel)
@@ -160,17 +161,20 @@ namespace TDPG.EffectSystem.ElementRegistry
             // 2. Combine DNA and gather all effects
             List<Effect> effects = new List<Effect>();
             Seed newSeed = new Seed(0, -1, "GeneratedFromParents");
+    
             foreach (Element parent in parentElements)
             {
-                combineSeeds(newSeed, parent.GetDna());
+                newSeed = combineSeeds(newSeed, parent.GetDna());   // <-- assign returned Seed
+                Debug.Log($"{operationLabel}: After combining with parent {parent.Name} (dna={parent.GetDna().Value}) -> newSeed={newSeed.Value}");
+
                 List<Effect> parentEffects = parent.GetEffects();
                 if (parentEffects is { Count: > 0 })
                     effects.AddRange(parentEffects);
             }
 
+
             // 3. mutate and normalize
             newSeed = MutateSeed(newSeed, mutateType);
-            newSeed.NormalizeSeedValue();
             ulong baseValue = newSeed.GetBaseValue();
             
             // 4. Determine effect types in newSeed
