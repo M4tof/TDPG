@@ -187,7 +187,7 @@ namespace TDPG.EffectSystem.ElementRegistry
                 Type effectType = allParentEffects
                     .Select(e => e.GetType())
                     .Distinct()
-                    .ElementAtOrDefault(bit % allParentEffects.Select(e => e.GetType()).Distinct().Count()); //TODO: not divide by 0 ensure
+                    .ElementAtOrDefault(bit % allParentEffects.Select(e => e.GetType()).Distinct().Count());
 
                 if (effectType == null)
                     continue;
