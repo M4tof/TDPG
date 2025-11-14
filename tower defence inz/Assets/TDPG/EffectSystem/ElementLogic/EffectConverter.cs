@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -29,25 +30,25 @@ namespace TDPG.EffectSystem.ElementLogic
             string typeName = (string)jo["Type"];
             string assemblyName = (string)jo["Assembly"];
 
-            Type type = Type.GetType($"{typeName}, {assemblyName}");
+            Type type = Type.GetType($"{typeName}, {assemblyName}"); //Uses .NET’s reflection to resolve the Type by its fully qualified name + assembly name.
             if (type == null)
                 throw new JsonSerializationException($"Unknown effect type: {typeName}");
 
-            // Read values
-            float[] values = jo["Values"].ToObject<float[]>(serializer);
+            float[] values = jo["Values"].ToObject<float[]>(serializer); //deserialize values to new float[]
 
-            // Reconstruct instance
-            Effect instance;
-            if (type == typeof(SlowDown))
-                instance = new SlowDown(values[0], values[1]);
-            else if (type == typeof(HealthDown))
-                instance = new HealthDown(values[0]);
-            else if (type == typeof(Heal))
-                instance = new Heal(values[0]);
-            else
-                throw new JsonSerializationException($"Unsupported effect type: {typeName}");
-            //TODO: LONG-TERM expand with each new EffecType
+            // Try to find a constructor with exactly N float parameters {Asks reflection: “Give me all public constructors of this type.”}
+            var ctor = type.GetConstructors()
+                .FirstOrDefault(c =>
+                {
+                    var p = c.GetParameters();
+                    return p.Length == values.Length && p.All(x => x.ParameterType == typeof(float));
+                });
 
+            if (ctor == null)
+                throw new JsonSerializationException($"No matching constructor found for {typeName} with {values.Length} floats");
+
+            // Create instance
+            var instance = (Effect)ctor.Invoke(values.Cast<object>().ToArray());
             return instance;
         }
 

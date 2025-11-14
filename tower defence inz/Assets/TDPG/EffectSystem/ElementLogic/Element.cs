@@ -36,23 +36,24 @@ namespace TDPG.EffectSystem.ElementLogic
         public static readonly Dictionary<int, Func<float[], Effect>> EffectFactories = new()
         {
             {
-                1, values => {
+                0, values => {
                     var v = NormalizeValues(values, 2);
                     return new SlowDown(v[0], v[1]);
                 }
             },
             {
-                2, values => {
+                1, values => {
                     var v = NormalizeValues(values, 1);
                     return new HealthDown(v[0]);
                 }
             },
             {
-                3, values => {
+                2, values => {
                     var v = NormalizeValues(values, 1);
                     return new Heal(v[0]);
                 }
             }
+            //TODO: LONG TERM FILL HERE
         };
         public Element(string name, int id, Seed dna, params float[] values)
         {
@@ -76,9 +77,9 @@ namespace TDPG.EffectSystem.ElementLogic
         // --- Reverse lookup map (bit -> effect type) ---
         public static readonly Dictionary<int, Type> EffectTypes = new()
         {
-            { 1, typeof(SlowDown) },
-            { 2, typeof(HealthDown) },
-            { 3, typeof(Heal) }
+            { 0, typeof(SlowDown) },
+            { 1, typeof(HealthDown) },
+            { 2, typeof(Heal) }
         };
         public Element(string name, int id, List<Effect> effects)
         {

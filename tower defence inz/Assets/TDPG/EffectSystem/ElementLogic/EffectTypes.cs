@@ -11,7 +11,9 @@ namespace TDPG.EffectSystem.ElementLogic
 
         public override void Apply(GameObject target)
         {
-            // TODO: Implement effect behavior in gameplay
+            // TODO:  Implement effect behavior in gameplay
+            // e.g. target.Speed -= Values[0]  slowdown by factor
+            //          target.effectSpeedTurns = Values[1]   for duration number of turns
         }
 
         public override Dictionary<EffectParameter, float> LogicTransfer()

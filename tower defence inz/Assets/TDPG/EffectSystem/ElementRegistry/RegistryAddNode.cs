@@ -8,7 +8,7 @@ using UnityEngine;
 using static TDPG.Generators.Seed.Genetic;
 
 namespace TDPG.EffectSystem.ElementRegistry
-{//TODO: ensure if you add new one, then it is identical to the old one and just adds nodes, or if different one but with same parents then discard/warn
+{
     public partial class Registry
     { 
     //Add elements to registry
@@ -19,12 +19,56 @@ namespace TDPG.EffectSystem.ElementRegistry
                 Debug.LogError("Cannot add null element to registry.");
                 return false;
             }
+            
+            // Lookup all parents
+            List<Element> parentElements = registryGraph.Vertices
+                .Where(v => parentsId.Contains(v.Id))
+                .ToList();
 
-            // Find parent elements by ID
-            List<Element> parentElements = registryGraph.Vertices.Where(v => parentsId.Contains(v.Id)).ToList();
             if (parentElements.Count == 0)
             {
-                Debug.LogWarning($"No parent elements found for IDs [{string.Join(",", parentsId)}].");
+                Debug.LogWarning(
+                    $"No parent elements found for IDs [{string.Join(",", parentsId)}].");
+                return false;
+            }
+
+            var requestedParentSet = parentElements.Select(p => p.Id).ToHashSet();
+            
+            // Detect element already exists
+            Element existingElement = registryGraph.Vertices
+                .FirstOrDefault(v => v.Id == newElement.Id);
+
+            if (existingElement != null)
+            {
+                // Pull the existing parents from the graph
+                var existingParents = registryGraph.InEdges(existingElement)
+                    .Select(e => e.Source.Id)
+                    .ToHashSet();
+
+                bool existingIsRootOnly =
+                    existingParents.Count == 1 && existingParents.Contains(0);
+
+                bool requestedIsRootOnly =
+                    requestedParentSet.Count == 1 && requestedParentSet.Contains(0);
+                
+                // Reassignment rules
+                if (!existingIsRootOnly || !requestedIsRootOnly)
+                {
+                    Debug.LogWarning(
+                        $"Cannot reassign element '{existingElement.Name}' (ID {existingElement.Id}). " +
+                        $"Existing parents=[{string.Join(", ", existingParents)}], " +
+                        $"Requested=[{string.Join(", ", requestedParentSet)}]");
+                    return false;
+                }
+                newElement = existingElement; 
+            }
+            
+            // Enforce unique parent-set constraint (except root)
+            if (HasElementWithSameNonRootParents(requestedParentSet))
+            {
+                Debug.LogWarning(
+                    $"Cannot add element '{newElement.Name}' because another element already has parents " +
+                    $"[{string.Join(", ", requestedParentSet)}], and only {{Root}} is allowed to have duplicate children.");
                 return false;
             }
 
@@ -101,7 +145,18 @@ namespace TDPG.EffectSystem.ElementRegistry
                 return null;
             }
             List<Effect> allParentEffects = parentElements.SelectMany(p => p.GetEffects()).ToList();
+            
+            // 1.5 Ensure we aren't replacing an already existing element
+            var parentIdSet = parentElements.Select(p => p.Id).ToHashSet();
 
+            if (HasElementWithSameNonRootParents(parentIdSet))
+            {
+                Debug.LogWarning(
+                    $"Cannot generate child because another element already has parents [{string.Join(", ", parentIdSet)}], " +
+                    $"and only {{Root}} is allowed to have duplicate children.");
+                return null;
+            }
+            
             // 2. Combine DNA and gather all effects
             List<Effect> effects = new List<Effect>();
             Seed newSeed = new Seed(0, -1, "GeneratedFromParents");
@@ -210,5 +265,37 @@ namespace TDPG.EffectSystem.ElementRegistry
             return child;
         }
         
+        /// <summary>
+        /// Returns true if some element (non-root) already has exactly the same parents,
+        /// except the parent set { root } which is allowed to have duplicates.
+        /// </summary>
+        private bool HasElementWithSameNonRootParents(HashSet<int> parentIds)
+        {
+            // Allow duplicates if parents == { root }
+            if (parentIds.Count == 1 && parentIds.Contains(rootElement.Id))
+                return false;
+
+            foreach (var vertex in registryGraph.Vertices)
+            {
+                // Skip root itself
+                if (vertex == rootElement)
+                    continue;
+
+                var thisParents = registryGraph
+                    .InEdges(vertex)
+                    .Select(e => e.Source.Id)
+                    .ToHashSet();
+
+                // Skip elements whose only parent is root
+                if (thisParents.Count == 1 && thisParents.Contains(rootElement.Id))
+                    continue;
+
+                // If another element has the same parent set → duplicate → not allowed
+                if (thisParents.SetEquals(parentIds))
+                    return true;
+            }
+
+            return false;
+        }
     }
 }

@@ -8,6 +8,7 @@ using Formatting = System.Xml.Formatting;
 
 namespace Tests.EffectSystem.ElementTests
 {
+    [TestFixture, Category("EffectSystemTest")]
     public class EffectTests
     {
         [Test]
@@ -27,7 +28,11 @@ namespace Tests.EffectSystem.ElementTests
 
             Assert.AreEqual("HealthDown", healthDown.Name);
             Assert.IsTrue(healthDown.Description.Contains("Lowers health of the target"));
-            Assert.AreEqual(5f, GetPrivateValues(healthDown)[0], "Should be change by 5hp (- is implicit by name 'health DOWN'"); 
+            Assert.AreEqual(5f, GetPrivateValues(healthDown)[0], "Should be change by 5hp (- is implicit by name 'health DOWN'");
+
+            var logic = healthDown.LogicTransfer();
+            Assert.IsTrue(logic.ContainsKey(EffectParameter.HealthChange));
+            Assert.IsTrue(logic.ContainsValue(-5f), "Should transfer logic as HealthChange: -5");
         }
 
         [Test]
@@ -74,7 +79,7 @@ namespace Tests.EffectSystem.ElementTests
 
         [Test]
         public void Effects_CanBeAppliedWithoutError()
-        {   //fake test until they actually do apply to a target
+        {   //mock test until they actually do apply to a target
             var dummyTarget = new GameObject("Dummy");
             var burn = new HealthDown(5f);
             var heal = new Heal(10f);

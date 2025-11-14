@@ -10,6 +10,7 @@ using static Tests.TestUtils;
 
 namespace Tests.GeneratorTests
 {
+    [TestFixture, Category("GeneratorTests")]
     public class VectorTests
     {
         [Test]

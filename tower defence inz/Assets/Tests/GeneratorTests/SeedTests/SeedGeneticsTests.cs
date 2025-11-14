@@ -7,7 +7,7 @@ using static Tests.TestUtils;
 
 namespace Tests.GeneratorTests.SeedTests
 {
-        [TestFixture]
+        [TestFixture, Category("SeedTests")]
         public class SeedGeneticsTests
         {
             //Makes new child from 2 Seeds

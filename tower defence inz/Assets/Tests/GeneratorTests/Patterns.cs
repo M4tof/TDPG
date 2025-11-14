@@ -8,6 +8,7 @@ using TDPG.Generators.Seed;
 
 namespace Tests.GeneratorTests
 {
+    [TestFixture, Category("GeneratorTests")]
     public class Patterns
     {
         [Test]

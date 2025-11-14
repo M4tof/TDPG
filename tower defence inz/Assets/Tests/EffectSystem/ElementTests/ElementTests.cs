@@ -10,6 +10,7 @@ using UnityEngine;
 
 namespace Tests.EffectSystem.ElementTests
 {
+    [TestFixture, NUnit.Framework.Category("EffectSystemTest")]
     public class ElementTests
     {
         [Test]
@@ -20,7 +21,7 @@ namespace Tests.EffectSystem.ElementTests
             
             Assert.AreEqual("Fire", element.Name);
             Assert.AreEqual(1, element.Id);
-            Assert.IsEmpty(element.GetEffects());
+            Assert.IsEmpty(element.GetEffects(), "Seed 0b_0000000000000000000... means empty effect list");
         }
         
         [Test]
@@ -33,7 +34,7 @@ namespace Tests.EffectSystem.ElementTests
             Assert.AreEqual("Created: NOW!", element.MetaData[1]);
             Assert.AreEqual(2, element.MetaData.Count);
             
-            Assert.AreEqual("Value: 123, Id: 1, Parent: ", element.MetaData[0]); //normalized seed Value
+            Assert.AreEqual("Value: 123, Id: 1, Parent: ", element.MetaData[0]);
         }
         
         [Test]
@@ -90,12 +91,12 @@ namespace Tests.EffectSystem.ElementTests
         public void Element_SeedBitPattern_CreatesExpectedEffects()
         {
             // EffectRegistry:
-            // bit 1 => SlowDown
-            // bit 2 => HealthDown
-            // bit 3 => Heal
+            // bit 0 => SlowDown
+            // bit 1 => HealthDown
+            // bit 2 => Heal
 
-            // Set bits 1, 2, and 3 => 0b1110 (bit 1 to 3)
-            ulong seedValue = 0b_0000_0000_0000_0000_0000_0000_0000_1110UL;
+            // Set bits 1, 2, and 0 => 0b0111 (bit 0 to 2)
+            ulong seedValue = 0b_0000_0000_0000_0000_0000_0000_0000_0111UL;
             Seed seed = new Seed(seedValue, -1, "BitPatternTest");
 
             // Values used by constructors when bits are on
@@ -203,7 +204,7 @@ namespace Tests.EffectSystem.ElementTests
         [Test]
         public void Element_FromEffects_SetsExpectedBitsInSeed()
         {
-            // Create effects matching bits 1, 2, 3
+            // Create effects matching bits 0, 1, 2
             var effects = new List<Effect>
             {
                 new SlowDown(0.25f, 1.5f),
@@ -214,8 +215,8 @@ namespace Tests.EffectSystem.ElementTests
             var element = new Element("ReverseBitTest", 88, effects);
             Seed dna = element.GetDna();
 
-            ulong expectedBits = (1UL << 1) | (1UL << 2) | (1UL << 3);
-            ulong actualValue = dna.Value; // Assuming Seed exposes this; if not, compare ToString pattern
+            ulong expectedBits = (1UL << 0) | (1UL << 1) | (1UL << 2);
+            ulong actualValue = dna.Value;
 
             Assert.AreEqual(expectedBits, actualValue,
                 $"Expected seed bits {Convert.ToString((long)expectedBits, 2)} but got {Convert.ToString((long)actualValue, 2)}");
@@ -224,29 +225,29 @@ namespace Tests.EffectSystem.ElementTests
         [Test]
         public void Element_FromPartialBits_CreatesPartialEffects()
         {
-            // Only set bits for HealthDown (2) and Heal (3)
-            ulong seedValue = (1UL << 2) | (1UL << 3);
+            // Only set bits for HealthDown (1) and Heal (2)
+            ulong seedValue = (1UL << 1) | (1UL << 2);
             Seed seed = new Seed(seedValue, 7, "PartialBitTest");
 
             var element = new Element("PartialTest", 7, seed, 0.5f, 10f);
             var effects = element.GetEffects();
 
-            Assert.AreEqual(2, effects.Count, "Expected only 2 effects for bits 2 and 3.");
+            Assert.AreEqual(2, effects.Count, "Expected only 2 effects for bits 1 and 2.");
 
-            Assert.IsTrue(effects.Any(e => e is HealthDown), "Expected HealthDown from bit 2.");
-            Assert.IsTrue(effects.Any(e => e is Heal), "Expected Heal from bit 3.");
-            Assert.IsFalse(effects.Any(e => e is SlowDown), "Did not expect SlowDown (bit 1 not set).");
+            Assert.IsTrue(effects.Any(e => e is HealthDown), "Expected HealthDown from bit 1.");
+            Assert.IsTrue(effects.Any(e => e is Heal), "Expected Heal from bit 2.");
+            Assert.IsFalse(effects.Any(e => e is SlowDown), "Did not expect SlowDown (bit 0 not set).");
         }
         
         [Test]
         public void Element_Factory_SafeWithEmptyOrShortValues()
         {
             // Empty array should not throw and should use defaults
-            Assert.DoesNotThrow(() => Element.EffectFactories[1](Array.Empty<float>()));
-            Assert.DoesNotThrow(() => Element.EffectFactories[2](new float[] { 0.5f }));
-            Assert.DoesNotThrow(() => Element.EffectFactories[3](null));
+            Assert.DoesNotThrow(() => Element.EffectFactories[0](Array.Empty<float>()));
+            Assert.DoesNotThrow(() => Element.EffectFactories[1](new float[] { 0.5f }));
+            Assert.DoesNotThrow(() => Element.EffectFactories[2](null));
 
-            var slow = Element.EffectFactories[1](new float[] { 0.5f });
+            var slow = Element.EffectFactories[0](new float[] { 0.5f });
             Assert.IsInstanceOf<SlowDown>(slow);
         }
         
@@ -264,7 +265,7 @@ namespace Tests.EffectSystem.ElementTests
         [Test]
         public void Element_SeedToEffectAndBack_RoundTripIntegrity()
         {
-            var seed = new Seed((1UL << 1) | (1UL << 3), 42, "RoundTrip");
+            var seed = new Seed((1UL << 0) | (1UL << 2), 42, "RoundTrip");
             var element = new Element("RoundTrip", 1, seed, 0.25f, 2f, 10f);
 
             var effects = element.GetEffects();

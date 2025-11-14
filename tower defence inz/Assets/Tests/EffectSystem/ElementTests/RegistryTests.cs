@@ -9,7 +9,7 @@ using UnityEngine;
 
 namespace Tests.EffectSystem.ElementTests
 {
-    [TestFixture]
+    [TestFixture, Category("EffectSystemTest")]
     public class RegistryTests
     {
         private Registry registry;
@@ -163,22 +163,18 @@ namespace Tests.EffectSystem.ElementTests
             var e = new Element("E", 5, new Seed(5, 0, "E"));
             var f = new Element("F", 6, new List<Effect>{slowDown, hit});
 
-            // Root → A, B, C
+            // Root → A, B, C  (C has parents {Root, A, B})
             registry.PutPreMadeElement(new List<int> { root.Id }, a);
             registry.PutPreMadeElement(new List<int> { root.Id }, b);
-            registry.PutPreMadeElement(new List<int> { root.Id }, c);
-
-            // A → C (reinforce)
-            registry.PutPreMadeElement(new List<int> { a.Id }, c);
-
-            // B → C, D
-            registry.PutPreMadeElement(new List<int> { b.Id }, c);
+            registry.PutPreMadeElement(new List<int> { root.Id, a.Id, b.Id }, c);
+            
+            // B → D
             registry.PutPreMadeElement(new List<int> { b.Id }, d);
 
             // D → E
             registry.PutPreMadeElement(new List<int> { d.Id }, e);
 
-            // C, E → F (multi-parent)
+            // C, E → F  (unique parent set → allowed)
             registry.PutPreMadeElement(new List<int> { c.Id, e.Id }, f);
 
             // --- Test 1: Root descendants by depth ---
@@ -332,9 +328,7 @@ namespace Tests.EffectSystem.ElementTests
             // --- Build Graph ---
             registry.PutPreMadeElement(new List<int> { root.Id }, a);
             registry.PutPreMadeElement(new List<int> { root.Id }, b);
-            registry.PutPreMadeElement(new List<int> { root.Id }, c);
-
-            registry.PutPreMadeElement(new List<int> { a.Id, b.Id }, c);  // A → C // B → C
+            registry.PutPreMadeElement(new List<int> { root.Id , a.Id, b.Id }, c);
             registry.PutPreMadeElement(new List<int> { b.Id }, d);        // B → D
             registry.PutPreMadeElement(new List<int> { d.Id }, e);        // D → E
             registry.PutPreMadeElement(new List<int> { c.Id, e.Id }, f);  // C,E → F
@@ -390,11 +384,107 @@ namespace Tests.EffectSystem.ElementTests
             }
         }
         
+        [Test]
+        public void CannotAdd_SecondElementWithSameNonRootParents()
+        {
+            var a = new Element("A", 1, new Seed(1, 0, "A"));
+            var b = new Element("B", 2, new Seed(2, 0, "B"));
+            var x = new Element("X", 3, new Seed(3, 0, "X"));
+            var y = new Element("Y", 4, new Seed(4, 0, "Y"));
+
+            registry.PutPreMadeElement(new List<int> { 0 }, a);
+            registry.PutPreMadeElement(new List<int> { 0 }, b);
+
+            // X has parents {A, B}
+            Assert.IsTrue(registry.PutPreMadeElement(new List<int> { 1, 2 }, x));
+
+            // Y tries the same → should fail
+            Assert.IsFalse(registry.PutPreMadeElement(new List<int> { 1, 2 }, y));
+        }
         
-        
-        
-        
-        
+        [Test]
+        public void ReassignExistingElementToNewParentSet_Fails()
+        {
+            var a = new Element("A", 1, new Seed(1, 0, "A"));
+            var b = new Element("B", 2, new Seed(2, 0, "B"));
+
+            registry.PutPreMadeElement(new List<int> { 0 }, a);
+
+            // A exists under {Root}
+            Assert.IsFalse(registry.PutPreMadeElement(new List<int> { 2 }, a));
+        }
+
+        [Test]
+        public void Allow_MultipleChildrenOfRootOnly()
+        {
+            for (int i = 1; i <= 10; i++)
+            {
+                var e = new Element("R" + i, i, new Seed((ulong)i, 0, "R" + i));
+                Assert.IsTrue(registry.PutPreMadeElement(new List<int> { 0 }, e));
+            }
+
+            Assert.AreEqual(11, registry.CountElements()); // root + 10 elems
+        }
+
+        [Test]
+        public void GenerateChild_FailsIfParentSetAlreadyUsed()
+        {
+            var a = new Element("A", 1, new Seed(1, 0, "A"));
+            var b = new Element("B", 2, new Seed(2, 0, "B"));
+
+            registry.PutPreMadeElement(new List<int> { 0 }, a);
+            registry.PutPreMadeElement(new List<int> { 0 }, b);
+
+            // First child with parent-set {A, B}
+            var first = registry.GenerateChildElementFromParents_Addition(new List<int> { 1, 2 });
+            Assert.IsNotNull(first);
+
+            // Second attempt → must fail, return null
+            var second = registry.GenerateChildElementFromParents_Recombine(new List<int> { 1, 2 });
+            Assert.IsNull(second);
+        }
+
+        [Test]
+        public void CircularParentAttempt_FailsGracefully()
+        {
+            var a = new Element("A", 1, new Seed(1, 0, "A"));
+            var b = new Element("B", 2, new Seed(2, 0, "B"));
+
+            registry.PutPreMadeElement(new List<int> { 0 }, a);
+            registry.PutPreMadeElement(new List<int> { 1 }, b);
+
+            // Attempt to add A as a child of B → would create cycle
+            Assert.IsFalse(registry.PutPreMadeElement(new List<int> { 2 }, a));
+        }
+
+        [Test]
+        public void Descendants_IgnoreRejectedParentInsert()
+        {
+            var a = new Element("A", 1, new Seed(1, 0, "A"));
+            var b = new Element("B", 2, new Seed(2, 0, "B"));
+            var c = new Element("C", 3, new Seed(3, 0, "C"));
+
+            registry.PutPreMadeElement(new List<int> { 0 }, a);
+            registry.PutPreMadeElement(new List<int> { 0 }, b);
+            registry.PutPreMadeElement(new List<int> { 1 }, c); // C under A
+
+            // Try to reassign C under B (should fail)
+            Assert.IsFalse(registry.PutPreMadeElement(new List<int> { 2 }, c));
+
+            // Descendants of B should NOT include C
+            var bChildren = registry.GetDescendants(registry.GetElement(2), 1);
+            Assert.IsEmpty(bChildren);
+        }
+
+        [Test]
+        public void RegistryRejects_InvalidParentId()
+        {
+            var x = new Element("X", 1, new Seed(1, 0, "X"));
+
+            // parent -99 does not exist
+            Assert.IsFalse(registry.PutPreMadeElement(new List<int> { -99 }, x));
+        }
+
         
     }
 }

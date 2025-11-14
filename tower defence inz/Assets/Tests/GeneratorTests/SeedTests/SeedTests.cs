@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Tests.GeneratorTests.SeedTests
 {
-    [TestFixture]
+    [TestFixture, Category("SeedTests")]
     public class SeedTests
     {
         [Test]
@@ -139,6 +139,36 @@ namespace Tests.GeneratorTests.SeedTests
             StringAssert.Contains("B", result.GetName());
             Assert.AreEqual(-1, result.Id);
         }
-    
+
+        [Test]
+        public void Seed_Normalize_Test()
+        {
+            Seed seed = new Seed(1234, 1, "ValueName", true);
+            Seed reference = new Seed(1234, 1, "ValueName", false);
+            
+            Assert.AreEqual(seed.GetBaseValue(), reference.GetBaseValue());
+            seed.NormalizeSeedValue(); //Should do nothing since seed isBitBased 
+            Assert.AreEqual(seed.GetBaseValue(), reference.GetBaseValue());
+            
+            reference.NormalizeSeedValue(); // should normalize value to 1234000000
+            Assert.AreNotEqual(seed.GetBaseValue(), reference.GetBaseValue());
+            Debug.Log(reference.GetBaseValue());
+            Assert.That(reference.GetBaseValue() == 123_400_000);
+            
+        }
+
+        [Test]
+        public void Seed_Bitwise_Test()
+        {
+            ulong seedValue = 0b_0000_0000_0000_0000_0000_0000_0000_0111UL;
+            Seed seed = new Seed(seedValue, -1, "BitwiseTest");
+            
+            Debug.Log(seed.GetBaseValue());
+            Assert.That(seed.GetBaseValue() == 7);
+            
+            seedValue = 0b_0000_0000_0000_0000_0000_0000_0001_1111UL;
+            Assert.That(seedValue == 31);
+        }
+        
     }
 }
