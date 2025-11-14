@@ -1,13 +1,10 @@
 fileFormatVersion: 2
-guid: 0efc94a825ae7c2cd9137fe5f777b994
+guid: 0fdcfaf4dda59864c92bb7041d2c5e9b
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -9216592098991865937
-    second: bullet_3_1_0
-  - first:
-      213: -1915277212760676851
-    second: bullet_3_1_1
+      213: -352198177103576309
+    second: Turret2_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -40,7 +37,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 1
+    filterMode: 0
     aniso: 1
     mipBias: 0
     wrapU: 1
@@ -78,7 +75,7 @@ TextureImporter:
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 1
+    textureCompression: 0
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -99,43 +96,17 @@ TextureImporter:
     ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
-  - serializedVersion: 4
-    buildTarget: Android
-    maxTextureSize: 2048
-    resizeAlgorithm: 0
-    textureFormat: -1
-    textureCompression: 1
-    compressionQuality: 50
-    crunchedCompression: 0
-    allowsAlphaSplitting: 0
-    overridden: 0
-    ignorePlatformSupport: 0
-    androidETC2FallbackOverride: 0
-    forceMaximumCompressionQuality_BC6H_BC7: 0
-  - serializedVersion: 4
-    buildTarget: WebGL
-    maxTextureSize: 2048
-    resizeAlgorithm: 0
-    textureFormat: -1
-    textureCompression: 1
-    compressionQuality: 50
-    crunchedCompression: 0
-    allowsAlphaSplitting: 0
-    overridden: 0
-    ignorePlatformSupport: 0
-    androidETC2FallbackOverride: 0
-    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: bullet_3_1_0
+      name: Turret2_0
       rect:
         serializedVersion: 2
-        x: 367
+        x: 0
         y: 0
-        width: 304
-        height: 1024
+        width: 64
+        height: 57
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -144,30 +115,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: faffaeb4156181080800000000000000
-      internalID: -9216592098991865937
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: bullet_3_1_1
-      rect:
-        serializedVersion: 2
-        x: 747
-        y: 822
-        width: 250
-        height: 155
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: d06eff6c5819b65e0800000000000000
-      internalID: -1915277212760676851
+      spriteID: b03833bbf9dbc1bf0800000000000000
+      internalID: -352198177103576309
       vertices: []
       indices: 
       edges: []
@@ -186,8 +135,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      bullet_3_1_0: -9216592098991865937
-      bullet_3_1_1: -1915277212760676851
+      Turret2_0: -352198177103576309
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

@@ -10,14 +10,15 @@ public class Grid
     private float cellSize;
     private int[,] grid;
     private TileType[,] typeGrid;
-    //TODO dodać grid dla budynków kiedy będzie można je tworzyć
+    private GameObject[,] buildingsGrid;
     
     public enum TileType
     {
-        Empty,
-        Wall,
-        Water,
-        Building
+        EMPTY,
+        WALL,
+        WATER,
+        BUILDING,
+        DONT_EXISTS        
     }
 
     public Grid(int width, int height,float cellSize)
@@ -28,12 +29,14 @@ public class Grid
         
         grid = new int[width, height];
         typeGrid = new TileType[width, height];
+        buildingsGrid = new GameObject[width, height];
 
         for (int x = 0; x < grid.GetLength(0); x++)
         {
             for (int y = 0; y < grid.GetLength(1); y++)
             {
-                typeGrid[x,y] = TileType.Empty;
+                typeGrid[x,y] = TileType.EMPTY;
+                buildingsGrid[x, y] = null;
                 Debug.Log(x+":"+y);
                 Debug.DrawLine(GetWorldPosition(x,y),GetWorldPosition(x,y+1),Color.yellow,100f);
                 Debug.DrawLine(GetWorldPosition(x,y),GetWorldPosition(x+1,y),Color.yellow,100f);
@@ -50,6 +53,13 @@ public class Grid
         Vector2Int position;
         position = GetXY(worldPosition);
         SetValue(position.x, position.y, value);
+    }
+    
+    //return value of tile
+    public int GetValue(Vector3 worldPosition)
+    {
+        Vector2Int position =  GetXY(worldPosition);
+        return grid[position.x, position.y];
     }
     
     //Set value of given tile 
@@ -80,18 +90,42 @@ public class Grid
         typeGrid[x, y] = value;
     }
     
-    //return value of tile
-    public int getValue(Vector3 worldPosition)
+    //return type of tile based on world position
+    public TileType GetTileType(Vector3 worldPosition)
     {
         Vector2Int position =  GetXY(worldPosition);
-        return grid[position.x, position.y];
+        return GetTileType(position.x, position.y);
     }
     
-    //return type of tile
-    public TileType getTileType(Vector3 worldPosition)
+    //return type of tile based of tile type
+    public TileType GetTileType(int x, int y)
     {
-        Vector2Int position =  GetXY(worldPosition);
-        return typeGrid[position.x, position.y];
+        if (x < 0 || x >= width || y < 0 || y >= height)
+        {
+            return TileType.DONT_EXISTS;
+        }
+        return typeGrid[x, y];
+    }
+    
+    //Set Building based on world position
+    public void SetBuilding(Vector3 worldPosition, GameObject building)
+    {
+        Vector2Int position;
+        position = GetXY(worldPosition);
+        SetBuilding(position.x, position.y, building);
+    }
+    
+    //Set Building based on tile position
+    public void SetBuilding(int x, int y, GameObject building)
+    {
+        buildingsGrid[x, y] = building;
+    }
+    
+    //return building
+    public GameObject GetBuilding(Vector3 worldPosition)
+    {
+        Vector2Int position = GetXY(worldPosition);
+        return buildingsGrid[position.x, position.y];
     }
     
     //Get Tile based on given position
@@ -109,6 +143,11 @@ public class Grid
     //Print in console grid tile on given position
     public void PrintGridCell(Vector3 worldPosition)
     {
-        Debug.Log(GetXY(worldPosition));
+        Vector2Int position = GetXY(worldPosition);
+        if (position.x < 0 || position.y < 0 || position.x >= width || position.y >= height)
+        {
+            return;
+        }
+        Debug.Log($"Tile: {position} Type: {typeGrid[position.x, position.y]} Building: {buildingsGrid[position.x, position.y]}");
     }
 }
