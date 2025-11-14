@@ -75,7 +75,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 1
   m_Sprite: {fileID: -1173744490545380907, guid: ee79ee4b83a9c42489a8e9a5f7d433ed, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -185,8 +185,8 @@ CapsuleCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0.101634264, y: -0.30856454}
-  m_Size: {x: 2.5708175, y: 3.9453623}
+  m_Offset: {x: 0.014916286, y: -0.01456359}
+  m_Size: {x: 0.16526964, y: 0.2352894}
   m_Direction: 0
 --- !u!114 &6413146351426944057
 MonoBehaviour:
@@ -200,10 +200,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5315c3945a6644a4cb251ac97a120b7f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 25
+  speed: 1
   spriteRenderer: {fileID: 9095416276449560323}
   mainCamera: {fileID: 0}
   pauseMenu: {fileID: 0}
+  buildingMenu: {fileID: 0}
+  inMenu: 0
 --- !u!114 &3755034284902648661
 MonoBehaviour:
   m_ObjectHideFlags: 0

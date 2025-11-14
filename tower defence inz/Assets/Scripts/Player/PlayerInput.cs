@@ -3,6 +3,7 @@ using UnityEngine.InputSystem;
 
 [RequireComponent(typeof(Rigidbody2D))]
 [RequireComponent(typeof(BasicProjectileSpawner))]
+[RequireComponent(typeof(TurretSpawner))]
 public class PlayerInput : MonoBehaviour
 {
     
@@ -12,29 +13,39 @@ public class PlayerInput : MonoBehaviour
     [SerializeField] private SpriteRenderer spriteRenderer;
     [SerializeField] private Camera mainCamera;
     [SerializeField] private PauseMenu pauseMenu;
+    [SerializeField] private BuildingMenu buildingMenu;
     
     private Rigidbody2D rb;
     private BasicProjectileSpawner projectileSpawner;
+    private TurretSpawner turretSpawner;
     
     private Vector3 moveDirection;
     private Vector3 mousePosition;
     private Vector3 projectileRotation;
+
+    private bool inMenu;
+    private GameObject buildingToBuild; 
     
     //Initial
     void Start()
     {
+        inMenu = false;
         rb = GetComponent<Rigidbody2D>();
         projectileSpawner = GetComponent<BasicProjectileSpawner>();
+        turretSpawner = GetComponent<TurretSpawner>();
     }
     
     //Updates every frame
     void Update()
     {
-        
+        //Move player
         rb.linearVelocity = moveDirection * speed;
         RotateSprite();
+        
+        //Move building preview
+        turretSpawner.UpdateVisualizerPosition(mainCamera.ScreenToWorldPoint(Mouse.current.position.ReadValue()));
     }
-
+    
     //Set player direction based on input system
     public void onMove(InputAction.CallbackContext context)
     {
@@ -48,16 +59,53 @@ public class PlayerInput : MonoBehaviour
         {
             mousePosition = Mouse.current.position.ReadValue();
             Vector3 worldMousePosition = mainCamera.ScreenToWorldPoint(mousePosition);
-            projectileSpawner.Shoot(transform.position, worldMousePosition);
+            if (!inMenu)
+            {
+                projectileSpawner.Shoot(transform.position, worldMousePosition);
+                return;
+            }
+
+            if (buildingMenu.GetIsActive() && turretSpawner.GetTurretToSpawn() != null)
+            {
+                turretSpawner.SpawnTurret(worldMousePosition);
+            }
         }
+        
     }
 
-    public void onPause(InputAction.CallbackContext context)
+    //When Player press building button it switch building Panel
+    public void onBuilding(InputAction.CallbackContext context)
     {
-        //Debug.Log("PAUSZA");
         if (context.performed)
         {
+            if (pauseMenu.GetMenuActive())
+            {
+                return;
+            }
+            buildingMenu.SwitchBuildingPanel();
+            mainCamera.GetComponent<CameraController>().SetDynamicCameraMovement(!buildingMenu.GetIsActive());
+            inMenu = !inMenu;
+        }
+    }
+    
+    public void onPause(InputAction.CallbackContext context)
+    {
+        
+        if (context.performed)
+        {
+            if (buildingMenu.GetIsActive())
+            {
+                if (turretSpawner.GetTurretToSpawn() != null)
+                {
+                    turretSpawner.SetTurretToSpawn(null);
+                    return;
+                }
+                buildingMenu.CloseBuildingPanel();
+                inMenu = false;
+                return;
+            }
             pauseMenu.SwitchMenu();
+            inMenu = !inMenu;
         }
 
     }
@@ -76,4 +124,21 @@ public class PlayerInput : MonoBehaviour
         }
     }
     
+    void OnValidate()
+    {
+        if (pauseMenu == null)
+        {
+            Debug.LogWarning("Pause Menu is not assigned", this);
+        }
+        if (mainCamera == null)
+        {
+            Debug.LogWarning("Main Camera is not assigned", this);
+        }
+        if (buildingMenu == null)
+        {
+            Debug.LogWarning("Building Menu is not assigned", this);
+        }
+    }
 }
+
+

@@ -6,6 +6,7 @@ using TDPG.Generators.Scalars;
 using TDPG.Generators.Seed;
 using TDPG.Generators.Vectors;
 using UnityEngine;
+using static Tests.TestUtils;
 
 namespace Tests.GeneratorTests
 {
@@ -76,6 +77,26 @@ namespace Tests.GeneratorTests
             Assert.GreaterOrEqual(distinctCount, 2, "Should have at least 2 distinct float values");
     
             Debug.Log($"Generated {distinctCount} distinct values: {string.Join(", ", list)}");
+        }
+        
+                
+        [Test]
+        public void VectorGenerator_Performance_IsFastEnough()
+        {
+            var seed = new Seed(101010123, 1);
+            var scalar = new IntGenerator { min = 5, max = 50 };
+    
+            var vg = new VectorGenerator<int>(scalar, dimension: 1000);
+            var list = new List<int>();
+            
+            var sw = System.Diagnostics.Stopwatch.StartNew();
+
+            for (int i = 0; i < 1_000_000; i++)
+                list = vg.Generate(seed);
+
+            sw.Stop();
+            Debug.Log($"Executed in  {sw.ElapsedMilliseconds} ms");
+            Assert.Less(sw.ElapsedMilliseconds, 10.5f * ExpectedTimeToExecuteLonger * GetPerformanceMultiplier(), "Int generation took too long");
         }
         
     }
