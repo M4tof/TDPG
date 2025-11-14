@@ -6,6 +6,7 @@ using static TDPG.Generators.Scalars.InitializerFromDate;
 
 namespace Tests.GeneratorTests
 {
+    [TestFixture, Category("IntegrationTest")]
     public class IntegrateScalarGenWithSeedTests
     {
         [Test]

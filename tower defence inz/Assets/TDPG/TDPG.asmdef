@@ -1,3 +1,16 @@
 {
-  "name": "TDPG"
+    "name": "TDPG",
+    "rootNamespace": "",
+    "references": [
+        "QuikGraph.dll"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
 }
