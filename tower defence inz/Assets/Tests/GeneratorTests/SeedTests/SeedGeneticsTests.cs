@@ -7,7 +7,7 @@ using static Tests.TestUtils;
 
 namespace Tests.GeneratorTests.SeedTests
 {
-        [TestFixture]
+        [TestFixture, Category("SeedTests")]
         public class SeedGeneticsTests
         {
             //Makes new child from 2 Seeds
@@ -17,7 +17,7 @@ namespace Tests.GeneratorTests.SeedTests
                 Seed seed1 = new Seed(122,1);
                 Seed seed2 = new Seed(123,2);
                 
-                Seed child = seed1 + seed2;
+                Seed child = seed1 * seed2;
                 
                 Assert.AreNotEqual(seed1.Value, child.Value);
                 Assert.AreNotEqual(seed2.Value, child.Value);
@@ -55,7 +55,7 @@ namespace Tests.GeneratorTests.SeedTests
                 Seed seed1 = new Seed(122,1);
                 ISeed gs1 = new GlobalSeed(12222, "papa");
 
-                Seed childExplicit = seed1 + gs1;
+                Seed childExplicit = seed1 * gs1;
                 Assert.AreNotEqual(seed1.Value, childExplicit.Value);
                 Assert.AreNotEqual(gs1.GetBaseValue(), childExplicit.Value);
                 

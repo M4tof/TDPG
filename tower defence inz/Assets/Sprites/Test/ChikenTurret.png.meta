@@ -134,7 +134,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      ChikenTurret_0: -1493861469240322331
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

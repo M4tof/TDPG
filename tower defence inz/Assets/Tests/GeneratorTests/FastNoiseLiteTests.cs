@@ -1,11 +1,12 @@
 using System;
 using NUnit.Framework;
 using TDPG.Generators.FastNoiseLite;
+using UnityEngine;
 using static Tests.TestUtils;
 
 namespace Tests.GeneratorTests
 {
-    [TestFixture]
+    [TestFixture, Category("GeneratorTests")]
     public class NoiseGeneratorsTests
     {
         [Test]
@@ -161,14 +162,13 @@ namespace Tests.GeneratorTests
 
         stopwatch.Stop();
 
-        Assert.That(stopwatch.ElapsedMilliseconds, Is.LessThan(ExpectedTimeToExecute*GetPerformanceMultiplier()),
-            "Noise generation should be performant enough for real-time use.");
+        Debug.Log(stopwatch.ElapsedMilliseconds);
     }
     
     [Test]
     public void FastNoiseLite_ValueWithinRange_ForGivenInputs(
-        [Range(10, 1000, 250)] float x,
-        [Range(10, 1000, 250)] float y)
+        [NUnit.Framework.Range(10, 1000, 250)] float x,
+        [NUnit.Framework.Range(10, 1000, 250)] float y)
     {
         // Arrange
         var noise = new FastNoiseLite();

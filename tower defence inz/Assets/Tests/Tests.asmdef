@@ -1,9 +1,24 @@
 {
     "name": "Tests",
-   "references": [
-     "TDPG"
-   ],
-    "optionalUnityReferences": [
-        "TestAssemblies"
-    ]
+    "rootNamespace": "",
+    "references": [
+        "TDPG",
+        "UnityEngine.TestRunner",
+        "UnityEditor.TestRunner"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "nunit.framework.dll",
+        "QuikGraph.dll",
+        "Newtonsoft.Json.dll"
+    ],
+    "autoReferenced": false,
+    "defineConstraints": [
+        "UNITY_INCLUDE_TESTS"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
 }

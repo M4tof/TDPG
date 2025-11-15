@@ -10,7 +10,7 @@ using static TDPG.Generators.Scalars.InitializerFromDate;
 namespace Tests.GeneratorTests.SeedTests
 {
     
-    [TestFixture]
+    [TestFixture, Category("SeedTests")]
     public class GlobalSeedTests
     {
         
