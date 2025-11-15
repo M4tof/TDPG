@@ -4,7 +4,6 @@ using TDPG.Generators.Seed;
 using TDPG.Generators.Scalars;
 using System.IO;
 using System.Text;
-using Newtonsoft.Json;
 
 public class GameManager : MonoBehaviour
 {
