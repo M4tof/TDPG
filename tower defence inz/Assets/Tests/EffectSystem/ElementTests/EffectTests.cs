@@ -1,11 +1,14 @@
 using NUnit.Framework;
 using System.Collections.Generic;
-using TDPG.EffectSystem.Element;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using TDPG.EffectSystem.ElementLogic;
 using UnityEngine;
-using static Tests.TestUtils;
+using Formatting = System.Xml.Formatting;
 
 namespace Tests.EffectSystem.ElementTests
 {
+    [TestFixture, Category("EffectSystemTest")]
     public class EffectTests
     {
         [Test]
@@ -14,8 +17,8 @@ namespace Tests.EffectSystem.ElementTests
             var heal = new Heal(10f);
 
             Assert.AreEqual("Heal", heal.Name);
-            Assert.IsTrue(heal.Description.Contains("Heal the target"));
-            Assert.AreEqual(10f, GetPrivateValues_Effect(heal)[0]);
+            Assert.IsTrue(heal.Description.Contains("Heals the target"));
+            Assert.AreEqual(10f, GetPrivateValues(heal)[0]);
         }
 
         [Test]
@@ -24,8 +27,12 @@ namespace Tests.EffectSystem.ElementTests
             var healthDown = new HealthDown(5f);
 
             Assert.AreEqual("HealthDown", healthDown.Name);
-            Assert.IsTrue(healthDown.Description.Contains("Lower health"));
-            Assert.AreEqual(5f, GetPrivateValues_Effect(healthDown)[0], "Should be change by 5hp (- is implicit by name 'health DOWN'"); 
+            Assert.IsTrue(healthDown.Description.Contains("Lowers health of the target"));
+            Assert.AreEqual(5f, GetPrivateValues(healthDown)[0], "Should be change by 5hp (- is implicit by name 'health DOWN'");
+
+            var logic = healthDown.LogicTransfer();
+            Assert.IsTrue(logic.ContainsKey(EffectParameter.HealthChange));
+            Assert.IsTrue(logic.ContainsValue(-5f), "Should transfer logic as HealthChange: -5");
         }
 
         [Test]
@@ -37,7 +44,7 @@ namespace Tests.EffectSystem.ElementTests
             StringAssert.Contains("30%", slow.Description); // because factor * 100
             StringAssert.Contains("2", slow.Description);
 
-            float[] values = GetPrivateValues_Effect(slow);
+            float[] values = GetPrivateValues(slow);
             Assert.AreEqual(0.3f, values[0]);
             Assert.AreEqual(2f, values[1]);
         }
@@ -72,7 +79,7 @@ namespace Tests.EffectSystem.ElementTests
 
         [Test]
         public void Effects_CanBeAppliedWithoutError()
-        {   //fake test until they actually do apply to an target
+        {   //mock test until they actually do apply to a target
             var dummyTarget = new GameObject("Dummy");
             var burn = new HealthDown(5f);
             var heal = new Heal(10f);
@@ -82,6 +89,68 @@ namespace Tests.EffectSystem.ElementTests
             Assert.DoesNotThrow(() => heal.Apply(dummyTarget));
             Assert.DoesNotThrow(() => slow.Apply(dummyTarget));
         }
-        
+
+        [Test]
+        public void Effect_SerializeDeserialize_SerializesCorrectly()
+        {
+            // Arrange
+            var settings = new JsonSerializerSettings
+            {
+                Formatting = (Newtonsoft.Json.Formatting)Formatting.Indented,
+                Converters = new List<JsonConverter> { new EffectConverter() }
+            };
+
+            Effect original = new SlowDown(0.5f, 3f);
+
+            // Act: Serialize
+            string json = JsonConvert.SerializeObject(original, settings);
+            Debug.Log($"Serialized JSON:\n{json}");
+
+            // Act: Deserialize
+            Effect restored = JsonConvert.DeserializeObject<Effect>(json, settings);
+            Debug.Log($"Restored: {restored.Name} ({restored.GetType().Name})");
+            
+            // Assert
+            Assert.IsNotNull(restored, "Deserialized effect should not be null.");
+            Assert.AreEqual(original.GetType(), restored.GetType(), "Deserialized type should match original type.");
+            Assert.AreEqual(original.Name, restored.Name, "Name should match.");
+            Assert.AreEqual(original.Description, restored.Description, "Description should match.");
+
+            float[] originalValues = original.GetValues();
+            float[] restoredValues = restored.GetValues();
+
+            Assert.AreEqual(originalValues.Length, restoredValues.Length, "Values length should match.");
+            for (int i = 0; i < originalValues.Length; i++)
+                Assert.AreEqual(originalValues[i], restoredValues[i], 0.0001f, $"Value {i} should match.");
+
+            // sanity check on LogicTransfer
+            var origLogic = original.LogicTransfer();
+            var restoredLogic = restored.LogicTransfer();
+            Assert.AreEqual(origLogic.Count, restoredLogic.Count, "LogicTransfer should have same param count.");
+
+            foreach (var kvp in origLogic)
+                Assert.AreEqual(kvp.Value, restoredLogic[kvp.Key], 0.0001f, $"LogicTransfer param {kvp.Key} should match.");
+        }
+
+        /// <summary>
+        /// Helper to reflectively access protected float[] Values in tests
+        /// </summary>
+        private static float[] GetPrivateValues(Effect effect)
+        {
+            var type = typeof(Effect);
+
+            // Try to get it as a field first
+            var fieldInfo = type.GetField("Values",
+                System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+
+            if (fieldInfo != null)
+                return (float[])fieldInfo.GetValue(effect);
+
+            // If it's a property, handle that
+            var propInfo = type.GetProperty("Values",
+                System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+
+            return propInfo != null ? (float[])propInfo.GetValue(effect) : null;
+        }
     }
 }
