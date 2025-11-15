@@ -3,4 +3,5 @@
   <Project Path="Assembly-CSharp.csproj" />
   <Project Path="Unity.InputSystem.RebindingUI.csproj" />
   <Project Path="Tests.csproj" />
+  <Project Path="Unity.InputSystem.RebindingUI.csproj" />
 </Solution>
