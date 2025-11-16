@@ -120,6 +120,7 @@ public class GameManager : MonoBehaviour
                 G.grid = data.GData.Grid;
                 G.typeGrid = data.GData.TypeGrid;
                 G.turretId = data.GData.BuildingGrid;
+                FindObjectOfType<GridManager>().SetCurrentGrid(G);
                 Debug.Log($"Game Loaded successfully. Version: {data.SaveVersion}");
             }
         }
