@@ -6,7 +6,7 @@ public class TurretBase : MonoBehaviour
     [Header("Parameters")] 
     [SerializeField] private int id;    //TODO Serialize is only for testing
     [SerializeField] private Vector2 tileSize = new Vector2(1, 1);
-    [SerializeField] private float multiplayer = 5.0f;
+    [SerializeField] private float multiplyer = 5.0f;
     
     
     [SerializeField] private GameObject spriteObject;

@@ -73,8 +73,18 @@ public class GameManager : MonoBehaviour
             GS = GSeed,
             Resources = RSInstance.GetData(),
             Elements = new ElementSaveData{},
-            Turrets = new TurretSaveData{}
+            Turrets = new List<TurretSaveData>(),
+            GData = new GridSaveData
+            {
+                Width = G.width,
+                Height = G.height,
+                CellSize = G.CellSize,
+                Grid = G.grid,
+                TypeGrid = G.typeGrid,
+                BuildingGrid = G.turretId
+            }
         };
+        
         string json = JsonConvert.SerializeObject(data, Formatting.Indented);
         path = Path.Combine(Application.persistentDataPath, path);
         File.WriteAllText(path, json, Encoding.UTF8);
@@ -106,7 +116,10 @@ public class GameManager : MonoBehaviour
                 GSeed = data.GS;
                 RSInstance.LoadData(data.Resources);
                 // TODO: implement rest of the systems
-                
+                G = new Grid(data.GData.Width, data.GData.Height, data.GData.CellSize);
+                G.grid = data.GData.Grid;
+                G.typeGrid = data.GData.TypeGrid;
+                G.turretId = data.GData.BuildingGrid;
                 Debug.Log($"Game Loaded successfully. Version: {data.SaveVersion}");
             }
         }
