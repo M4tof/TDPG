@@ -2,7 +2,8 @@
     "name": "TDPG",
     "rootNamespace": "",
     "references": [
-        "QuikGraph.dll"
+        "QuikGraph.dll",
+        "Unity.InputSystem"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
