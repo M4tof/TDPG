@@ -57,7 +57,7 @@ public class EnemySpawner : MonoBehaviour
             follower.destinationObject = destination.gameObject;
 
             // Randomly decide if enemy can swim
-            follower.canSwim = Random.value < 0.5f;
+            follower.canSwim = Random.value < 0.7f;
         }
         
     }

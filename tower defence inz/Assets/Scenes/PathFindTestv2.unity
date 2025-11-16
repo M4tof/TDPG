@@ -149,8 +149,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mainCamera: {fileID: 1796767792}
-  width: 10
-  height: 10
+  width: 20
+  height: 20
   cellSize: 2
   debugFiller: {fileID: 769840562}
 --- !u!4 &310619388
@@ -213,6 +213,7 @@ Transform:
   - {fileID: 310619388}
   - {fileID: 769840561}
   - {fileID: 2000776787}
+  - {fileID: 1230438744}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &769840560
@@ -261,7 +262,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   wallChance: 0.1
   waterChance: 0.2
-  buildingChance: 0
+  buildingChance: 0.1
   destinationObject: {fileID: 1230438742}
   enemyObjects: []
 --- !u!1 &1230438742
@@ -344,12 +345,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1230438742}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 7, y: 1, z: 0}
   m_LocalScale: {x: 0.25, y: 0.25, z: 0.25}
   m_ConstrainProportionsScale: 1
   m_Children: []
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 714253077}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1796767791
 GameObject:
@@ -363,7 +364,6 @@ GameObject:
   - component: {fileID: 1796767792}
   - component: {fileID: 1796767795}
   - component: {fileID: 1796767794}
-  - component: {fileID: 1796767793}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -406,7 +406,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 20
+  orthographic size: 22
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -422,21 +422,6 @@ Camera:
   m_OcclusionCulling: 1
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
---- !u!114 &1796767793
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1796767791}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 32391cd6b7a4d4f4ba9bdb49b241b64f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  playerTransform: {fileID: 1230438744}
-  allowDynamicMovement: 1
-  displacementMultiplayer: {x: 0.15, y: 0.3}
 --- !u!114 &1796767794
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -498,7 +483,7 @@ Transform:
   m_GameObject: {fileID: 1796767791}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -10}
+  m_LocalPosition: {x: 20, y: 20, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -551,7 +536,7 @@ MonoBehaviour:
   enemyPrefab: {fileID: 5260947920896696658, guid: 82e9cb1976feb98c0944e89d6f9c79cb, type: 3}
   gridManager: {fileID: 310619387}
   destination: {fileID: 1230438744}
-  spawnCount: 4
+  spawnCount: 10
   spawnAfterStart: 1
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
@@ -559,4 +544,3 @@ SceneRoots:
   m_Roots:
   - {fileID: 1796767796}
   - {fileID: 714253077}
-  - {fileID: 1230438744}

@@ -95,7 +95,11 @@ namespace TDPG.Templates.Pathfinding
             if (gridManager == null || path == null || path.Count == 0)
                 return;
 
-            Gizmos.color = Color.red;
+            Gizmos.color = Color.magenta;
+            if (canSwim)
+            {
+                Gizmos.color = Color.cyan;
+            }
             float zOffset = 2.0f;
             for (int i = 0; i < path.Count - 1; i++)
             {
