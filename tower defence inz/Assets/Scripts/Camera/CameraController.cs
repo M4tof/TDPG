@@ -14,7 +14,14 @@ public class CameraController : MonoBehaviour
     [Header("Camera Point")] 
     [SerializeField] private Vector2 staticCameraPosition;
     
-    
+    [Header("Zooming")]
+    [SerializeField] private float normalZoom = 10f;
+    [SerializeField] private float zoomOut = 40f;
+
+    void Start()
+    {
+        normalZoom = Camera.main.orthographicSize;
+    }
     
     void Update()
     {
@@ -68,6 +75,16 @@ public class CameraController : MonoBehaviour
     public void SetStaticCameraPosition(Vector2 position)
     {
         staticCameraPosition = position;
+    }
+
+    public void ZoomIn()
+    {
+        Camera.main.orthographicSize = normalZoom;
+    }
+    
+    public void ZoomOut()
+    {
+        Camera.main.orthographicSize = zoomOut;
     }
     
     //Validation

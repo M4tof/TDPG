@@ -148,7 +148,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f1a3e0bcf5ded21f6a63b86052eb92dd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GM: {fileID: 0}
 --- !u!4 &149956239
 Transform:
   m_ObjectHideFlags: 0
@@ -218,7 +217,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3755034284902648661, guid: a3fd9e2b77aba7542becd0c031fdec11, type: 3}
       propertyPath: m_ActionEvents.Array.size
-      value: 5
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 3755034284902648661, guid: a3fd9e2b77aba7542becd0c031fdec11, type: 3}
       propertyPath: m_ActionEvents.Array.data[4].m_ActionId
@@ -253,6 +252,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3755034284902648661, guid: a3fd9e2b77aba7542becd0c031fdec11, type: 3}
+      propertyPath: m_ActionEvents.Array.data[5].m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3755034284902648661, guid: a3fd9e2b77aba7542becd0c031fdec11, type: 3}
       propertyPath: m_ActionEvents.Array.data[1].m_PersistentCalls.m_Calls.Array.data[1].m_Target
       value: 
       objectReference: {fileID: 1339975572}
@@ -262,6 +265,10 @@ PrefabInstance:
       objectReference: {fileID: 167622956}
     - target: {fileID: 3755034284902648661, guid: a3fd9e2b77aba7542becd0c031fdec11, type: 3}
       propertyPath: m_ActionEvents.Array.data[4].m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 167622956}
+    - target: {fileID: 3755034284902648661, guid: a3fd9e2b77aba7542becd0c031fdec11, type: 3}
+      propertyPath: m_ActionEvents.Array.data[5].m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 167622956}
     - target: {fileID: 3755034284902648661, guid: a3fd9e2b77aba7542becd0c031fdec11, type: 3}
@@ -289,6 +296,10 @@ PrefabInstance:
       value: onPause
       objectReference: {fileID: 0}
     - target: {fileID: 3755034284902648661, guid: a3fd9e2b77aba7542becd0c031fdec11, type: 3}
+      propertyPath: m_ActionEvents.Array.data[5].m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: onMap
+      objectReference: {fileID: 0}
+    - target: {fileID: 3755034284902648661, guid: a3fd9e2b77aba7542becd0c031fdec11, type: 3}
       propertyPath: m_ActionEvents.Array.data[1].m_PersistentCalls.m_Calls.Array.data[1].m_TargetAssemblyTypeName
       value: GridManager, Assembly-CSharp
       objectReference: {fileID: 0}
@@ -298,6 +309,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3755034284902648661, guid: a3fd9e2b77aba7542becd0c031fdec11, type: 3}
       propertyPath: m_ActionEvents.Array.data[4].m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: PlayerInput, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 3755034284902648661, guid: a3fd9e2b77aba7542becd0c031fdec11, type: 3}
+      propertyPath: m_ActionEvents.Array.data[5].m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
       value: PlayerInput, Assembly-CSharp
       objectReference: {fileID: 0}
     - target: {fileID: 3755034284902648661, guid: a3fd9e2b77aba7542becd0c031fdec11, type: 3}
@@ -314,6 +329,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3755034284902648661, guid: a3fd9e2b77aba7542becd0c031fdec11, type: 3}
       propertyPath: m_ActionEvents.Array.data[4].m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
+    - target: {fileID: 3755034284902648661, guid: a3fd9e2b77aba7542becd0c031fdec11, type: 3}
+      propertyPath: m_ActionEvents.Array.data[5].m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
       value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
     - target: {fileID: 4867039639046970502, guid: a3fd9e2b77aba7542becd0c031fdec11, type: 3}
@@ -1516,6 +1535,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5f883444b5bfb0144b43db2518e2cf06, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  id: 0
   tileSize: {x: 1, y: 1}
   multiplayer: 5
   spriteObject: {fileID: 1666673375}
@@ -1848,9 +1868,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 66c4bbf51986c1048b1c7913f0cb20cd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _savePath: SaveSlot3.json
-  _slotNumber: 3
-  _slotType: Load
 --- !u!114 &1034394190
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2353,9 +2370,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 66c4bbf51986c1048b1c7913f0cb20cd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _savePath: SaveSlot2.json
-  _slotNumber: 2
-  _slotType: Save
 --- !u!114 &1201491742
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3521,7 +3535,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerTransform: {fileID: 167622957}
   allowDynamicMovement: 1
+  stickToPoint: 0
   displacementMultiplayer: {x: 0.15, y: 0.3}
+  staticCameraPosition: {x: 0, y: 0}
+  normalZoom: 20
+  zoomOut: 40
 --- !u!1 &1762318399
 GameObject:
   m_ObjectHideFlags: 0
@@ -4523,9 +4541,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 66c4bbf51986c1048b1c7913f0cb20cd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _savePath: SaveSlot1.json
-  _slotNumber: 1
-  _slotType: Save
 --- !u!114 &1896514615
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4808,9 +4823,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 66c4bbf51986c1048b1c7913f0cb20cd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _savePath: SaveSlot2.json
-  _slotNumber: 2
-  _slotType: Load
 --- !u!114 &1925418257
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5170,9 +5182,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 66c4bbf51986c1048b1c7913f0cb20cd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _savePath: SaveSlot1.json
-  _slotNumber: 1
-  _slotType: Load
 --- !u!114 &2009059997
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5967,9 +5976,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 66c4bbf51986c1048b1c7913f0cb20cd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _savePath: SaveSlot3.json
-  _slotNumber: 3
-  _slotType: Save
 --- !u!114 &2138575799
 MonoBehaviour:
   m_ObjectHideFlags: 0

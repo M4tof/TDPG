@@ -121,19 +121,26 @@ public class PlayerInput : MonoBehaviour
             {
                 return;
             }
+            CameraController cameraController = mainCamera.GetComponent<CameraController>();
+            if (cameraController == null)
+            {
+                return;
+            }
             if (inMap)
             {
-                mainCamera.GetComponent<CameraController>().SetStaticCamera(false);
+                cameraController.SetStaticCamera(false);
                 if (!buildingMenu.GetIsActive())
                 {
                     mainCamera.GetComponent<CameraController>().SetDynamicCameraMovement(true);
+                    cameraController.ZoomIn();
                 }
 
                 inMap = false;
                 return;
             }
-            mainCamera.GetComponent<CameraController>().SetStaticCamera(true);
-            mainCamera.GetComponent<CameraController>().SetDynamicCameraMovement(false);
+            cameraController.SetStaticCamera(true);
+            cameraController.SetDynamicCameraMovement(false);
+            cameraController.ZoomOut();
             inMap = true;
         }
     }
