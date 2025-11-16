@@ -79,12 +79,30 @@ public class CameraController : MonoBehaviour
 
     public void ZoomIn()
     {
-        Camera.main.orthographicSize = normalZoom;
+        //Camera.main.orthographicSize = normalZoom;
+        StartCoroutine(CameraSizeCoroutine(normalZoom, 1.0f));
     }
     
     public void ZoomOut()
     {
-        Camera.main.orthographicSize = zoomOut;
+        //Camera.main.orthographicSize = zoomOut;
+        StartCoroutine(CameraSizeCoroutine(zoomOut, 1.0f));
+    }
+    
+    //Courutine 
+    private IEnumerator CameraSizeCoroutine(float cameraSize, float duration)
+    {
+        int startSize = Camera.main.orthographicSize;
+        float elapsed = 0f;
+        
+        while (elapsed < duration)
+        {
+            Camera.main.orthographicSize = Vector3.Lerp(startSize, cameraSize, elapsed / duration);
+            elapsed += Time.deltaTime;
+            yield return null;
+        }
+        Camera.main.orthographicSize =  cameraSize;
+        //transform.position = cameraSize;
     }
     
     //Validation
