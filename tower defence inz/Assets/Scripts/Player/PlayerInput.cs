@@ -61,6 +61,7 @@ public class PlayerInput : MonoBehaviour
         {
             mousePosition = Mouse.current.position.ReadValue();
             Vector3 worldMousePosition = mainCamera.ScreenToWorldPoint(mousePosition);
+            GridManager.Instance.OnMouseClick(context);
             if (!inMenu)
             {
                 projectileSpawner.Shoot(transform.position, worldMousePosition);
