@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using Newtonsoft.Json;
 using TDPG.Generators.Seed;
 using TDPG.Generators.Scalars;
@@ -8,7 +9,7 @@ using System.Collections.Generic;
 
 public class GameManager : MonoBehaviour
 {
-    public static GameManager Instance {get; private set;}
+    public static GameManager Instance { get; private set; }
     public ResourceSystem RSInstance;
     public TurretCompendium TCInstance;
     public ElementCompendium ECInstance;
@@ -18,17 +19,24 @@ public class GameManager : MonoBehaviour
     public int Slot;
 
     public Grid G;
-    
+
+    public int PendingLoadSlot;
+    public string PendingLoadPath;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        
+        RSInstance = ResourceSystem.Instance;
+        TCInstance = TurretCompendium.Instance;
+        ECInstance = ElementCompendium.Instance;
+        Slot = 1;
+        GSeed = new GlobalSeed(InitializerFromDate.QuickGenerate(Slot), "main", "Main global seed for this save slot");
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+
     }
 
     void Awake()
@@ -47,14 +55,22 @@ public class GameManager : MonoBehaviour
             // Prevents the GameObject from being destroyed when reloading a scene
             DontDestroyOnLoad(gameObject);
             Debug.Log("GameManager created and set to not destroy on load.");
-            RSInstance = ResourceSystem.Instance;
-            TCInstance = TurretCompendium.Instance;
-            ECInstance = ElementCompendium.Instance;
-            Slot = 1;
-            GSeed = new GlobalSeed(InitializerFromDate.QuickGenerate(Slot), "main", "Main global seed for this save slot");
         }
     }
 
+    void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        if (scene.name == "MainGame" && !string.IsNullOrEmpty(PendingLoadPath))
+        {
+            // Now that the scene systems (like GridManager) exist, load the data.
+            SetSlot(PendingLoadSlot);
+            LoadGame(PendingLoadPath);
+
+            // Clear pending data
+            PendingLoadPath = null;
+            PendingLoadSlot = 0;
+        }
+    }
     public void SetSlot(int s)
     {
         Slot = s;
@@ -62,8 +78,8 @@ public class GameManager : MonoBehaviour
 
     public void GetGrid()
     {
-        
-        G = FindObjectOfType<GridManager>().GetCurrentGrid();
+
+        G = GridManager.Instance.GetCurrentGrid();
     }
     public void SaveGame(string path)
     {
@@ -73,7 +89,7 @@ public class GameManager : MonoBehaviour
             // SlotNumber = Slot,
             GS = GSeed,
             Resources = RSInstance.GetData(),
-            Elements = new ElementSaveData{},
+            Elements = new ElementSaveData { },
             Turrets = new List<TurretSaveData>(),
             GData = new GridSaveData
             {
@@ -85,7 +101,7 @@ public class GameManager : MonoBehaviour
                 BuildingGrid = G.turretId
             }
         };
-        
+
         string json = JsonConvert.SerializeObject(data, Formatting.Indented);
         path = Path.Combine(Application.persistentDataPath, path);
         File.WriteAllText(path, json, Encoding.UTF8);
@@ -121,7 +137,7 @@ public class GameManager : MonoBehaviour
                 G.grid = data.GData.Grid;
                 G.typeGrid = data.GData.TypeGrid;
                 G.turretId = data.GData.BuildingGrid;
-                FindObjectOfType<GridManager>().SetCurrentGrid(G);
+                GridManager.Instance.SetCurrentGrid(G);
                 Debug.Log($"Game Loaded successfully. Version: {data.SaveVersion}");
             }
         }
