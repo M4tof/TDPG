@@ -85,7 +85,7 @@ public class PlayerInput : MonoBehaviour
                 return;
             }
             buildingMenu.SwitchBuildingPanel();
-            mainCamera.GetComponent<CameraController>().SetDynamicCameraMovement(!buildingMenu.GetIsActive());
+            mainCamera.GetComponent<CameraController>().SetDynamicCameraMovement(!buildingMenu.GetIsActive(),false);
             inMenu = !inMenu;
         }
     }
@@ -131,7 +131,7 @@ public class PlayerInput : MonoBehaviour
                 cameraController.SetStaticCamera(false);
                 if (!buildingMenu.GetIsActive())
                 {
-                    mainCamera.GetComponent<CameraController>().SetDynamicCameraMovement(true);
+                    mainCamera.GetComponent<CameraController>().SetDynamicCameraMovement(true,true);
                     cameraController.ZoomIn();
                 }
 

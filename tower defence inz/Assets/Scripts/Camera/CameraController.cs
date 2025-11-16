@@ -44,7 +44,7 @@ public class CameraController : MonoBehaviour
             return;
             SetCameraPositionBasedOnCenterMap();
         }
-        SetCameraPostionBasedOnPlayerPosition();
+        SetInstanltyCameraPostionBasedOnPlayerPosition();
     }
 
     //Set Camera position based on attached transform;
@@ -52,6 +52,13 @@ public class CameraController : MonoBehaviour
     {
         StartCoroutine(MoveToPlayerCoroutine(duration));
     }
+    
+    //Set Camera position based on attached transform;
+    public void SetInstanltyCameraPostionBasedOnPlayerPosition(float duration = 1.0f)
+    {
+        transform.position = new Vector3(playerTransform.position.x, playerTransform.position.y, -10f);
+    }
+    
     //Set Camera positon based diffrence between mouse position and attached transform (camera would move toward mouse position)
     void SetCameraPositionBasedOnMousePosition()
     {
@@ -74,10 +81,10 @@ public class CameraController : MonoBehaviour
     }
 
     //Change mode of camera
-    public void SetDynamicCameraMovement(bool active)
+    public void SetDynamicCameraMovement(bool active, bool smoothTransition = false)
     {
         allowDynamicMovement = active;
-        if (allowDynamicMovement)
+        if (allowDynamicMovement && smoothTransition)
         {
             SetCameraPostionBasedOnPlayerPosition();
         }
@@ -144,6 +151,7 @@ public class CameraController : MonoBehaviour
     //Smoothly changes camera position to point between player and mouse pointer
     private IEnumerator MoveToPlayerCoroutine(float duration)
     {
+        Debug.Log("ACTIVE");
         cameraTransition = true;
         Vector3 target = GetPositionBasedOnMousePosition();
         float elapsed = 0f;
