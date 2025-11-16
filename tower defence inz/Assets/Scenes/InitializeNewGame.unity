@@ -265,7 +265,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3755034284902648661, guid: a3fd9e2b77aba7542becd0c031fdec11, type: 3}
       propertyPath: m_ActionEvents.Array.data[5].m_PersistentCalls.m_Calls.Array.data[0].m_Mode
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3755034284902648661, guid: a3fd9e2b77aba7542becd0c031fdec11, type: 3}
       propertyPath: m_ActionEvents.Array.data[1].m_PersistentCalls.m_Calls.Array.data[1].m_Target
@@ -3412,7 +3412,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerTransform: {fileID: 167622957}
   allowDynamicMovement: 1
+  stickToPoint: 0
   displacementMultiplayer: {x: 0.15, y: 0.3}
+  staticCameraPosition: {x: 0, y: 0}
 --- !u!1 &1762318399
 GameObject:
   m_ObjectHideFlags: 0
