@@ -55,6 +55,8 @@ public class ResourceSystem : MonoBehaviour
             }
         }
 
+        // TODO: check availble func
+
         public void Update()
         {
             float currVal = value;

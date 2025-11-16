@@ -135,4 +135,9 @@ public class GridManager : MonoBehaviour
     {
         return grid;
     }
+
+    public void SetCurrentGrid(GridManager g)
+    {
+        grid = g;
+    }
 }
