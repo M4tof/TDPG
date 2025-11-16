@@ -17,7 +17,6 @@ namespace TDPG.EffectSystem.ElementLogic
             Description = description;
         }
 
-        public abstract void Apply(GameObject target); // Actually apply the effect
 
         // Transfer structured data
         public abstract Dictionary<EffectParameter, float> LogicTransfer(); // For use in planners, etc.

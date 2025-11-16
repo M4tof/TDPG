@@ -38,26 +38,6 @@ namespace Tests.EffectSystem.ElementTests
         }
         
         [Test]
-        public void Element_CanApplyEffects_FromConstructorList()
-        {
-            var dummyTarget = new GameObject("Dummy");
-
-            var effects = new List<Effect>
-            {
-                new HealthDown(5f),
-                new Heal(10f),
-                new SlowDown(0.25f, 2f)
-            };
-
-            var element = new Element("Fire", 1, effects);
-
-            Assert.AreEqual(3, element.GetEffects().Count);
-
-            // Should apply all effects without error
-            Assert.DoesNotThrow(() => element.ApplyEffects(dummyTarget));
-        }
-        
-        [Test]
         public void Element_Effects_HaveValidLogicTransfers_WhenCreatedFromList()
         {
             var effects = new List<Effect>
