@@ -101,6 +101,7 @@ GameObject:
   - component: {fileID: 6413146351426944057}
   - component: {fileID: 3755034284902648661}
   - component: {fileID: 2793783209248290579}
+  - component: {fileID: 4867039639046970502}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -205,7 +206,6 @@ MonoBehaviour:
   mainCamera: {fileID: 0}
   pauseMenu: {fileID: 0}
   buildingMenu: {fileID: 0}
-  inMenu: 0
 --- !u!114 &3755034284902648661
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -287,6 +287,22 @@ MonoBehaviour:
         m_CallState: 2
     m_ActionId: 1cecfa95-f809-4320-bed0-fd17d323bf45
     m_ActionName: 'Player/Pause[/Keyboard/escape]'
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 6413146351426944057}
+        m_TargetAssemblyTypeName: PlayerInput, Assembly-CSharp
+        m_MethodName: onMap
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: 6021f2f9-4274-4e4a-bff8-98b62dcef48f
+    m_ActionName: 'Player/Map[/Keyboard/m]'
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
   m_DefaultActionMap: Player
@@ -305,3 +321,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   projectile: {fileID: 1195895545647384619, guid: 54f1a2241ea8b704390fa0976c4ece48, type: 3}
+--- !u!114 &4867039639046970502
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1671086669106017320}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 30a4f9226d413274bb3d3e60b7c2eac4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  gridManager: {fileID: 0}
+  TurretBox: {fileID: 0}
+  TurretVisualizer: {fileID: 0}

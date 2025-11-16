@@ -16,6 +16,7 @@ public class GridManager : MonoBehaviour
     void Start()
     {
         grid = new Grid(width, height,cellSize);
+        mainCamera.GetComponent<CameraController>().SetStaticCameraPosition(new Vector2(cellSize*width/2,cellSize*height/2));
     }
 
     public void OnMouseClick(InputAction.CallbackContext context)
@@ -106,13 +107,16 @@ public class GridManager : MonoBehaviour
             return;
         }
         //Placing turret on grid
-        for (int x = 0; x < turretSize.x; x++)
+        if (GameManager.Instance.RSInstance.mana.Claim(200))
         {
-            for (int y = 0; y < turretSize.y; y++)
+            for (int x = 0; x < turretSize.x; x++)
             {
-                Vector2Int tile = new Vector2Int(firstTile.x + x, firstTile.y + y);
-                grid.SetBuilding(tile.x,tile.y,turret);
-                grid.SetTileType(tile.x,tile.y,Grid.TileType.BUILDING);
+                for (int y = 0; y < turretSize.y; y++)
+                {
+                    Vector2Int tile = new Vector2Int(firstTile.x + x, firstTile.y + y);
+                    grid.SetBuilding(tile.x,tile.y,turret);
+                    grid.SetTileType(tile.x,tile.y,Grid.TileType.BUILDING);
+                }
             }
         }
     }
@@ -123,5 +127,10 @@ public class GridManager : MonoBehaviour
         {
             Debug.LogWarning("Main Camera is not assigned", this);
         }
+    }
+
+    public Grid GetCurrentGrid()
+    {
+        return grid;
     }
 }
