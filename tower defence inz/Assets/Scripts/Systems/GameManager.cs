@@ -55,7 +55,14 @@ public class GameManager : MonoBehaviour
             // Prevents the GameObject from being destroyed when reloading a scene
             DontDestroyOnLoad(gameObject);
             Debug.Log("GameManager created and set to not destroy on load.");
+
+            SceneManager.sceneLoaded += OnSceneLoaded; 
         }
+    }
+
+    void OnDestroy()
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
     }
 
     void OnSceneLoaded(Scene scene, LoadSceneMode mode)
