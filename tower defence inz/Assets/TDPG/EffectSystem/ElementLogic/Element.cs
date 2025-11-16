@@ -117,13 +117,6 @@ namespace TDPG.EffectSystem.ElementLogic
 
         public void AddMetaData(string metaData) => MetaData.Add(metaData);
 
-        public void ApplyEffects(GameObject target)
-        {
-            foreach (Effect effect in effects)
-            {
-                effect.Apply(target);
-            }
-        }
         
         public List<Effect> GetEffects() => effects;
         

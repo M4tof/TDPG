@@ -9,13 +9,6 @@ namespace TDPG.EffectSystem.ElementLogic
         public SlowDown(float factor, float duration) 
             : base("SlowDown", $"Slows down the target by {factor * 100}% for {duration} seconds.", factor, duration) { }
 
-        public override void Apply(GameObject target)
-        {
-            // TODO:  Implement effect behavior in gameplay
-            // e.g. target.Speed -= Values[0]  slowdown by factor
-            //          target.effectSpeedTurns = Values[1]   for duration number of turns
-        }
-
         public override Dictionary<EffectParameter, float> LogicTransfer()
         {
             float factor = Values.Length > 0 ? Values[0] : 0f;
@@ -46,10 +39,6 @@ namespace TDPG.EffectSystem.ElementLogic
         public HealthDown(float amount)
             : base("HealthDown", $"Lowers health of the target by {amount} points, once.", amount) {}
 
-        public override void Apply(GameObject target)
-        {
-            // TODO: Implement actual effect on target
-        }
 
         public override Dictionary<EffectParameter, float> LogicTransfer()
         {
@@ -77,10 +66,6 @@ namespace TDPG.EffectSystem.ElementLogic
         public Heal(float amount)
             : base("Heal", $"Heals the target by {amount} points, once.", amount) {}
 
-        public override void Apply(GameObject target)
-        {
-            // TODO: Implement actual heal effect
-        }
 
         public override Dictionary<EffectParameter, float> LogicTransfer()
         {

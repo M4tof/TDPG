@@ -78,19 +78,6 @@ namespace Tests.EffectSystem.ElementTests
         }
 
         [Test]
-        public void Effects_CanBeAppliedWithoutError()
-        {   //mock test until they actually do apply to a target
-            var dummyTarget = new GameObject("Dummy");
-            var burn = new HealthDown(5f);
-            var heal = new Heal(10f);
-            var slow = new SlowDown(0.25f, 2f);
-
-            Assert.DoesNotThrow(() => burn.Apply(dummyTarget));
-            Assert.DoesNotThrow(() => heal.Apply(dummyTarget));
-            Assert.DoesNotThrow(() => slow.Apply(dummyTarget));
-        }
-
-        [Test]
         public void Effect_SerializeDeserialize_SerializesCorrectly()
         {
             // Arrange
