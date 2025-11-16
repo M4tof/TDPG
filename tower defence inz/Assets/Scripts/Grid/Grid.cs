@@ -11,6 +11,7 @@ public class Grid
     private int[,] grid;
     private TileType[,] typeGrid;
     private GameObject[,] buildingsGrid;
+    private int[,] turretId;
     
     public enum TileType
     {
@@ -30,13 +31,15 @@ public class Grid
         grid = new int[width, height];
         typeGrid = new TileType[width, height];
         buildingsGrid = new GameObject[width, height];
+        turretId = new int[width, height];
 
         for (int x = 0; x < grid.GetLength(0); x++)
         {
             for (int y = 0; y < grid.GetLength(1); y++)
             {
                 typeGrid[x,y] = TileType.EMPTY;
-                buildingsGrid[x, y] = null;
+                buildingsGrid[x, y] = null;;
+                turretId[x, y] = -1;
                 Debug.Log(x+":"+y);
                 Debug.DrawLine(GetWorldPosition(x,y),GetWorldPosition(x,y+1),Color.yellow,100f);
                 Debug.DrawLine(GetWorldPosition(x,y),GetWorldPosition(x+1,y),Color.yellow,100f);
@@ -128,6 +131,31 @@ public class Grid
         return buildingsGrid[position.x, position.y];
     }
     
+    //Set value for tile on grid based on world position
+    public void SetTurretId(Vector3 worldPosition, int id)
+    {
+        Vector2Int position;
+        position = GetXY(worldPosition);
+        SetTurretId(position.x, position.y, id);
+    }
+    
+    //return value of tile
+    public int GetTurretId(Vector3 worldPosition)
+    {
+        Vector2Int position =  GetXY(worldPosition);
+        return turretId[position.x, position.y];
+    }
+    
+    //Set value of given tile 
+    public void SetTurretId(int x, int y, int id)
+    {
+        if (x < 0 || x >= width || y < 0 || y >= height)
+        {
+            return;
+        }
+        turretId[x, y] = id;
+    }
+    
     //Get Tile based on given position
     public Vector2Int GetXY(Vector3 worldPosition)
     {
@@ -148,6 +176,6 @@ public class Grid
         {
             return;
         }
-        Debug.Log($"Tile: {position} Type: {typeGrid[position.x, position.y]} Building: {buildingsGrid[position.x, position.y]}");
+        Debug.Log($"Tile: {position} Type: {typeGrid[position.x, position.y]} Building: {buildingsGrid[position.x, position.y]} Id: {turretId[position.x, position.y]}");
     }
 }

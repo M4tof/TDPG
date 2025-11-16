@@ -101,6 +101,7 @@ public class GridManager : MonoBehaviour
         }
         Vector2Int firstTile = grid.GetXY(worldPosition);
         Vector2 turretSize = turretBase.GetTileSize();
+        int turretId = turretBase.GetId();
         //Validation
         if (!CanPlaceTurret(worldPosition, turretSize))
         {
@@ -116,6 +117,7 @@ public class GridManager : MonoBehaviour
                     Vector2Int tile = new Vector2Int(firstTile.x + x, firstTile.y + y);
                     grid.SetBuilding(tile.x,tile.y,turret);
                     grid.SetTileType(tile.x,tile.y,Grid.TileType.BUILDING);
+                    grid.SetTurretId(tile.x,tile.y,turretId);
                 }
             }
         }
