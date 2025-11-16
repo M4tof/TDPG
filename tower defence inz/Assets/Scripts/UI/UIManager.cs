@@ -6,6 +6,7 @@ using Debug = UnityEngine.Debug;
 public class UIManager : MonoBehaviour
 {
     public static UIManager Instance { get; private set; }
+    public GameManager GM;
 
     void Awake()
     {
@@ -23,6 +24,7 @@ public class UIManager : MonoBehaviour
             // Prevents the GameObject from being destroyed when reloading a scene
             DontDestroyOnLoad(gameObject);
             Debug.Log("UIManager created and set to not destroy on load.");
+            GM= GameManager.Instance;
         }
     }
     
@@ -41,6 +43,7 @@ public class UIManager : MonoBehaviour
     public void OnNewGamePress()
     {
         Debug.Log("New Game Pressed");
+        Debug.Break();
         SceneManager.LoadScene("InitializeNewGame");
     }
 
@@ -48,12 +51,17 @@ public class UIManager : MonoBehaviour
     {
         Debug.Log($"Load Pressed, loading {caller.SavePath}");
         // TODO: Implement loading logic here
+        GM.LoadGame(caller.SavePath);
+        GM.SetSlot(caller.SlotNumber);
+        Debug.Break();
         SceneManager.LoadScene("MainGame");
     }
 
     public void OnSavePress(SaveLoadButton caller)
     {
         Debug.Log($"Save Pressed, saving to {caller.SavePath}");
+        GM.SetSlot(caller.SlotNumber);
+        GM.SaveGame(caller.SavePath);
         // TODO: Implement saving logic here
     }
 }
