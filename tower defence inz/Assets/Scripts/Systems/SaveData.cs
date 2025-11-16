@@ -1,5 +1,6 @@
 using TDPG.Generators.Seed;
-
+using System.Collections.Generic;
+using UnityEngine;
 // Data collected from the ResourceSystem
 public class ResourceSaveData
 {

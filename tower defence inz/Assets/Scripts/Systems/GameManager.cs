@@ -4,6 +4,7 @@ using TDPG.Generators.Seed;
 using TDPG.Generators.Scalars;
 using System.IO;
 using System.Text;
+using System.Collections.Generic;
 
 public class GameManager : MonoBehaviour
 {
@@ -78,7 +79,7 @@ public class GameManager : MonoBehaviour
             {
                 Width = G.width,
                 Height = G.height,
-                CellSize = G.CellSize,
+                CellSize = G.cellSize,
                 Grid = G.grid,
                 TypeGrid = G.typeGrid,
                 BuildingGrid = G.turretId

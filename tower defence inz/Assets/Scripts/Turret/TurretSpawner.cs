@@ -37,7 +37,7 @@ public class TurretSpawner : MonoBehaviour
         }
         TurretVisualizer.SetId(turret.GetId());
         TurretVisualizer.SetTileSize(turret.GetTileSize());
-        TurretVisualizer.SetMultiplayer(turret.GetMultiplayer());
+        TurretVisualizer.SetMultiplyer(turret.GetMultiplyer());
         TurretVisualizer.SetSprite(turret.GetSprite());
     }
 

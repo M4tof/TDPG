@@ -5,13 +5,13 @@ using UnityEngine;
 
 public class Grid
 {
-    private int width{get; set;}
-    private int height{get; set;}
-    private float cellSize {get; set;}
-    private int[,] grid {get; set;}
-    private TileType[,] typeGrid {get; set;}
-    private GameObject[,] buildingsGrid {get; set;}
-    private int[,] turretId {get; set;}
+    public int width{get; set;}
+    public int height{get; set;}
+    public float cellSize {get; set;}
+    public int[,] grid {get; set;}
+    public TileType[,] typeGrid {get; set;}
+    public GameObject[,] buildingsGrid {get; set;}
+    public int[,] turretId {get; set;}
     
     public enum TileType
     {
