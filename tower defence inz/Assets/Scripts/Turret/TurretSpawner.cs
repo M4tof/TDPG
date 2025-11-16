@@ -17,6 +17,11 @@ public class TurretSpawner : MonoBehaviour
     private GameObject turretToSpawn;
     private bool canSpawnTurret = true;
 
+    void Start()
+    {
+        gridManager = GridManager.Instance;
+    }
+
     //Set Turret to Spawn
     public void SetTurretToSpawn(GameObject turretToSpawn)
     {
