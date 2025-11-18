@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TDPG.Templates.Pathfinding;
 using UnityEngine;
 using static TDPG.Templates.Grid.Grid;
 
@@ -31,6 +32,34 @@ namespace TDPG.Templates.Grid
             this.cachedTiles = new TileType[width, height];
 
             FillGridRandomly();
+            
+            // Subscribe to grid change events
+            PathfindingEvents.OnGridChanged += OnGridChanged;
+        }
+        
+        void OnDestroy()
+        {
+            // Unsubscribe from events
+            PathfindingEvents.OnGridChanged -= OnGridChanged;
+        }
+        
+        private void OnGridChanged()
+        {
+            // Update the cached tiles when grid changes
+            UpdateCachedTiles();
+        }
+        
+        private void UpdateCachedTiles()
+        {
+            if (grid == null) return;
+            
+            for (int x = 0; x < width; x++)
+            {
+                for (int y = 0; y < height; y++)
+                {
+                    cachedTiles[x, y] = grid.GetTileType(x, y);
+                }
+            }
         }
         
         private HashSet<Vector2Int> GetProtectedTiles()
@@ -123,7 +152,6 @@ namespace TDPG.Templates.Grid
                         TileType.WALL => Color.red,
                         TileType.WATER => Color.blue,
                         TileType.BUILDING => Color.yellow,
-                        TileType.EMPTY => Color.green,
                         _ => Color.magenta
                     };
 
@@ -132,10 +160,6 @@ namespace TDPG.Templates.Grid
                         Gizmos.DrawLine(center + new Vector3(-size, -size, 0), center + new Vector3(size, size, 0));
                         Gizmos.DrawLine(center + new Vector3(-size, size, 0), center + new Vector3(size, -size, 0));
                     }
-                    // else
-                    // {
-                    //     Gizmos.DrawWireCube(center, new Vector3(size * 2, size * 2, 0.1f));
-                    // }
                 }
             }
         }

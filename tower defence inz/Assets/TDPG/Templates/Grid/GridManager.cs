@@ -151,6 +151,16 @@ namespace TDPG.Templates.Grid
         {
             return height;
         }
+
+        internal Grid.TileType GetTileType(Vector3 worldPosition)
+        {
+            return grid.GetTileType(worldPosition);
+        }
+
+        internal void SetTileType(Vector3 worldPosition, Grid.TileType tileType)
+        {
+            grid.SetTileType(worldPosition,tileType);
+        }
     
     }
 }

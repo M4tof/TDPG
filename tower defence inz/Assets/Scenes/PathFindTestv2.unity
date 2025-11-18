@@ -261,7 +261,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   wallChance: 0.1
-  waterChance: 0.2
+  waterChance: 0.1
   buildingChance: 0.1
   destinationObject: {fileID: 1230438742}
   enemyObjects: []
@@ -536,7 +536,7 @@ MonoBehaviour:
   enemyPrefab: {fileID: 5260947920896696658, guid: 82e9cb1976feb98c0944e89d6f9c79cb, type: 3}
   gridManager: {fileID: 310619387}
   destination: {fileID: 1230438744}
-  spawnCount: 10
+  spawnCount: 20
   spawnAfterStart: 1
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
