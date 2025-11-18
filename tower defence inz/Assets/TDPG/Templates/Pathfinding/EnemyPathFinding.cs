@@ -14,6 +14,7 @@ namespace TDPG.Templates.Pathfinding
         [SerializeField] internal bool canSwim = false;
         [SerializeField] internal bool canFly = false;
         [SerializeField] internal bool canDestroyBuildings = false;
+        [SerializeField] internal float speed = 2f;
         
         private PathFindingUtils pathfinder;
         private List<Vector3> path;
@@ -94,7 +95,7 @@ namespace TDPG.Templates.Pathfinding
             // Only move if not currently destroying a building
             if (!isDestroyingBuilding)
             {
-                transform.position = Vector3.MoveTowards(transform.position, target, Time.deltaTime * 2f);
+                transform.position = Vector3.MoveTowards(transform.position, target, Time.deltaTime * speed);
             }
 
             if (Vector3.Distance(transform.position, target) < 0.1f)

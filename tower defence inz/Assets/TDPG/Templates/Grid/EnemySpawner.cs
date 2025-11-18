@@ -94,6 +94,8 @@ public class EnemySpawner : MonoBehaviour
                     break;
             }
             
+            float speed = Random.Range(0.5f, 4.0f);
+            follower.speed = speed;
         }
         
     }
