@@ -33,6 +33,8 @@ public class EnemySpawner : MonoBehaviour
     }
     private void SpawnSingleEnemy()
     {
+        float half = 0.50f;
+        
         Grid grid = gridManager.GetGrid();
         if (grid == null)
         {
@@ -55,9 +57,45 @@ public class EnemySpawner : MonoBehaviour
         {
             follower.gridManager = gridManager;
             follower.destinationObject = destination.gameObject;
+            
+            // Randomly decide enemy capabilities
+            float randomValue = Random.value;
 
-            // Randomly decide if enemy can swim
-            follower.canSwim = Random.value < 0.7f;
+            switch (randomValue)
+            {
+                case < 0.3f: // 30% chance - Cannot swim
+                    follower.canSwim = false;
+                    follower.canDestroyBuildings = false;
+                    follower.canFly = false;
+                    break;
+        
+                case < 0.5f: // 20% chance - Can swim only
+                    follower.canSwim = true;
+                    follower.canDestroyBuildings = false;
+                    follower.canFly = false;
+                    break;
+        
+                case < 0.7f: // 20% chance - Can destroy buildings only
+                    follower.canSwim = false;
+                    follower.canDestroyBuildings = true;
+                    follower.canFly = false;
+                    break;
+        
+                case < 0.8f: // 10% chance - Can swim and destroy buildings
+                    follower.canSwim = true;
+                    follower.canDestroyBuildings = true;
+                    follower.canFly = false;
+                    break;
+        
+                default: // 20% chance - Can fly
+                    follower.canSwim = false;
+                    follower.canDestroyBuildings = false;
+                    follower.canFly = true;
+                    break;
+            }
+            
+            float speed = Random.Range(0.5f, 4.0f);
+            follower.speed = speed;
         }
         
     }

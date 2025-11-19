@@ -205,7 +205,7 @@ namespace TDPG.Templates.Grid
         }
 
     
-        public IEnumerable<Vector3> GetNeighbors(Vector3 cell, bool canSwim, bool allowDiagonals = false)
+        public IEnumerable<Vector3> GetNeighbors(Vector3 cell, bool canSwim, bool canFly, bool canDestroyBuildings, bool allowDiagonals = false)
         {
             int[,] directions = allowDiagonals
                 ? new int[,] { { 1, 0 }, { -1, 0 }, { 0, 1 }, { 0, -1 }, { 1, 1 }, { -1, 1 }, { 1, -1 }, { -1, -1 } }
@@ -228,7 +228,10 @@ namespace TDPG.Templates.Grid
                 // EMPTY always OK
                 // WATER only OK if canSwim
                 if (tile == TileType.EMPTY ||
-                    (tile == TileType.WATER && canSwim))
+                    (tile == TileType.WATER && canSwim) ||
+                    canFly||
+                    (tile == TileType.BUILDING && canDestroyBuildings)
+                    )
                 {
                     yield return new Vector3(nx, ny, 0);
                 }

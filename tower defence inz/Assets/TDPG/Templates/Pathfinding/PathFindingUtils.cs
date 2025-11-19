@@ -21,7 +21,7 @@ namespace TDPG.Templates.Pathfinding
         }
 
 
-        public List<Vector3> FindPath(Vector3 startWorld, Vector3 endWorld, bool canSwim)
+        public List<Vector3> FindPath(Vector3 startWorld, Vector3 endWorld, bool canSwim, bool canFLy, bool canDestroyBuildings)
         {
             Vector2Int startCell = grid.GetXY(startWorld);
             Vector2Int endCell   = grid.GetXY(endWorld);
@@ -30,7 +30,7 @@ namespace TDPG.Templates.Pathfinding
             Vector3 goal  = new Vector3(endCell.x, endCell.y, 0);
 
             // Pass the ability to A*
-            List<Vector3> pathCells = astar.FindPath(start, goal, canSwim);
+            List<Vector3> pathCells = astar.FindPath(start, goal, canSwim, canFLy, canDestroyBuildings);
 
             List<Vector3> worldPath = new List<Vector3>();
             foreach (var c in pathCells)

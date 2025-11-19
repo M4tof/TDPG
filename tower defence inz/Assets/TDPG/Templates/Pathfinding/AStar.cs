@@ -16,7 +16,7 @@ public class AStar
         this.grid = grid;
     }
 
-    public List<Vector3> FindPath(Vector3 start, Vector3 goal, bool canSwim)
+    public List<Vector3> FindPath(Vector3 start, Vector3 goal, bool canSwim, bool canFLy, bool canDestroyBuildings)
     {
         frontier = new PriorityQueue<Vector3, float>();
         cameFrom = new Dictionary<Vector3, Vector3?>();
@@ -33,7 +33,7 @@ public class AStar
             if (current == goal)
                 break;
 
-            foreach (Vector3 next in grid.GetNeighbors(new Vector3Int((int)current.x, (int)current.y, 0), canSwim))
+            foreach (Vector3 next in grid.GetNeighbors(new Vector3Int((int)current.x, (int)current.y, 0), canSwim, canFLy, canDestroyBuildings))
             {
                 float newCost = costSoFar[current] + 1;
 
