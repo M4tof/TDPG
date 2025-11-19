@@ -1,10 +1,14 @@
 using NUnit.Framework;
 using System.Collections.Generic;
-using TDPG.EffectSystem.Element;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using TDPG.EffectSystem.ElementLogic;
 using UnityEngine;
+using Formatting = System.Xml.Formatting;
 
 namespace Tests.EffectSystem.ElementTests
 {
+    [TestFixture, Category("EffectSystemTest")]
     public class EffectTests
     {
         [Test]
@@ -13,7 +17,7 @@ namespace Tests.EffectSystem.ElementTests
             var heal = new Heal(10f);
 
             Assert.AreEqual("Heal", heal.Name);
-            Assert.IsTrue(heal.Description.Contains("Heal the target"));
+            Assert.IsTrue(heal.Description.Contains("Heals the target"));
             Assert.AreEqual(10f, GetPrivateValues(heal)[0]);
         }
 
@@ -23,8 +27,12 @@ namespace Tests.EffectSystem.ElementTests
             var healthDown = new HealthDown(5f);
 
             Assert.AreEqual("HealthDown", healthDown.Name);
-            Assert.IsTrue(healthDown.Description.Contains("Lower health"));
-            Assert.AreEqual(5f, GetPrivateValues(healthDown)[0], "Should be change by 5hp (- is implicit by name 'health DOWN'"); 
+            Assert.IsTrue(healthDown.Description.Contains("Lowers health of the target"));
+            Assert.AreEqual(5f, GetPrivateValues(healthDown)[0], "Should be change by 5hp (- is implicit by name 'health DOWN'");
+
+            var logic = healthDown.LogicTransfer();
+            Assert.IsTrue(logic.ContainsKey(EffectParameter.HealthChange));
+            Assert.IsTrue(logic.ContainsValue(-5f), "Should transfer logic as HealthChange: -5");
         }
 
         [Test]
@@ -70,16 +78,45 @@ namespace Tests.EffectSystem.ElementTests
         }
 
         [Test]
-        public void Effects_CanBeAppliedWithoutError()
-        {   //fake test until they actually do apply to an target
-            var dummyTarget = new GameObject("Dummy");
-            var burn = new HealthDown(5f);
-            var heal = new Heal(10f);
-            var slow = new SlowDown(0.25f, 2f);
+        public void Effect_SerializeDeserialize_SerializesCorrectly()
+        {
+            // Arrange
+            var settings = new JsonSerializerSettings
+            {
+                Formatting = (Newtonsoft.Json.Formatting)Formatting.Indented,
+                Converters = new List<JsonConverter> { new EffectConverter() }
+            };
 
-            Assert.DoesNotThrow(() => burn.Apply(dummyTarget));
-            Assert.DoesNotThrow(() => heal.Apply(dummyTarget));
-            Assert.DoesNotThrow(() => slow.Apply(dummyTarget));
+            Effect original = new SlowDown(0.5f, 3f);
+
+            // Act: Serialize
+            string json = JsonConvert.SerializeObject(original, settings);
+            Debug.Log($"Serialized JSON:\n{json}");
+
+            // Act: Deserialize
+            Effect restored = JsonConvert.DeserializeObject<Effect>(json, settings);
+            Debug.Log($"Restored: {restored.Name} ({restored.GetType().Name})");
+            
+            // Assert
+            Assert.IsNotNull(restored, "Deserialized effect should not be null.");
+            Assert.AreEqual(original.GetType(), restored.GetType(), "Deserialized type should match original type.");
+            Assert.AreEqual(original.Name, restored.Name, "Name should match.");
+            Assert.AreEqual(original.Description, restored.Description, "Description should match.");
+
+            float[] originalValues = original.GetValues();
+            float[] restoredValues = restored.GetValues();
+
+            Assert.AreEqual(originalValues.Length, restoredValues.Length, "Values length should match.");
+            for (int i = 0; i < originalValues.Length; i++)
+                Assert.AreEqual(originalValues[i], restoredValues[i], 0.0001f, $"Value {i} should match.");
+
+            // sanity check on LogicTransfer
+            var origLogic = original.LogicTransfer();
+            var restoredLogic = restored.LogicTransfer();
+            Assert.AreEqual(origLogic.Count, restoredLogic.Count, "LogicTransfer should have same param count.");
+
+            foreach (var kvp in origLogic)
+                Assert.AreEqual(kvp.Value, restoredLogic[kvp.Key], 0.0001f, $"LogicTransfer param {kvp.Key} should match.");
         }
 
         /// <summary>

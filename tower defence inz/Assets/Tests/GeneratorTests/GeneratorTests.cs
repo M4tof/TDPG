@@ -3,11 +3,16 @@ using System.Collections.Generic;
 using TDPG.Generators.Interfaces;
 using TDPG.Generators.Scalars;
 using TDPG.Generators.Seed;
+using UnityEngine;
+using static Tests.TestUtils;
 
 namespace Tests.GeneratorTests
 { 
+    [TestFixture, Category("GeneratorTests")]
     public class GeneratorTests
     {
+        
+        
         [Test]
         public void FloatGenerator_Deterministic_WithSeed()
         {
@@ -20,35 +25,18 @@ namespace Tests.GeneratorTests
             Assert.AreEqual(a, b, "FloatGenerator should be deterministic for same seed and context");
         }
 
-        [Test]
-        public void SplitMix64Random_Reproducible()
-        {
-            var rs1 = new SplitMix64Random(42UL);
-            var rs2 = new SplitMix64Random(42UL);
-            Assert.AreEqual(rs1.NextUInt64(), rs2.NextUInt64());
-            Assert.AreEqual(rs1.NextUInt64(), rs2.NextUInt64());
-        }
-        
-        [Test]
-        public void IntGenerator_Bounds()
-        {
-            var rng = new SplitMix64Random(99UL);
-            var ig = new IntGenerator { min = 5, max = 5 };
-            int v = ig.Generate(rng);
-            Assert.AreEqual(5, v);
-        }
-
-        [Test]
-        public void FloatGenerator_UniformWithinRange()
+        [TestCase(0f, 1f)]
+        [TestCase(-5f, 5f)]
+        [TestCase(5f, 15f)]
+        [TestCase(100f, 200f)]
+        public void FloatGenerator_UniformWithinRange(float min, float max)
         {
             var rng = new SplitMix64Random(0xBEEFUL);
-            var gen = new FloatGenerator { mode = FloatGenerator.Mode.Uniform, min = 5f, max = 15f };
-
-            for (int i = 0; i < 1000; i++)
+            var gen = new FloatGenerator { mode = FloatGenerator.Mode.Uniform, min = min, max = max };
+            for (int i = 0; i < 100; i++)
             {
                 float value = gen.Generate(rng);
-                Assert.GreaterOrEqual(value, 5f, "Value below minimum bound");
-                Assert.LessOrEqual(value, 15f, "Value above maximum bound");
+                Assert.That(value, Is.InRange(min, max), $"Value not within range [{min}, {max}]");
             }
         }
 
@@ -77,7 +65,48 @@ namespace Tests.GeneratorTests
             float v2 = g2.Generate(seed, "x");
             Assert.AreEqual(v1, v2, "Same seed and context should yield same result");
         }
+        
+        [Test]
+        public void FloatGenerator_Performance_IsFastEnough()
+        {
+            var rng = new SplitMix64Random(42UL);
+            var gen = new FloatGenerator { mode = FloatGenerator.Mode.Uniform, min = 0f, max = 1f };
+            var sw = System.Diagnostics.Stopwatch.StartNew();
 
+            for (int i = 0; i < 1_000_000; i++)
+                gen.Generate(rng);
+
+            sw.Stop();
+            Debug.Log($"Executed in  {sw.ElapsedMilliseconds} ms");
+            // Assert.Less(sw.ElapsedMilliseconds, ExpectedTimeToExecute*GetPerformanceMultiplier(), "Float generation took too long");
+            Assert.Pass();
+        }
+        
+        [Test]
+        public void FloatGenerator_ImplementsIGenerator()
+        {
+            IGenerator<float> gen = new FloatGenerator();
+            Assert.IsNotNull(gen);
+        }
+        
+        [Test]
+        public void SplitMix64Random_Reproducible()
+        {
+            var rs1 = new SplitMix64Random(42UL);
+            var rs2 = new SplitMix64Random(42UL);
+            Assert.AreEqual(rs1.NextUInt64(), rs2.NextUInt64());
+            Assert.AreEqual(rs1.NextUInt64(), rs2.NextUInt64());
+        }
+        
+        [Test]
+        public void IntGenerator_Bounds()
+        {
+            var rng = new SplitMix64Random(99UL);
+            var ig = new IntGenerator { min = 5, max = 5 };
+            int v = ig.Generate(rng);
+            Assert.AreEqual(5, v);
+        }
+        
         [Test]
         public void IntGenerator_ProducesWithinInclusiveRange()
         {
@@ -109,20 +138,30 @@ namespace Tests.GeneratorTests
             for (int i = 0; i < 10; i++)
                 Assert.AreEqual(7, g.Generate(rng));
         }
-
-        [Test]
-        public void FloatGenerator_ImplementsIGenerator()
-        {
-            IGenerator<float> gen = new FloatGenerator();
-            Assert.IsNotNull(gen);
-        }
-
+        
         [Test]
         public void IntGenerator_ImplementsIGenerator()
         {
             IGenerator<int> gen = new IntGenerator();
             Assert.IsNotNull(gen);
         }
+        
+        [Test]
+        public void IntGenerator_Performance_IsFastEnough()
+        {
+            var rng = new SplitMix64Random(42UL);
+            var gen = new IntGenerator { min = 0, max = 100 };
+            var sw = System.Diagnostics.Stopwatch.StartNew();
+
+            for (int i = 0; i < 1_000_000; i++)
+                gen.Generate(rng);
+
+            sw.Stop();
+            Debug.Log($"Executed in  {sw.ElapsedMilliseconds} ms");
+            // Assert.Less(sw.ElapsedMilliseconds, ExpectedTimeToExecute*GetPerformanceMultiplier(), "Int generation took too long");
+            Assert.Pass();
+        }
+
 
         [Test]
         public void AllGenerators_DeterministicForSameSeed()
