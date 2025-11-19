@@ -61,6 +61,7 @@ public class PlayerInput : MonoBehaviour
         {
             mousePosition = Mouse.current.position.ReadValue();
             Vector3 worldMousePosition = mainCamera.ScreenToWorldPoint(mousePosition);
+            GridManager.Instance.OnMouseClick(context);
             if (!inMenu)
             {
                 projectileSpawner.Shoot(transform.position, worldMousePosition);
@@ -85,7 +86,7 @@ public class PlayerInput : MonoBehaviour
                 return;
             }
             buildingMenu.SwitchBuildingPanel();
-            mainCamera.GetComponent<CameraController>().SetDynamicCameraMovement(!buildingMenu.GetIsActive());
+            mainCamera.GetComponent<CameraController>().SetDynamicCameraMovement(!buildingMenu.GetIsActive(),false);
             inMenu = !inMenu;
         }
     }
@@ -121,19 +122,26 @@ public class PlayerInput : MonoBehaviour
             {
                 return;
             }
+            CameraController cameraController = mainCamera.GetComponent<CameraController>();
+            if (cameraController == null)
+            {
+                return;
+            }
             if (inMap)
             {
-                mainCamera.GetComponent<CameraController>().SetStaticCamera(false);
+                cameraController.SetStaticCamera(false);
                 if (!buildingMenu.GetIsActive())
                 {
-                    mainCamera.GetComponent<CameraController>().SetDynamicCameraMovement(true);
+                    mainCamera.GetComponent<CameraController>().SetDynamicCameraMovement(true,true);
+                    cameraController.ZoomIn();
                 }
 
                 inMap = false;
                 return;
             }
-            mainCamera.GetComponent<CameraController>().SetStaticCamera(true);
-            mainCamera.GetComponent<CameraController>().SetDynamicCameraMovement(false);
+            cameraController.SetStaticCamera(true);
+            cameraController.SetDynamicCameraMovement(false);
+            cameraController.ZoomOut();
             inMap = true;
         }
     }

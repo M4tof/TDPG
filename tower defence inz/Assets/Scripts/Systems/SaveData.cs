@@ -1,5 +1,6 @@
 using TDPG.Generators.Seed;
-
+using System.Collections.Generic;
+using UnityEngine;
 // Data collected from the ResourceSystem
 public class ResourceSaveData
 {
@@ -21,7 +22,20 @@ public class ElementSaveData
 
 public class TurretSaveData
 {
-    
+    public int Id;
+    public Vector2 TileSize;
+    public float Multiplyer;
+    public string SpriteName;
+}
+
+public class GridSaveData
+{
+    public int Width;
+    public int Height;
+    public float CellSize;
+    public int[,] Grid;
+    public Grid.TileType[,] TypeGrid;
+    public int[,] BuildingGrid;
 }
 
 // The master data class that holds all saved data
@@ -35,5 +49,6 @@ public class GameSaveData
     
     public ResourceSaveData Resources;
     public ElementSaveData Elements;
-    public TurretSaveData Turrets;
+    public List<TurretSaveData> Turrets;
+    public GridSaveData GData;
 }

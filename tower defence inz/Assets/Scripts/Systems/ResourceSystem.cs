@@ -55,6 +55,8 @@ public class ResourceSystem : MonoBehaviour
             }
         }
 
+        // TODO: check availble func
+
         public void Update()
         {
             float currVal = value;
@@ -124,7 +126,7 @@ public class ResourceSystem : MonoBehaviour
             Debug.Log("ResourceSystem created and set to not destroy on load.");
 
             money = new Resource(200f, 4000f, 2f, false, onMoneyChange);
-            mana = new Resource(400f, 400f, 0.5f, true, onManaChange);
+            mana = new Resource(400f, 400f, 0.0f, true, onManaChange);
             updateList = new List<Resource>();
             updateList.Add(money);
             updateList.Add(mana);

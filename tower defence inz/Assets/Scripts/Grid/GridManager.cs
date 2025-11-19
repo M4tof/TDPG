@@ -3,20 +3,40 @@ using UnityEngine.InputSystem;
 
 public class GridManager : MonoBehaviour
 {
+
+    public static GridManager Instance { get; set; }
     [Header("Required elements")]
     [SerializeField] private Camera mainCamera;
-    
+
     [Header("Parameters")]
     [SerializeField] private int width = 10;
     [SerializeField] private int height = 10;
     [SerializeField] private float cellSize = 8;
-    
+
     private Grid grid;
 
+    void Awake()
+    {
+        // Singleton pattern to ensure only one instance exists
+        if (Instance != null && Instance != this)
+        {
+            // If another GameManager already exists, destroy this one
+            Destroy(gameObject);
+            Debug.LogWarning("Duplicate GridManager destroyed. Only one instance allowed.");
+        }
+        else
+        {
+            // If this is the first GameManager, make it the instance
+            Instance = this;
+            // Prevents the GameObject from being destroyed when reloading a scene
+            DontDestroyOnLoad(gameObject);
+            Debug.Log("GridManager created and set to not destroy on load.");
+        }
+    }
     void Start()
     {
-        grid = new Grid(width, height,cellSize);
-        mainCamera.GetComponent<CameraController>().SetStaticCameraPosition(new Vector2(cellSize*width/2,cellSize*height/2));
+        grid = new Grid(width, height, cellSize);
+        mainCamera.GetComponent<CameraController>().SetStaticCameraPosition(new Vector2(cellSize * width / 2, cellSize * height / 2));
     }
 
     public void OnMouseClick(InputAction.CallbackContext context)
@@ -29,13 +49,13 @@ public class GridManager : MonoBehaviour
             grid.PrintGridCell(worldMousePosition);
         }
     }
-    
+
     //Return tile postition on grid
     public Vector2 GetGridTilePosition(Vector3 worldPosition)
     {
         return grid.GetXY(worldPosition);
     }
-    
+
     //Return tile world postition on grid
     public Vector2 GetGridWorldTilePosition(Vector3 worldPosition)
     {
@@ -55,7 +75,7 @@ public class GridManager : MonoBehaviour
 
         return true;
     }
-    
+
     //Check if world point is on Grid
     public bool IsTileOnGrid(Vector3 position)
     {
@@ -75,14 +95,14 @@ public class GridManager : MonoBehaviour
         {
             for (int y = 0; y < TurretSize.y; y++)
             {
-                Vector3Int tile = new Vector3Int(firstTile.x + x, firstTile.y + y,0);
+                Vector3Int tile = new Vector3Int(firstTile.x + x, firstTile.y + y, 0);
                 if (!IsTileOnGrid(tile))
                 {
                     Debug.Log($"Tile {tile} Out of Grid");
                     return false;
                 }
 
-                if (grid.GetTileType(tile.x,tile.y) != Grid.TileType.EMPTY)
+                if (grid.GetTileType(tile.x, tile.y) != Grid.TileType.EMPTY)
                 {
                     Debug.Log($"Tile Blocked");
                     return false;
@@ -101,6 +121,7 @@ public class GridManager : MonoBehaviour
         }
         Vector2Int firstTile = grid.GetXY(worldPosition);
         Vector2 turretSize = turretBase.GetTileSize();
+        int turretId = turretBase.GetId();
         //Validation
         if (!CanPlaceTurret(worldPosition, turretSize))
         {
@@ -114,13 +135,14 @@ public class GridManager : MonoBehaviour
                 for (int y = 0; y < turretSize.y; y++)
                 {
                     Vector2Int tile = new Vector2Int(firstTile.x + x, firstTile.y + y);
-                    grid.SetBuilding(tile.x,tile.y,turret);
-                    grid.SetTileType(tile.x,tile.y,Grid.TileType.BUILDING);
+                    grid.SetBuilding(tile.x, tile.y, turret);
+                    grid.SetTileType(tile.x, tile.y, Grid.TileType.BUILDING);
+                    grid.SetTurretId(tile.x, tile.y, turretId);
                 }
             }
         }
     }
-    
+
     void OnValidate()
     {
         if (mainCamera == null)
@@ -132,5 +154,10 @@ public class GridManager : MonoBehaviour
     public Grid GetCurrentGrid()
     {
         return grid;
+    }
+
+    public void SetCurrentGrid(Grid g)
+    {
+        grid = g;
     }
 }

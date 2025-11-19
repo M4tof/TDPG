@@ -4,22 +4,35 @@ public class TurretBase : MonoBehaviour
 {
 
     [Header("Parameters")] 
+    [SerializeField] private int id;    //TODO Serialize is only for testing
     [SerializeField] private Vector2 tileSize = new Vector2(1, 1);
-    [SerializeField] private float multiplayer = 5.0f;
+    [SerializeField] private float multiplyer = 5.0f;
+    
     
     [SerializeField] private GameObject spriteObject;
     
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        spriteObject.transform.localPosition = new Vector2(tileSize.x * multiplayer, tileSize.x * multiplayer);
+        spriteObject.transform.localPosition = new Vector2(tileSize.x * multiplyer, tileSize.x * multiplyer);
     }
 
+    //Set Id
+    public void SetId(int id)
+    {
+        this.id = id;
+    }
+    
+    public int GetId()
+    {
+        return this.id;
+    }
+    
     //Set TileSize
     public void SetTileSize(Vector2 tileSize)
     {
         this.tileSize = tileSize;
-        spriteObject.transform.localPosition = new Vector2(tileSize.x * multiplayer, tileSize.x * multiplayer);
+        spriteObject.transform.localPosition = new Vector2(tileSize.x * multiplyer, tileSize.x * multiplyer);
     }
 
     //Get tile size
@@ -28,17 +41,17 @@ public class TurretBase : MonoBehaviour
         return tileSize;
     }
 
-    //Set Multiplayer
-    public void SetMultiplayer(float multiplayer)
+    //Set multiplyer
+    public void SetMultiplyer(float multiplyer)
     {
-        this.multiplayer = multiplayer;
-        spriteObject.transform.localPosition = new Vector2(tileSize.x * multiplayer, tileSize.x * multiplayer);
+        this.multiplyer = multiplyer;
+        spriteObject.transform.localPosition = new Vector2(tileSize.x * multiplyer, tileSize.x * multiplyer);
     }
     
-    //Get Multiplayer
-    public float GetMultiplayer()
+    //Get multiplyer
+    public float GetMultiplyer()
     {
-        return multiplayer;
+        return multiplyer;
     }
 
     public void SetSprite(Sprite sprite)

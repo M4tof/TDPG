@@ -17,6 +17,11 @@ public class TurretSpawner : MonoBehaviour
     private GameObject turretToSpawn;
     private bool canSpawnTurret = true;
 
+    void Start()
+    {
+        gridManager = GridManager.Instance;
+    }
+
     //Set Turret to Spawn
     public void SetTurretToSpawn(GameObject turretToSpawn)
     {
@@ -35,8 +40,9 @@ public class TurretSpawner : MonoBehaviour
             TurretVisualizer.gameObject.SetActive(false);
             return;
         }
+        TurretVisualizer.SetId(turret.GetId());
         TurretVisualizer.SetTileSize(turret.GetTileSize());
-        TurretVisualizer.SetMultiplayer(turret.GetMultiplayer());
+        TurretVisualizer.SetMultiplyer(turret.GetMultiplyer());
         TurretVisualizer.SetSprite(turret.GetSprite());
     }
 

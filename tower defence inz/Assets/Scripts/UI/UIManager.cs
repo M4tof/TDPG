@@ -24,14 +24,13 @@ public class UIManager : MonoBehaviour
             // Prevents the GameObject from being destroyed when reloading a scene
             DontDestroyOnLoad(gameObject);
             Debug.Log("UIManager created and set to not destroy on load.");
-            GM= GameManager.Instance;
         }
     }
     
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        
+        GM = GameManager.Instance;
     }
 
     // Update is called once per frame
@@ -51,10 +50,14 @@ public class UIManager : MonoBehaviour
     {
         Debug.Log($"Load Pressed, loading {caller.SavePath}");
         // TODO: Implement loading logic here
-        GM.LoadGame(caller.SavePath);
-        GM.SetSlot(caller.SlotNumber);
-        Debug.Break();
+        // GM.LoadGame(caller.SavePath);
+        // GM.SetSlot(caller.SlotNumber);
+        // Debug.Break();
+
+        GM.PendingLoadPath = caller.SavePath;
+        GM.PendingLoadSlot = caller.SlotNumber;
         SceneManager.LoadScene("MainGame");
+
     }
 
     public void OnSavePress(SaveLoadButton caller)
