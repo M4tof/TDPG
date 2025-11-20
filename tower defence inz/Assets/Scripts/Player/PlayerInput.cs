@@ -61,7 +61,7 @@ public class PlayerInput : MonoBehaviour
         {
             mousePosition = Mouse.current.position.ReadValue();
             Vector3 worldMousePosition = mainCamera.ScreenToWorldPoint(mousePosition);
-            GridManager.Instance.OnMouseClick(context);
+            TDPG.Templates.Grid.GridManager.Instance.OnMouseClick(context);
             if (!inMenu)
             {
                 projectileSpawner.Shoot(transform.position, worldMousePosition);
@@ -117,7 +117,6 @@ public class PlayerInput : MonoBehaviour
     {
         if (context.performed)
         {
-            Debug.Log("MMMMMMM");
             if (pauseMenu.GetMenuActive())
             {
                 return;

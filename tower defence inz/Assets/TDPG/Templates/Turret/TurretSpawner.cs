@@ -36,7 +36,7 @@ namespace TDPG.Templates.Turret
                 return;
             }
             TurretVisualizer.SetTileSize(turret.GetTileSize());
-            TurretVisualizer.SetMultiplayer(turret.GetMultiplayer());
+            TurretVisualizer.SetMultiplier(turret.GetMultiplier());
             TurretVisualizer.SetSprite(turret.GetSprite());
         }
 

@@ -96,7 +96,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1221148439404082517}
-  - component: {fileID: 6215233159336792188}
+  - component: {fileID: 3729861448306260778}
   m_Layer: 0
   m_Name: NOTTurret 1
   m_TagString: Untagged
@@ -120,7 +120,7 @@ Transform:
   - {fileID: 6950241722753773571}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &6215233159336792188
+--- !u!114 &3729861448306260778
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -129,10 +129,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 7408951562071587175}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8413f4eec9cf7e046a89191a3475d7b7, type: 3}
+  m_Script: {fileID: 11500000, guid: c3bcf3f3db0138e4bae993a748d2d360, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   id: 1
   tileSize: {x: 4, y: 4}
-  multiplyer: 2.5
+  multiplayer: 2.5
   spriteObject: {fileID: 5591873773380164164}

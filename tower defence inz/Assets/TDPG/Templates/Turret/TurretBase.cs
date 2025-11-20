@@ -6,6 +6,7 @@ namespace TDPG.Templates.Turret
     {
 
         [Header("Parameters")] 
+        [SerializeField] private int id;    //TODO Serialize is only for testing
         [SerializeField] private Vector2 tileSize = new Vector2(1, 1);
         [SerializeField] private float multiplayer = 5.0f;
     
@@ -17,6 +18,17 @@ namespace TDPG.Templates.Turret
             spriteObject.transform.localPosition = new Vector2(tileSize.x * multiplayer, tileSize.x * multiplayer);
         }
 
+        //Set Id
+        public void SetId(int id)
+        {
+            this.id = id;
+        }
+    
+        public int GetId()
+        {
+            return this.id;
+        }
+        
         //Set TileSize
         public void SetTileSize(Vector2 tileSize)
         {
@@ -31,14 +43,14 @@ namespace TDPG.Templates.Turret
         }
 
         //Set Multiplayer
-        public void SetMultiplayer(float multiplayer)
+        public void SetMultiplier(float multiplayer)
         {
             this.multiplayer = multiplayer;
             spriteObject.transform.localPosition = new Vector2(tileSize.x * multiplayer, tileSize.x * multiplayer);
         }
     
         //Get Multiplayer
-        public float GetMultiplayer()
+        public float GetMultiplier()
         {
             return multiplayer;
         }

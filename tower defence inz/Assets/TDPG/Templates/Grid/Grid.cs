@@ -7,12 +7,12 @@ namespace TDPG.Templates.Grid
 {
     public class Grid
     {
-        private int width;
-        private int height;
-        private float cellSize;
-        private int[,] grid;
-        private TileType[,] typeGrid;
-        private GameObject[,] buildingsGrid;
+        public int width;
+        public int height;
+        public float cellSize;
+        public int[,] grid;
+        public TileType[,] typeGrid;
+        public int[,] turretId {get; set;}
     
         private IntGenerator gridIntXRand;
         private IntGenerator gridIntYRand;
@@ -37,14 +37,13 @@ namespace TDPG.Templates.Grid
         
             grid = new int[width, height];
             typeGrid = new TileType[width, height];
-            buildingsGrid = new GameObject[width, height];
 
             for (int x = 0; x < grid.GetLength(0); x++)
             {
                 for (int y = 0; y < grid.GetLength(1); y++)
                 {
                     typeGrid[x,y] = TileType.EMPTY;
-                    buildingsGrid[x, y] = null;
+                    //buildingsGrid[x, y] = null;
                     Debug.Log(x+":"+y);
                     Debug.DrawLine(GetWorldPosition(x,y),GetWorldPosition(x,y+1),Color.yellow,100f);
                     Debug.DrawLine(GetWorldPosition(x,y),GetWorldPosition(x+1,y),Color.yellow,100f);
@@ -123,27 +122,6 @@ namespace TDPG.Templates.Grid
             return typeGrid[x, y];
         }
     
-        //Set Building based on world position
-        public void SetBuilding(Vector3 worldPosition, GameObject building)
-        {
-            Vector2Int position;
-            position = GetXY(worldPosition);
-            SetBuilding(position.x, position.y, building);
-        }
-    
-        //Set Building based on tile position
-        public void SetBuilding(int x, int y, GameObject building)
-        {
-            buildingsGrid[x, y] = building;
-        }
-    
-        //return building
-        public GameObject GetBuilding(Vector3 worldPosition)
-        {
-            Vector2Int position = GetXY(worldPosition);
-            return buildingsGrid[position.x, position.y];
-        }
-    
         //Get Tile based on given position
         public Vector2Int GetXY(Vector3 worldPosition)
         {
@@ -157,14 +135,14 @@ namespace TDPG.Templates.Grid
         }
     
         //Print in console grid tile on given position
-        public void PrintGridCell(Vector3 worldPosition)
+        public void PrintGridCell(Vector3 worldPosition, string buildingInfo)
         {
             Vector2Int position = GetXY(worldPosition);
             if (position.x < 0 || position.y < 0 || position.x >= width || position.y >= height)
             {
                 return;
             }
-            Debug.Log($"Tile: {position} Type: {typeGrid[position.x, position.y]} Building: {buildingsGrid[position.x, position.y]}");
+            Debug.Log($"Tile: {position} Type: {typeGrid[position.x, position.y]} {buildingInfo}");
         }
     
     

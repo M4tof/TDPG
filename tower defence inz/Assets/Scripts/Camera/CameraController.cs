@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 using System.Collections;
+using TDPG.Templates.Grid;
 
 [RequireComponent(typeof(Camera))]
 public class CameraController : MonoBehaviour
@@ -14,7 +15,9 @@ public class CameraController : MonoBehaviour
     [SerializeField] Vector2 displacementMultiplayer = new Vector2(0.15f,0.3f);
     
     [Header("Camera Point")] 
+    [SerializeField] private Vector2 centerGrid;
     [SerializeField] private Vector2 staticCameraPosition;
+
     
     [Header("Zooming")]
     [SerializeField] private float normalZoom = 10f;
@@ -25,6 +28,7 @@ public class CameraController : MonoBehaviour
     void Start()
     {
         normalZoom = Camera.main.orthographicSize;
+        centerGrid = GridManager.Instance.GetCenterGrid();
     }
     
     void Update()
@@ -42,7 +46,6 @@ public class CameraController : MonoBehaviour
         if (stickToPoint)
         {
             return;
-            SetCameraPositionBasedOnCenterMap();
         }
         SetInstanltyCameraPostionBasedOnPlayerPosition();
     }
@@ -77,7 +80,13 @@ public class CameraController : MonoBehaviour
 
     public void SetCameraPositionBasedOnCenterMap(float duration = 1.0f)
     {
-        StartCoroutine(MoveCoroutine(new Vector3(staticCameraPosition.x, staticCameraPosition.y, -10f),duration));
+        Debug.Log($"Center {centerGrid}");
+        StartCoroutine(MoveCoroutine(new Vector3(centerGrid.x, centerGrid.y, -10f),duration));
+    }
+    
+    public void SetCameraPosition(float duration = 1.0f)
+    {
+        StartCoroutine(MoveCoroutine(new Vector3(staticCameraPosition.x,staticCameraPosition.y, -10f),duration));
     }
 
     //Change mode of camera
@@ -136,7 +145,6 @@ public class CameraController : MonoBehaviour
         cameraTransition = true;
         Vector3 startPosition = transform.position;
         float elapsed = 0f;
-        Vector3 velocity = Vector3.zero;
         while (elapsed < duration)
         {
             transform.position = Vector3.Lerp(startPosition, target, elapsed / duration);
