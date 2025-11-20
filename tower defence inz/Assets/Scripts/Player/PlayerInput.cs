@@ -117,7 +117,6 @@ public class PlayerInput : MonoBehaviour
     {
         if (context.performed)
         {
-            Debug.Log("MMMMMMM");
             if (pauseMenu.GetMenuActive())
             {
                 return;

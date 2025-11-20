@@ -87,7 +87,7 @@ public class GameManager : MonoBehaviour
     public void GetGrid()
     {
 
-        G = TDPG.Templates.Grid.GridManager.Instance.GetCurrentGrid();
+        G = GridManager.Instance.GetCurrentGrid();
     }
     public void SaveGame(string path)
     {

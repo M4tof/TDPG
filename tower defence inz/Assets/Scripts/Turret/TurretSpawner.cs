@@ -16,7 +16,7 @@ public class TurretSpawner : MonoBehaviour
     [Tooltip("It would show selected turret on grid")]
     [SerializeField] TurretBase TurretVisualizer;
     
-    [SerializeField] private GameObject turretToSpawn;
+    private GameObject turretToSpawn;
     private bool canSpawnTurret = true;
 
     void Start()

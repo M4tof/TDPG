@@ -60,6 +60,7 @@ namespace TDPG.Templates.Grid
                     buildingsGrid[x, y] = null;
                 }
             }
+            //Set Camera
         }
 
         public void OnMouseClick(InputAction.CallbackContext context)
@@ -168,13 +169,18 @@ namespace TDPG.Templates.Grid
         }
     
         
-        internal int GetWidth()
+        public int GetWidth()
         {
             return width;
         }
-        internal int GetHeight()
+        public int GetHeight()
         {
             return height;
+        }
+        
+        public Vector3 GetCenterGrid()
+        {
+            return new Vector3(width * cellSize / 2, width * cellSize / 2, -10f);
         }
 
         internal Grid.TileType GetTileType(Vector3 worldPosition)
