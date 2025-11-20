@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class Turret : TurretBase
+public class TurretOld : TurretBaseOld
 {
     /*[Header("Parameters")]
     [SerializeField] private Vector2 tileSize = new Vector2(1, 1);

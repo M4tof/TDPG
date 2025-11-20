@@ -6,6 +6,7 @@ using TDPG.Generators.Scalars;
 using System.IO;
 using System.Text;
 using System.Collections.Generic;
+using TDPG.Templates.Grid;
 
 public class GameManager : MonoBehaviour
 {
@@ -18,7 +19,7 @@ public class GameManager : MonoBehaviour
 
     public int Slot;
 
-    public Grid G;
+    public TDPG.Templates.Grid.Grid G;
 
     public int PendingLoadSlot;
     public string PendingLoadPath;
@@ -86,7 +87,7 @@ public class GameManager : MonoBehaviour
     public void GetGrid()
     {
 
-        G = GridManager.Instance.GetCurrentGrid();
+        G = TDPG.Templates.Grid.GridManager.Instance.GetCurrentGrid();
     }
     public void SaveGame(string path)
     {
@@ -140,7 +141,7 @@ public class GameManager : MonoBehaviour
                 GSeed = data.GS;
                 RSInstance.LoadData(data.Resources);
                 // TODO: implement rest of the systems
-                G = new Grid(data.GData.Width, data.GData.Height, data.GData.CellSize);
+                G = new TDPG.Templates.Grid.Grid(data.GData.Width, data.GData.Height, data.GData.CellSize);
                 G.grid = data.GData.Grid;
                 G.typeGrid = data.GData.TypeGrid;
                 G.turretId = data.GData.BuildingGrid;

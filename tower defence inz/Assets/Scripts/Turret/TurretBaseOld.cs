@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class TurretBase : MonoBehaviour
+public class TurretBaseOld : MonoBehaviour
 {
 
     [Header("Parameters")] 
@@ -49,7 +49,7 @@ public class TurretBase : MonoBehaviour
     }
     
     //Get multiplyer
-    public float GetMultiplyer()
+    public float GetMultipler()
     {
         return multiplyer;
     }

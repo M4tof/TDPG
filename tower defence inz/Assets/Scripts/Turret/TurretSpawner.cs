@@ -2,6 +2,8 @@ using System;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using TDPG.Templates.Grid;
+using TDPG.Templates.Turret;
 
 public class TurretSpawner : MonoBehaviour
 {
@@ -14,7 +16,7 @@ public class TurretSpawner : MonoBehaviour
     [Tooltip("It would show selected turret on grid")]
     [SerializeField] TurretBase TurretVisualizer;
     
-    private GameObject turretToSpawn;
+    [SerializeField] private GameObject turretToSpawn;
     private bool canSpawnTurret = true;
 
     void Start()
@@ -23,10 +25,10 @@ public class TurretSpawner : MonoBehaviour
     }
 
     //Set Turret to Spawn
-    public void SetTurretToSpawn(GameObject turretToSpawn)
+    public void SetTurretToSpawn(GameObject newTurret)
     {
         //Set turret
-        this.turretToSpawn = turretToSpawn;
+        turretToSpawn = newTurret;
         if (turretToSpawn == null)
         {
             TurretVisualizer.gameObject.SetActive(false);
@@ -34,7 +36,7 @@ public class TurretSpawner : MonoBehaviour
         }
         //Set copy parameters from turret to spawn to preview
         TurretVisualizer.gameObject.SetActive(true);
-        TurretBase turret = this.turretToSpawn.GetComponent<TurretBase>();
+        TurretBase turret = turretToSpawn.GetComponent<TurretBase>();
         if (turret == null)
         {
             TurretVisualizer.gameObject.SetActive(false);
@@ -42,7 +44,7 @@ public class TurretSpawner : MonoBehaviour
         }
         TurretVisualizer.SetId(turret.GetId());
         TurretVisualizer.SetTileSize(turret.GetTileSize());
-        TurretVisualizer.SetMultiplyer(turret.GetMultiplyer());
+        TurretVisualizer.SetMultiplier(turret.GetMultiplier());
         TurretVisualizer.SetSprite(turret.GetSprite());
     }
 

@@ -1,6 +1,7 @@
 using TDPG.Generators.Seed;
 using System.Collections.Generic;
 using UnityEngine;
+using TDPG.Templates.Grid;
 // Data collected from the ResourceSystem
 public class ResourceSaveData
 {
@@ -34,7 +35,7 @@ public class GridSaveData
     public int Height;
     public float CellSize;
     public int[,] Grid;
-    public Grid.TileType[,] TypeGrid;
+    public TDPG.Templates.Grid.Grid.TileType[,] TypeGrid;
     public int[,] BuildingGrid;
 }
 

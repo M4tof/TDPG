@@ -3,8 +3,9 @@ using UnityEngine;
 
 
 
-public class Grid
+public class GridOld
 {
+    /*
     public int width{get; set;}
     public int height{get; set;}
     public float cellSize {get; set;}
@@ -177,5 +178,5 @@ public class Grid
             return;
         }
         Debug.Log($"Tile: {position} Type: {typeGrid[position.x, position.y]} Building: {buildingsGrid[position.x, position.y]} Id: {turretId[position.x, position.y]}");
-    }
+    }*/
 }

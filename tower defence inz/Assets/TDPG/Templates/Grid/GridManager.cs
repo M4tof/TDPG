@@ -6,6 +6,8 @@ namespace TDPG.Templates.Grid
 {
     public class GridManager : MonoBehaviour
     {
+        public static GridManager Instance { get; set; }
+        
         [Header("Required elements")]
         [SerializeField] private Camera mainCamera;
     
@@ -18,13 +20,28 @@ namespace TDPG.Templates.Grid
         [SerializeField] private GridDebugFiller debugFiller;
         
         private Grid grid;
+        private GameObject[,] buildingsGrid;
         
         public Grid GetGrid() => grid;
         public float CellSize => cellSize;
 
         void Awake()
         {
-            grid = new Templates.Grid.Grid(width, height, cellSize);
+            // Singleton pattern to ensure only one instance exists
+            if (Instance != null && Instance != this)
+            {
+                // If another GameManager already exists, destroy this one
+                Destroy(gameObject);
+                Debug.LogWarning("Duplicate GridManager destroyed. Only one instance allowed.");
+            }
+            else
+            {
+                // If this is the first GameManager, make it the instance
+                Instance = this;
+                // Prevents the GameObject from being destroyed when reloading a scene
+                DontDestroyOnLoad(gameObject);
+                Debug.Log("GridManager created and set to not destroy on load.");
+            }
         }
 
         void Start()
@@ -33,6 +50,15 @@ namespace TDPG.Templates.Grid
             if (debugFiller != null)
             {
                 debugFiller.Initialize(this);
+            }
+            grid = new Grid(width, height, cellSize);
+            buildingsGrid = new GameObject[width, height];
+            for (int x = 0; x < buildingsGrid.GetLength(0); x++)
+            {
+                for (int y = 0; y < buildingsGrid.GetLength(1); y++)
+                {
+                    buildingsGrid[x, y] = null;
+                }
             }
         }
 
@@ -43,7 +69,7 @@ namespace TDPG.Templates.Grid
                 Vector3 mousePosition;
                 mousePosition = Mouse.current.position.ReadValue();
                 Vector3 worldMousePosition = mainCamera.ScreenToWorldPoint(mousePosition);
-                grid.PrintGridCell(worldMousePosition);
+                PrintGridCell(worldMousePosition);
             }
         }
     
@@ -111,9 +137,12 @@ namespace TDPG.Templates.Grid
 
         public void PlaceTurret(Vector3 worldPosition, GameObject turret)
         {
+            Debug.Log($"Place Turrets {turret}");
             TurretBase turretBase = turret.GetComponent<TurretBase>();
+            Debug.Log($"Turret Base {turretBase}");
             if (turretBase == null)
             {
+                Debug.Log("NULL Place Turrets");
                 return;
             }
             Vector2Int firstTile = grid.GetXY(worldPosition);
@@ -121,6 +150,7 @@ namespace TDPG.Templates.Grid
             //Validation
             if (!CanPlaceTurret(worldPosition, turretSize))
             {
+                Debug.Log("Can't Place Turrets");
                 return;
             }
             //Placing turret on grid
@@ -129,19 +159,14 @@ namespace TDPG.Templates.Grid
                 for (int y = 0; y < turretSize.y; y++)
                 {
                     Vector2Int tile = new Vector2Int(firstTile.x + x, firstTile.y + y);
-                    grid.SetBuilding(tile.x,tile.y,turret);
-                    grid.SetTileType(tile.x,tile.y,Templates.Grid.Grid.TileType.BUILDING);
+                    buildingsGrid[tile.x, tile.y] = turret;
+                    //grid.SetBuilding(tile.x,tile.y,turret);
+                    grid.SetTileType(tile.x,tile.y,Grid.TileType.BUILDING);
                 }
             }
+            Debug.Log("FINISH Place Turrets");
         }
     
-        void OnValidate()
-        {
-            if (mainCamera == null)
-            {
-                Debug.LogWarning("Main Camera is not assigned", this);
-            }
-        }
         
         internal int GetWidth()
         {
@@ -160,6 +185,56 @@ namespace TDPG.Templates.Grid
         internal void SetTileType(Vector3 worldPosition, Grid.TileType tileType)
         {
             grid.SetTileType(worldPosition,tileType);
+        }
+        
+        public Grid GetCurrentGrid()
+        {
+            return grid;
+        }
+
+        public void SetCurrentGrid(Grid g)
+        {
+            grid = g;
+        }
+        
+        //Set Building based on world position
+        public void SetBuilding(Vector3 worldPosition, GameObject building)
+        {
+            Vector2Int position;
+            position = grid.GetXY(worldPosition);
+            SetBuilding(position.x, position.y, building);
+        }
+    
+        //Set Building based on tile position
+        public void SetBuilding(int x, int y, GameObject building)
+        {
+            buildingsGrid[x, y] = building;
+        }
+    
+        //return building
+        public GameObject GetBuilding(Vector3 worldPosition)
+        {
+            Vector2Int position = grid.GetXY(worldPosition);
+            return buildingsGrid[position.x, position.y];
+        }
+        
+        public void PrintGridCell(Vector3 worldPosition)
+        {
+            Vector2Int position = grid.GetXY(worldPosition);
+            if (position.x < 0 || position.y < 0 || position.x >= width || position.y >= height)
+            {
+                return;
+            }
+            string buildingInfo = "Building: " + buildingsGrid[position.x, position.y];
+            grid.PrintGridCell(worldPosition,buildingInfo);
+        }
+        
+        void OnValidate()
+        {
+            if (mainCamera == null)
+            {
+                Debug.LogWarning("Main Camera is not assigned", this);
+            }
         }
     
     }

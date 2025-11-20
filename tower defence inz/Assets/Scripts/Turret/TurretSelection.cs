@@ -2,8 +2,8 @@ using UnityEngine;
 
 public class TurretSelection : MonoBehaviour
 {
-    [SerializeField] GameObject turretToSpawn;
-    [SerializeField] TurretSpawner turretSpawner;
+    [SerializeField] private GameObject turretToSpawn;
+    [SerializeField] private TurretSpawner turretSpawner;
 
     public void SelectTurret()
     {
