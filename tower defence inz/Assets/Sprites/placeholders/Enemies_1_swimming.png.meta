@@ -610,7 +610,26 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      Enemies_1_swimming_0: -2671257429481893525
+      Enemies_1_swimming_1: -3550847498801210457
+      Enemies_1_swimming_10: 5010933196376844944
+      Enemies_1_swimming_11: -5233955866603705564
+      Enemies_1_swimming_12: 8657025696092969889
+      Enemies_1_swimming_13: 2339291223181852071
+      Enemies_1_swimming_14: 3207788259468317178
+      Enemies_1_swimming_15: 214181784001447676
+      Enemies_1_swimming_16: 649803714998477030
+      Enemies_1_swimming_17: 515979876871406936
+      Enemies_1_swimming_18: -3910576529553072515
+      Enemies_1_swimming_2: 9058146033995080212
+      Enemies_1_swimming_3: 2587164920486832445
+      Enemies_1_swimming_4: -4540737324676906078
+      Enemies_1_swimming_5: 4703047427159840878
+      Enemies_1_swimming_6: 1309917255490026868
+      Enemies_1_swimming_7: -7494380200751630375
+      Enemies_1_swimming_8: 3242007473910579950
+      Enemies_1_swimming_9: -9104484451890727425
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

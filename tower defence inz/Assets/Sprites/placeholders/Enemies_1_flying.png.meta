@@ -610,7 +610,26 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      Enemies_1_flying_0: -3553440928420061528
+      Enemies_1_flying_1: 1503604686558004639
+      Enemies_1_flying_10: -2825451620494319619
+      Enemies_1_flying_11: -3318741822723415132
+      Enemies_1_flying_12: -5145399271805778201
+      Enemies_1_flying_13: -8732608858539784698
+      Enemies_1_flying_14: 5195319737836682794
+      Enemies_1_flying_15: 1291399616470259245
+      Enemies_1_flying_16: 5653938718960540630
+      Enemies_1_flying_17: 1259285536860268135
+      Enemies_1_flying_18: -6838071445686956154
+      Enemies_1_flying_2: -4246575289369101028
+      Enemies_1_flying_3: -2621568576146231129
+      Enemies_1_flying_4: -2483784346628342851
+      Enemies_1_flying_5: 6652662771300376520
+      Enemies_1_flying_6: -3887818670860356850
+      Enemies_1_flying_7: 3799821404714095596
+      Enemies_1_flying_8: -5066950210327481805
+      Enemies_1_flying_9: 8721306413231736071
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
