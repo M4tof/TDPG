@@ -183,10 +183,10 @@ TextureImporter:
       name: Enemies_1_walking_0
       rect:
         serializedVersion: 2
-        x: 6
-        y: 543
-        width: 804
-        height: 479
+        x: 7
+        y: 544
+        width: 799
+        height: 477
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -205,10 +205,10 @@ TextureImporter:
       name: Enemies_1_walking_1
       rect:
         serializedVersion: 2
-        x: 821
-        y: 921
-        width: 66
-        height: 69
+        x: 822
+        y: 922
+        width: 64
+        height: 67
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -227,10 +227,10 @@ TextureImporter:
       name: Enemies_1_walking_2
       rect:
         serializedVersion: 2
-        x: 939
-        y: 921
-        width: 66
-        height: 69
+        x: 940
+        y: 922
+        width: 64
+        height: 67
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -249,10 +249,10 @@ TextureImporter:
       name: Enemies_1_walking_3
       rect:
         serializedVersion: 2
-        x: 827
-        y: 836
-        width: 67
-        height: 71
+        x: 829
+        y: 838
+        width: 64
+        height: 67
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -271,10 +271,10 @@ TextureImporter:
       name: Enemies_1_walking_4
       rect:
         serializedVersion: 2
-        x: 944
-        y: 799
-        width: 66
-        height: 75
+        x: 945
+        y: 800
+        width: 64
+        height: 73
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -293,10 +293,10 @@ TextureImporter:
       name: Enemies_1_walking_5
       rect:
         serializedVersion: 2
-        x: 4
-        y: 271
-        width: 394
-        height: 251
+        x: 5
+        y: 272
+        width: 392
+        height: 249
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -315,10 +315,10 @@ TextureImporter:
       name: Enemies_1_walking_6
       rect:
         serializedVersion: 2
-        x: 428
-        y: 373
-        width: 151
-        height: 147
+        x: 429
+        y: 374
+        width: 149
+        height: 145
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -337,10 +337,10 @@ TextureImporter:
       name: Enemies_1_walking_7
       rect:
         serializedVersion: 2
-        x: 623
-        y: 373
-        width: 151
-        height: 147
+        x: 624
+        y: 374
+        width: 149
+        height: 145
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -359,10 +359,10 @@ TextureImporter:
       name: Enemies_1_walking_8
       rect:
         serializedVersion: 2
-        x: 804
-        y: 513
-        width: 102
-        height: 261
+        x: 805
+        y: 514
+        width: 100
+        height: 259
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -381,10 +381,10 @@ TextureImporter:
       name: Enemies_1_walking_9
       rect:
         serializedVersion: 2
-        x: 921
-        y: 496
-        width: 102
-        height: 277
+        x: 922
+        y: 497
+        width: 100
+        height: 275
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -403,10 +403,10 @@ TextureImporter:
       name: Enemies_1_walking_10
       rect:
         serializedVersion: 2
-        x: 498
-        y: 199
-        width: 262
-        height: 168
+        x: 499
+        y: 200
+        width: 260
+        height: 166
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -425,10 +425,10 @@ TextureImporter:
       name: Enemies_1_walking_11
       rect:
         serializedVersion: 2
-        x: 824
-        y: 279
-        width: 84
-        height: 191
+        x: 826
+        y: 281
+        width: 81
+        height: 188
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -447,10 +447,10 @@ TextureImporter:
       name: Enemies_1_walking_12
       rect:
         serializedVersion: 2
-        x: 919
-        y: 256
-        width: 101
-        height: 230
+        x: 920
+        y: 258
+        width: 98
+        height: 227
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -469,10 +469,10 @@ TextureImporter:
       name: Enemies_1_walking_13
       rect:
         serializedVersion: 2
-        x: 44
-        y: 19
-        width: 252
-        height: 158
+        x: 45
+        y: 20
+        width: 250
+        height: 156
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -491,10 +491,10 @@ TextureImporter:
       name: Enemies_1_walking_14
       rect:
         serializedVersion: 2
-        x: 339
-        y: 10
-        width: 243
-        height: 173
+        x: 341
+        y: 11
+        width: 240
+        height: 170
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -513,10 +513,10 @@ TextureImporter:
       name: Enemies_1_walking_15
       rect:
         serializedVersion: 2
-        x: 615
-        y: 38
-        width: 79
-        height: 128
+        x: 616
+        y: 39
+        width: 77
+        height: 126
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -535,10 +535,10 @@ TextureImporter:
       name: Enemies_1_walking_16
       rect:
         serializedVersion: 2
-        x: 726
-        y: 3
-        width: 166
-        height: 220
+        x: 727
+        y: 4
+        width: 164
+        height: 218
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -557,10 +557,10 @@ TextureImporter:
       name: Enemies_1_walking_17
       rect:
         serializedVersion: 2
-        x: 903
-        y: 111
-        width: 97
-        height: 104
+        x: 904
+        y: 112
+        width: 95
+        height: 102
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -579,10 +579,10 @@ TextureImporter:
       name: Enemies_1_walking_18
       rect:
         serializedVersion: 2
-        x: 896
-        y: 21
-        width: 124
-        height: 68
+        x: 897
+        y: 22
+        width: 122
+        height: 66
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -601,7 +601,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: c17341c626f3d79c39b2ef1444195671
     internalID: 0
     vertices: []
     indices: 
