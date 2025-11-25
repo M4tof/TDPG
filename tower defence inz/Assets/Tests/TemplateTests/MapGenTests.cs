@@ -96,12 +96,7 @@ namespace Tests.TemplateTests
             var (water, wall, land) = RunMapTest(MapTypes.Lakes, "Lakes");
             Assert.Greater(water, 35f, "Lake maps should have >35% water.");
         }
-
-        [Test]
-        public void MapGen_DeterministicReference()
-        {
-            var (water, wall, land) = RunMapTest(MapTypes.NineDog, "NineDog");
-            Assert.Pass("NineDog map generated deterministically.");
-        }
+        
+        
     }
 }

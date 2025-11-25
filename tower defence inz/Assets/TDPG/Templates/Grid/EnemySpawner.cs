@@ -47,6 +47,7 @@ public class EnemySpawner : MonoBehaviour
 
         // Convert tile => world position
         Vector3 worldPos = grid.GetWorldPosition(spawnCell.x, spawnCell.y);
+        worldPos.z = 10;
 
         // Spawn
         GameObject enemy = Instantiate(enemyPrefab, worldPos, Quaternion.identity);
