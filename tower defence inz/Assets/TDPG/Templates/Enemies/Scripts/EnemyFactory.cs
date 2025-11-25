@@ -1,4 +1,6 @@
 using UnityEngine;
+using TDPG.Generators.Seed;
+using TDPG.Generators.Scalars;
 
 public class EnemyFactory : MonoBehaviour
 {
@@ -42,7 +44,7 @@ public class EnemyFactory : MonoBehaviour
 
     void Init(GlobalSeed gs, int slot)
     {
-        EnemySeed = gs.NextSubSeed(InitializerFromData.QuickGenerate(slot));
+        EnemySeed = gs.NextSubSeed(InitializerFromDate.QuickGenerate(slot).ToString());
         Difficulty = 1f;
         Gen = new FloatGenerator { mode = FloatGenerator.Mode.Uniform, min = 1f, max = Difficulty };
     }
