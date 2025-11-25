@@ -1,4 +1,8 @@
+using System;
+using TDPG.Generators.Seed;
+using TDPG.Templates.Grid.MapGen;
 using TDPG.Templates.Turret;
+using static TDPG.Generators.Scalars.InitializerFromDate;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -15,7 +19,13 @@ namespace TDPG.Templates.Grid
         [SerializeField] private int width = 10;
         [SerializeField] private int height = 10;
         [SerializeField] private float cellSize = 8;
-    
+        
+        [Header("Map Generation")]
+        [SerializeField] private MapGenerator mapGenerator;
+        [SerializeField] private Texture2D emptyTileTexture;
+        [SerializeField] private Texture2D wallTileTexture;
+        [SerializeField] private Texture2D watterTileTexture;
+        
         [Header("Debug")]
         [SerializeField] private GridDebugFiller debugFiller;
         
@@ -46,11 +56,14 @@ namespace TDPG.Templates.Grid
 
         void Start()
         {
-            // Initialize debug filler if assigned
-            if (debugFiller != null)
+            bool hasMapGenerator = false;
+            if (mapGenerator != null)
             {
-                debugFiller.Initialize(this);
+                hasMapGenerator = true;
+                width = mapGenerator.Width;
+                height = mapGenerator.Height;
             }
+            
             grid = new Grid(width, height, cellSize);
             buildingsGrid = new GameObject[width, height];
             for (int x = 0; x < buildingsGrid.GetLength(0); x++)
@@ -60,6 +73,24 @@ namespace TDPG.Templates.Grid
                     buildingsGrid[x, y] = null;
                 }
             }
+            
+            if (hasMapGenerator)
+            {
+                Debug.Log("Map generation initializing");
+                //tmp
+                GlobalSeed globalSeed = new GlobalSeed(QuickGenerate(1));
+                
+                Grid.TileType[,] mapData = mapGenerator.GenerateMap(globalSeed.NextSubSeed("TMPHERE"));
+                
+                ApplyMapToGrid(mapData);
+            }
+            
+            // Initialize debug filler if assigned and not using mapGenerator
+            else if (debugFiller != null)
+            {
+                debugFiller.Initialize(this);
+            }
+            
             //Set Camera
         }
 
@@ -73,7 +104,35 @@ namespace TDPG.Templates.Grid
                 PrintGridCell(worldMousePosition);
             }
         }
-    
+        
+        private void ApplyMapToGrid(Grid.TileType[,] mapData)
+        {
+            for (int x = 0; x < width; x++)
+            {
+                for (int y = 0; y < height; y++)
+                {
+                    Grid.TileType type = grid.GetTileType(x, y);
+                    
+                    grid.SetTileType(x, y, mapData[x, y]);
+                }
+            }
+        }
+        
+        private Texture2D GetTileTexture(Grid.TileType type)
+        {
+            switch (type)
+            {
+                case Grid.TileType.EMPTY:
+                    return emptyTileTexture;
+                case Grid.TileType.WALL:
+                    return wallTileTexture;
+                case Grid.TileType.WATER:
+                    return watterTileTexture;
+                default:
+                    return emptyTileTexture;
+            }
+        }
+        
         //Return tile postition on grid
         public Vector2 GetGridTilePosition(Vector3 worldPosition)
         {
@@ -242,6 +301,49 @@ namespace TDPG.Templates.Grid
                 Debug.LogWarning("Main Camera is not assigned", this);
             }
         }
-    
+
+        private void OnDrawGizmos()
+        {
+            if (grid == null)
+                return;
+
+            float tileSize = cellSize;
+            float half = tileSize * 0.5f;
+
+            for (int x = 0; x < width; x++)
+            {
+                for (int y = 0; y < height; y++)
+                {
+                    Grid.TileType tileType = grid.GetTileType(x, y);
+
+                    // Pick a color for each tile
+                    switch (tileType)
+                    {
+                        case Grid.TileType.WALL:
+                            Gizmos.color = Color.red;
+                            break;
+                        case Grid.TileType.WATER:
+                            Gizmos.color = Color.blue;
+                            break;
+                        case Grid.TileType.BUILDING:
+                            Gizmos.color = Color.yellow;
+                            break;
+                        default:
+                            Gizmos.color = Color.green; // EMPTY or unknown
+                            break;
+                    }
+                    
+                    Vector3 center = new Vector3(
+                        x * tileSize + half, 
+                        y * tileSize + half,
+                        3f);
+
+                    Gizmos.DrawCube(center, new Vector3(tileSize, tileSize, 0.1f));
+                }
+            }
+        }
+        
+        
+        
     }
 }
