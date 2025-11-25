@@ -5,6 +5,7 @@ using TDPG.Templates.Turret;
 using static TDPG.Generators.Scalars.InitializerFromDate;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.Tilemaps;
 
 namespace TDPG.Templates.Grid
 {
@@ -18,19 +19,25 @@ namespace TDPG.Templates.Grid
         [Header("Parameters")]
         [SerializeField] private int width = 10;
         [SerializeField] private int height = 10;
-        [SerializeField] private float cellSize = 8;
+        [SerializeField] private float cellSize = 1;
+        [SerializeField] private float pixelsPerUnit = 100f;
         
         [Header("Map Generation")]
         [SerializeField] private MapGenerator mapGenerator;
-        [SerializeField] private Texture2D emptyTileTexture;
-        [SerializeField] private Texture2D wallTileTexture;
-        [SerializeField] private Texture2D watterTileTexture;
+        
+        [Header("Tilemap")]
+        [SerializeField] private Tilemap tilemap;
+        [SerializeField] private UnityEngine.Grid gridComponent; 
+        [SerializeField] private TileBase emptyTile;
+        [SerializeField] private TileBase wallTile;
+        [SerializeField] private TileBase waterTile;
         
         [Header("Debug")]
         [SerializeField] private GridDebugFiller debugFiller;
         
-        private Grid grid;
+        private TDPG.Templates.Grid.Grid grid;
         private GameObject[,] buildingsGrid;
+        private bool mapGenerated = false;
         
         public Grid GetGrid() => grid;
         public float CellSize => cellSize;
@@ -56,6 +63,8 @@ namespace TDPG.Templates.Grid
 
         void Start()
         {
+            SetupTilemapGridAlignment();
+            
             bool hasMapGenerator = false;
             if (mapGenerator != null)
             {
@@ -66,6 +75,7 @@ namespace TDPG.Templates.Grid
             
             grid = new Grid(width, height, cellSize);
             buildingsGrid = new GameObject[width, height];
+            
             for (int x = 0; x < buildingsGrid.GetLength(0); x++)
             {
                 for (int y = 0; y < buildingsGrid.GetLength(1); y++)
@@ -74,15 +84,21 @@ namespace TDPG.Templates.Grid
                 }
             }
             
-            if (hasMapGenerator)
+            if (hasMapGenerator && !mapGenerated)
             {
                 Debug.Log("Map generation initializing");
+                
                 //tmp
                 GlobalSeed globalSeed = new GlobalSeed(QuickGenerate(1));
-                
                 Grid.TileType[,] mapData = mapGenerator.GenerateMap(globalSeed.NextSubSeed("TMPHERE"));
                 
-                ApplyMapToGrid(mapData);
+                ApplyMapToGridWithTilemap(mapData);
+                mapGenerated = true;
+            }
+            else if (!hasMapGenerator && tilemap != null)
+            {
+                // If no map generator, initialize with empty tiles
+                InitializeEmptyTilemap();
             }
             
             // Initialize debug filler if assigned and not using mapGenerator
@@ -92,6 +108,38 @@ namespace TDPG.Templates.Grid
             }
             
             //Set Camera
+        }
+        
+        private void SetupTilemapGridAlignment()
+        {
+            // Ensure the Tilemap's grid component matches our cell size
+            if (gridComponent != null)
+            {
+                gridComponent.cellSize = new Vector3(cellSize, cellSize, 0);
+                Debug.Log($"Set Grid component cell size to: {cellSize}");
+            }
+            else if (tilemap != null)
+            {
+                gridComponent = tilemap.layoutGrid;
+                if (gridComponent != null)
+                {
+                    gridComponent.cellSize = new Vector3(cellSize, cellSize, 0);
+                    Debug.Log($"Set Grid component cell size to: {cellSize}");
+                }
+            }
+
+            // Position the tilemap to align with grid coordinates
+            if (tilemap != null)
+            {
+                tilemap.transform.position = Vector3.zero;
+                Debug.Log("Reset Tilemap position to origin");
+            }
+            
+            // Set the tilemap's transform scale if needed
+            if (tilemap != null)
+            {
+                tilemap.transform.localScale = Vector3.one;
+            }
         }
 
         public void OnMouseClick(InputAction.CallbackContext context)
@@ -105,32 +153,108 @@ namespace TDPG.Templates.Grid
             }
         }
         
-        private void ApplyMapToGrid(Grid.TileType[,] mapData)
+        private void ApplyMapToGridWithTilemap(Grid.TileType[,] mapData)
         {
+            if (tilemap == null) 
+            {
+                Debug.LogWarning("Tilemap is not assigned in GridManager!");
+                return;
+            }
+    
+            tilemap.ClearAllTiles();
+    
             for (int x = 0; x < width; x++)
             {
                 for (int y = 0; y < height; y++)
                 {
-                    Grid.TileType type = grid.GetTileType(x, y);
-                    
-                    grid.SetTileType(x, y, mapData[x, y]);
+                    Grid.TileType type = mapData[x, y];
+                    grid.SetTileType(x, y, type);
+            
+                    TileBase tileToPlace = GetTileBase(type);
+                    if (tileToPlace != null)
+                    {
+                        Vector3Int tilePos = new Vector3Int(x, y, 0);
+                        tilemap.SetTile(tilePos, tileToPlace);
+                        
+                        // Debug positioning for first tile
+                        if (x == 0 && y == 0)
+                        {
+                            Vector3 worldPos = tilemap.CellToWorld(tilePos);
+                            Debug.Log($"Tile [0,0] grid position: {tilePos}, world position: {worldPos}");
+                        }
+                    }
+                }
+            }
+            
+            Debug.Log($"Tilemap populated with {width}x{height} tiles");
+            Debug.Log($"Expected grid bounds: (0,0) to ({width},{height})");
+            Debug.Log($"Expected world bounds: (0,0) to ({width * cellSize},{height * cellSize})");
+        }
+        
+        private void InitializeEmptyTilemap()
+        {
+            if (tilemap == null) return;
+            
+            tilemap.ClearAllTiles();
+            
+            for (int x = 0; x < width; x++)
+            {
+                for (int y = 0; y < height; y++)
+                {
+                    grid.SetTileType(x, y, Grid.TileType.EMPTY);
+                    tilemap.SetTile(new Vector3Int(x, y, 0), emptyTile);
                 }
             }
         }
         
-        private Texture2D GetTileTexture(Grid.TileType type)
+        private TileBase GetTileBase(Grid.TileType type)
         {
             switch (type)
             {
-                case Grid.TileType.EMPTY:
-                    return emptyTileTexture;
-                case Grid.TileType.WALL:
-                    return wallTileTexture;
-                case Grid.TileType.WATER:
-                    return watterTileTexture;
-                default:
-                    return emptyTileTexture;
+                case Grid.TileType.EMPTY: return emptyTile;
+                case Grid.TileType.WALL: return wallTile;
+                case Grid.TileType.WATER: return waterTile;
+                default: return emptyTile;
             }
+        }
+        
+        public void UpdateTileVisual(int x, int y, Grid.TileType tileType)
+        {
+            if (tilemap == null) return;
+            
+            TileBase tileToPlace = GetTileBase(tileType);
+            if (tileToPlace != null)
+            {
+                tilemap.SetTile(new Vector3Int(x, y, 0), tileToPlace);
+            }
+        }
+        
+        // Convert world position to grid coordinates using Tilemap
+        public Vector2Int WorldToGrid(Vector3 worldPosition)
+        {
+            if (gridComponent != null && tilemap != null)
+            {
+                Vector3Int cellPos = gridComponent.WorldToCell(worldPosition);
+                return new Vector2Int(cellPos.x, cellPos.y);
+            }
+            
+            // Fallback
+            return grid.GetXY(worldPosition);
+        }
+        
+        // Convert grid coordinates to world position using Tilemap
+        public Vector3 GridToWorld(int x, int y)
+        {
+            if (gridComponent != null && tilemap != null)
+            {
+                Vector3 worldPos = gridComponent.CellToWorld(new Vector3Int(x, y, 0));
+                // Get center of cell
+                worldPos += gridComponent.cellSize * 0.5f;
+                return worldPos;
+            }
+            
+            // Fallback
+            return grid.GetWorldPosition(x, y) + new Vector3(cellSize * 0.5f, cellSize * 0.5f, 0);
         }
         
         //Return tile postition on grid
@@ -300,6 +424,10 @@ namespace TDPG.Templates.Grid
             {
                 Debug.LogWarning("Main Camera is not assigned", this);
             }
+            if (tilemap == null)
+            {
+                Debug.LogWarning("Tilemap is not assigned", this);
+            }
         }
 
         private void OnDrawGizmos()
@@ -336,7 +464,7 @@ namespace TDPG.Templates.Grid
                     Vector3 center = new Vector3(
                         x * tileSize + half, 
                         y * tileSize + half,
-                        3f);
+                        10f);
 
                     Gizmos.DrawCube(center, new Vector3(tileSize, tileSize, 0.1f));
                 }

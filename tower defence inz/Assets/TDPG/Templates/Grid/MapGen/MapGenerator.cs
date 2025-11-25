@@ -96,27 +96,6 @@ namespace TDPG.Templates.Grid.MapGen
                     wallCutof = 0.5f;
                     noise.SetFractalType(FastNoiseLite.FractalType.PingPong);
                     break;
-                
-                case MapTypes.NineDog:
-                    for (int x = 0; x < width; x++)
-                    {
-                        for (int y = 0; y < height; y++)
-                        {
-                            float n = MapReference.Values[x, y];
-
-                            TileType tile;
-                            if (n < waterCutof)
-                                tile = TileType.WATER;
-                            else if (n > wallCutof)
-                                tile = TileType.WALL;
-                            else
-                                tile = TileType.EMPTY;
-
-                            mapInit[x, y] = tile;
-                        }
-                    }
-
-                    return mapInit;   // Deterministic output
             }
             
             // Apply noise settings
