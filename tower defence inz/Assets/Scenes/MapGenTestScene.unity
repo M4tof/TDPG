@@ -192,7 +192,7 @@ Transform:
   m_GameObject: {fileID: 805992599}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 7.639066, y: 56.815376, z: -1.3014023}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -210,9 +210,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 70c5e98b4e4f42a18888d92b66fc4ba3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  width: 100
-  height: 100
-  mapType: 0
+  width: 400
+  height: 400
+  mapType: 3
 --- !u!1 &1231574636
 GameObject:
   m_ObjectHideFlags: 0
@@ -287,15 +287,15 @@ TilemapRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingLayerID: -120532529
+  m_SortingLayer: 1
+  m_SortingOrder: -1
   m_ChunkSize: {x: 32, y: 32, z: 32}
   m_ChunkCullingBounds: {x: 0, y: 0, z: 0}
   m_MaxChunkCount: 16
   m_MaxFrameAge: 16
   m_SortOrder: 0
-  m_Mode: 1
+  m_Mode: 0
   m_DetectChunkCullingBounds: 0
   m_MaskInteraction: 0
 --- !u!1839735485 &1231574639
@@ -336,6 +336,95 @@ Tilemap:
     e31: 0
     e32: 0
     e33: 1
+--- !u!1001 &1423998852
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 2030520855538434835, guid: 82e9cb1976feb98c0944e89d6f9c79cb, type: 3}
+      propertyPath: m_SortingLayer
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 2030520855538434835, guid: 82e9cb1976feb98c0944e89d6f9c79cb, type: 3}
+      propertyPath: m_SortingOrder
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2030520855538434835, guid: 82e9cb1976feb98c0944e89d6f9c79cb, type: 3}
+      propertyPath: m_SortingLayerID
+      value: -1886011877
+      objectReference: {fileID: 0}
+    - target: {fileID: 5260947920896696658, guid: 82e9cb1976feb98c0944e89d6f9c79cb, type: 3}
+      propertyPath: m_Name
+      value: EnemyMOCK
+      objectReference: {fileID: 0}
+    - target: {fileID: 5666788997562717977, guid: 82e9cb1976feb98c0944e89d6f9c79cb, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 5666788997562717977, guid: 82e9cb1976feb98c0944e89d6f9c79cb, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 5666788997562717977, guid: 82e9cb1976feb98c0944e89d6f9c79cb, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 5666788997562717977, guid: 82e9cb1976feb98c0944e89d6f9c79cb, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5666788997562717977, guid: 82e9cb1976feb98c0944e89d6f9c79cb, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5666788997562717977, guid: 82e9cb1976feb98c0944e89d6f9c79cb, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5666788997562717977, guid: 82e9cb1976feb98c0944e89d6f9c79cb, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5666788997562717977, guid: 82e9cb1976feb98c0944e89d6f9c79cb, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5666788997562717977, guid: 82e9cb1976feb98c0944e89d6f9c79cb, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5666788997562717977, guid: 82e9cb1976feb98c0944e89d6f9c79cb, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5666788997562717977, guid: 82e9cb1976feb98c0944e89d6f9c79cb, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5666788997562717977, guid: 82e9cb1976feb98c0944e89d6f9c79cb, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5666788997562717977, guid: 82e9cb1976feb98c0944e89d6f9c79cb, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5978975577487075909, guid: 82e9cb1976feb98c0944e89d6f9c79cb, type: 3}
+      propertyPath: speed
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5978975577487075909, guid: 82e9cb1976feb98c0944e89d6f9c79cb, type: 3}
+      propertyPath: gridManager
+      value: 
+      objectReference: {fileID: 2073514573}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 82e9cb1976feb98c0944e89d6f9c79cb, type: 3}
 --- !u!1 &1818322623
 GameObject:
   m_ObjectHideFlags: 0
@@ -398,7 +487,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 100
+  orthographic size: 10
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -521,13 +610,13 @@ MonoBehaviour:
   width: 10
   height: 10
   cellSize: 1
-  pixelsPerUnit: 100
+  pixelsPerUnit: 2048
   mapGenerator: {fileID: 805992601}
   tilemap: {fileID: 1231574639}
   gridComponent: {fileID: 283719989}
   emptyTile: {fileID: 11400000, guid: 245591f996e999de48158143c4425721, type: 2}
   wallTile: {fileID: 11400000, guid: f46228e9649d55d45aec48fab5bea00c, type: 2}
-  waterTile: {fileID: 11400000, guid: f6e626b381b1328bf94dc4ac32fbddf5, type: 2}
+  waterTile: {fileID: 11400000, guid: aeaa97e4579d6d14fbb7c57b1cd3184a, type: 2}
   debugFiller: {fileID: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
@@ -535,3 +624,4 @@ SceneRoots:
   m_Roots:
   - {fileID: 1818322626}
   - {fileID: 283719990}
+  - {fileID: 1423998852}

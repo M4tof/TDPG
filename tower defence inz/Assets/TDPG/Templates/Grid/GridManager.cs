@@ -448,18 +448,19 @@ namespace TDPG.Templates.Grid
                     switch (tileType)
                     {
                         case Grid.TileType.WALL:
-                            Gizmos.color = Color.red;
+                            Gizmos.color = new Color(1,0,0,0.2f);
                             break;
                         case Grid.TileType.WATER:
-                            Gizmos.color = Color.blue;
+                            Gizmos.color = new Color(0,0,1,0.2f);
                             break;
                         case Grid.TileType.BUILDING:
-                            Gizmos.color = Color.yellow;
+                            Gizmos.color = new Color(1,1,0,0.2f);
                             break;
                         default:
-                            Gizmos.color = Color.green; // EMPTY or unknown
+                            Gizmos.color = new Color(0,1,0,0.2f); // EMPTY or unknown
                             break;
                     }
+                    
                     
                     Vector3 center = new Vector3(
                         x * tileSize + half, 

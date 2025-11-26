@@ -96,6 +96,9 @@ namespace TDPG.Templates.Grid.MapGen
                     wallCutof = 0.5f;
                     noise.SetFractalType(FastNoiseLite.FractalType.PingPong);
                     break;
+
+                case MapTypes.Static:
+                    return deterministicMapRetrieve();
             }
             
             // Apply noise settings
@@ -132,6 +135,35 @@ namespace TDPG.Templates.Grid.MapGen
         public int Width => width;
         public int Height => height;
         public MapTypes Type => mapType;
+
+        private TileType[,] deterministicMapRetrieve()
+        {
+            TileType[,] mapInternal = new TileType[width, height];
+            float[,] mapHere = DeterministicMap.noiseMatrix;
+            waterCutof = -0.25f;
+            wallCutof  = 0.70f;
+
+            for (int x = 0; x < width; x++)
+            {
+                for (int y = 0; y < height; y++)
+                {
+                    float n = mapHere[height - 1 - y, x];
+
+                    TileType tile;
+                    if (n < waterCutof)
+                        tile = TileType.WATER;
+                    else if (n > wallCutof)
+                        tile = TileType.WALL;
+                    else
+                        tile = TileType.EMPTY;
+
+                    mapInternal[x, y] = tile;
+                }
+            }
+
+            return mapInternal;
+        }
+
         
     }
 }

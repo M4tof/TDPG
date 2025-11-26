@@ -1125,8 +1125,8 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: -120532529
+  m_SortingLayer: 1
   m_SortingOrder: -1
   m_Sprite: {fileID: -4574420248226466374, guid: c5d437f91c29afb6eb0ed1a1d330f85e, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -2236,10 +2236,13 @@ MonoBehaviour:
   width: 10
   height: 10
   cellSize: 5
+  pixelsPerUnit: 100
   mapGenerator: {fileID: 0}
-  emptyTileTexture: {fileID: 0}
-  wallTileTexture: {fileID: 0}
-  watterTileTexture: {fileID: 0}
+  tilemap: {fileID: 0}
+  gridComponent: {fileID: 0}
+  emptyTile: {fileID: 0}
+  wallTile: {fileID: 0}
+  waterTile: {fileID: 0}
   debugFiller: {fileID: 0}
 --- !u!1 &1503803421
 GameObject:
