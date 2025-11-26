@@ -10,14 +10,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 13b75c95f34a00d4e8c04f76b73312e6, type: 3}
-  m_Name: WaterFlowing
+  m_Name: EmptyWindy
   m_EditorClassIdentifier: 
   m_AnimatedSprites:
-  - {fileID: -9171819887739478639, guid: 07d76a06e5933148a9c4de7ff9fb2230, type: 3}
-  - {fileID: 1143463542349218844, guid: c6b02540f6357504d894e64d2c502e9c, type: 3}
-  - {fileID: 3556595307276645008, guid: 8082dd08c3a0a8692956719134dcb5db, type: 3}
-  m_MinSpeed: 3
-  m_MaxSpeed: 3
+  - {fileID: -6884419807001312737, guid: 9ceeceb7c0f8612f19191e4b5dcd56d7, type: 3}
+  - {fileID: -2785831762592748890, guid: 93835c81602dbb6a3a9d05213faf097f, type: 3}
+  m_MinSpeed: 1
+  m_MaxSpeed: 1
   m_AnimationStartTime: 0
   m_AnimationStartFrame: 0
   m_TileColliderType: 0

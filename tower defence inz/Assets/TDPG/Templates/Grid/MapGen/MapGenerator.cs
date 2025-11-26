@@ -140,14 +140,20 @@ namespace TDPG.Templates.Grid.MapGen
         {
             TileType[,] mapInternal = new TileType[width, height];
             float[,] mapHere = DeterministicMap.noiseMatrix;
+            
+            int noiseSize = 400;
             waterCutof = -0.25f;
             wallCutof  = 0.70f;
-
+            
             for (int x = 0; x < width; x++)
             {
                 for (int y = 0; y < height; y++)
                 {
-                    float n = mapHere[height - 1 - y, x];
+                    // Wrap coordinates back into 0–399 range
+                    int nx = x % noiseSize; 
+                    int ny = (height - 1 - y) % noiseSize;
+                    
+                    float n = mapHere[ny, nx];
 
                     TileType tile;
                     if (n < waterCutof)
