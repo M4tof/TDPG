@@ -212,7 +212,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   width: 400
   height: 400
-  mapType: 0
+  mapType: 3
+  waterLevel: -0.01
+  wallLevel: 1
 --- !u!1 &1231574636
 GameObject:
   m_ObjectHideFlags: 0
