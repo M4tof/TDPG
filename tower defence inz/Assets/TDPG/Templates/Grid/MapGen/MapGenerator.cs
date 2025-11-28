@@ -35,11 +35,11 @@ namespace TDPG.Templates.Grid.MapGen
             _mapInit = new TileType[width, height];
             bool skipGeneration = false;
             
-            // if (seed == null)
-            // {
+            if (seed == null)
+            {
                 //                  012 34 5
                 seed = new Seed(240_11_8, -1,"missingSeedInMapGen",false);
-            // }
+            }
             
             seed.IsBitBased =  false;
             seed.NormalizeSeedValue();
@@ -396,7 +396,19 @@ namespace TDPG.Templates.Grid.MapGen
                         continue;
 
                     Vector3 startWorld = new Vector3(x, y, 0);
-                    List<Vector3> path = _pathUtils.FindPath(startWorld, dstWorld, false, false, false);
+                    List<Vector3> path;
+                    
+                    switch (mapType)
+                    {
+                        case MapTypes.Lakes:
+                        case MapTypes.Mountainous:
+                            path = _pathUtils.FindPath(startWorld, dstWorld, true, false, false);
+                            break;
+                        default:
+                            path = _pathUtils.FindPath(startWorld, dstWorld, false, false, false);
+                            break;
+                    }
+                    
                     if (path == null || path.Count < 2)
                         continue;
 
