@@ -20,12 +20,14 @@ namespace TDPG.Templates.Grid.MapGen
         
         [Header("Points of Interest Settings")]
         [SerializeField,Range(1,3)] private int emptyCellsAroundPoints = 1;
-        [SerializeField, Min(1)] private int numOfEnemySpawners = 1; //TODO:
+        [SerializeField, Min(1)] private int numOfEnemySpawners = 1;
         [SerializeField, Min(1)] private int minimalDistance = 1;
 
+        [Header("Debug Seed")] 
+        [SerializeField] private GlobalSeedGameObject providedSeed;
+        
         private TileType[,] _mapInit;
         private Vector3Int _destinationPos;
-        private Vector3Int[] _enemySpawnersPos;
         private TDPG.Templates.Grid.Grid _grid;
         private List<SpawnerCandidate> _reachableCandidates = new List<SpawnerCandidate>();
         private PathFindingUtils _pathUtils;
@@ -34,6 +36,11 @@ namespace TDPG.Templates.Grid.MapGen
         {
             _mapInit = new TileType[width, height];
             bool skipGeneration = false;
+
+            if (providedSeed != null)
+            {
+                seed = providedSeed.GetNextSeed();
+            }
             
             if (seed == null)
             {
@@ -347,11 +354,6 @@ namespace TDPG.Templates.Grid.MapGen
         public Vector3Int GetDestinationPosition()
         {
             return this._destinationPos;
-        }
-
-        public Vector3Int GetSpawnerPosition(int spawnerId)
-        {
-            return new Vector3Int(0, 0, 0); //TODO:
         }
 
         public void setGrid(Grid grid)

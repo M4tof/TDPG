@@ -95,7 +95,7 @@ namespace TDPG.Templates.Grid
             {
                 Debug.Log("Map generation initializing");
                 
-                //tmp
+                //tmp TODO: replace by properly reading globalseed
                 GlobalSeed globalSeed = new GlobalSeed(QuickGenerate(1));
                 Grid.TileType[,] mapData = mapGenerator.GenerateMap(globalSeed.NextSubSeed("TMPHERE"));
                 
@@ -105,6 +105,8 @@ namespace TDPG.Templates.Grid
 
                 mapGenerator.BuildValidSpawnerCandidates();
                 spawnerPositions = mapGenerator.SelectSpawnerPositions(numOfEnemySpawners);
+                
+                destpos = mapGenerator.GetDestinationPosition();
                 
                 mapGenerated = true;
             }
@@ -122,7 +124,7 @@ namespace TDPG.Templates.Grid
             
             //Set Camera
 
-            destpos = mapGenerator.GetDestinationPosition();
+            
             
         }
         
