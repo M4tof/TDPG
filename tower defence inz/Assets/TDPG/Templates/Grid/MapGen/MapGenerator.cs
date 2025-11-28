@@ -1,6 +1,8 @@
+using System.Collections.Generic;
 using TDPG.Generators.FastNoiseLite;
 using TDPG.Generators.Seed;
 using UnityEngine;
+using TDPG.Templates.Pathfinding;
 using static TDPG.Templates.Grid.Grid;
 
 namespace TDPG.Templates.Grid.MapGen
@@ -23,24 +25,32 @@ namespace TDPG.Templates.Grid.MapGen
 
         private TileType[,] _mapInit;
         private Vector3Int _destinationPos;
+        private Vector3Int[] _enemySpawnersPos;
+        private TDPG.Templates.Grid.Grid _grid;
+        private List<SpawnerCandidate> _reachableCandidates = new List<SpawnerCandidate>();
+        private PathFindingUtils _pathUtils;
         
         public TileType[,] GenerateMap(Seed seed)
         {
             _mapInit = new TileType[width, height];
+            bool skipGeneration = false;
+            
             // if (seed == null)
             // {
-                seed = new Seed(2401999, -1,"missingSeedInMapGen",false);
+                //                  012 34 5
+                seed = new Seed(240_11_8, -1,"missingSeedInMapGen",false);
             // }
             
             seed.IsBitBased =  false;
-            ulong seedVal = seed.GetBaseValue();
             seed.NormalizeSeedValue();
+            ulong seedVal = seed.GetBaseValue();
             string seedStr = seedVal.ToString();
             
             // Use first 5 digits of seed for noise parameters
             int d0 = int.Parse(seedStr[0].ToString());
             int d1 = int.Parse(seedStr[1].ToString());
             int d2 = int.Parse(seedStr[2].ToString());
+            
             int d3 = int.Parse(seedStr[3].ToString());
             int d4 = int.Parse(seedStr[4].ToString());
             
@@ -102,7 +112,9 @@ namespace TDPG.Templates.Grid.MapGen
                     break;
 
                 case MapTypes.Static:
-                    return DeterministicMapRetrieve();
+                    _mapInit = DeterministicMapRetrieve(d5);
+                    skipGeneration = true;
+                    break;
             }
             
             // Apply noise settings
@@ -114,31 +126,32 @@ namespace TDPG.Templates.Grid.MapGen
             Debug.Log($"Clamped ({mapType}): freq={freq}, oct={octaves}, gain={gain}");
             
             // Generate map
-            for (int x = 0; x < width; x++)
+            if (!skipGeneration)
             {
-                for (int y = 0; y < height; y++)
+                for (int x = 0; x < width; x++)
                 {
-                    float n = noise.GetNoise(x, y);
+                    for (int y = 0; y < height; y++)
+                    {
+                        float n = noise.GetNoise(x, y);
 
-                    TileType tile;
-                    if (n < waterLevel)          // bellow sea level water
-                        tile = TileType.WATER;
-                    else if (n > wallLevel)      // mountains
-                        tile = TileType.WALL;
-                    else                             // land
-                        tile = TileType.EMPTY;
+                        TileType tile;
+                        if (n < waterLevel) // bellow sea level water
+                            tile = TileType.WATER;
+                        else if (n > wallLevel) // mountains
+                            tile = TileType.WALL;
+                        else // land
+                            tile = TileType.EMPTY;
 
-                    _mapInit[x, y] = tile;
+                        _mapInit[x, y] = tile;
+                    }
                 }
             }
 
-            Vector2 dst = DecideDestination(d5);
-            _destinationPos = new Vector3Int((int)dst.x, (int)dst.y, 0);
+            Vector3Int dst = DecideDestination(d5);
+            _destinationPos = dst;
                 
-            CleanUpDestination((int)dst.x,(int)dst.y);
-            Debug.Log($"Destination set to position {_destinationPos}");
-            
-            //TODO: set up N enemy spawners, distance from destination from settings, ensure at least one path from it (destruction of buildings included)
+            CleanUpDestination(dst.x, dst.y);
+            Debug.Log($"Destination prepared at position {_destinationPos}");
             
             return _mapInit;
         }
@@ -146,16 +159,16 @@ namespace TDPG.Templates.Grid.MapGen
         
         public int Width => width;
         public int Height => height;
+        public int NumOfEnemySpawners => numOfEnemySpawners;
         public MapTypes Type => mapType;
 
-        private TileType[,] DeterministicMapRetrieve()
+        private TileType[,] DeterministicMapRetrieve(int d5)
         {
             _mapInit = new TileType[width, height];
             float[,] mapHere = DeterministicMap.noiseMatrix;
 
             int noiseSize = mapHere.GetLength(0);
-
-            // 1. Build the deterministic terrain
+            
             for (int x = 0; x < width; x++)
             {
                 for (int y = 0; y < height; y++)
@@ -176,30 +189,17 @@ namespace TDPG.Templates.Grid.MapGen
                     _mapInit[x, y] = tile;
                 }
             }
-
-            // 2. Destination selection uses digit 5 from seed
-            int seedBasedValue = 0; 
-            Vector2 dst = DecideDestination(seedBasedValue);
-
-            _destinationPos = new Vector3Int((int)dst.x, (int)dst.y, 0);
-
-            // 3. Apply cleanup (clears around destination)
-            CleanUpDestination((int)dst.x, (int)dst.y);
-
             Debug.Log($"[DETERMINISTIC] Destination set to {_destinationPos}");
-
-            // 4. TODO: Enemy spawners (same logic as procedural)
 
             return _mapInit;
         }
 
-
         private void CleanUpDestination(int posX, int posY)
         {
-            int x0Bound = Mathf.Clamp(posX - emptyCellsAroundPoints, 0, width);
-            int x1Bound = Mathf.Clamp(posX + emptyCellsAroundPoints, 0, width);
-            int y0Bound = Mathf.Clamp(posY - emptyCellsAroundPoints, 0, height);
-            int y1Bound = Mathf.Clamp(posY + emptyCellsAroundPoints, 0, height);
+            int x0Bound = Mathf.Clamp(posX - emptyCellsAroundPoints, 0, width-1);
+            int x1Bound = Mathf.Clamp(posX + emptyCellsAroundPoints, 0, width-1);
+            int y0Bound = Mathf.Clamp(posY - emptyCellsAroundPoints, 0, height-1);
+            int y1Bound = Mathf.Clamp(posY + emptyCellsAroundPoints, 0, height-1);
 
             for (int x = x0Bound; x <= x1Bound; x++)
             {
@@ -210,7 +210,7 @@ namespace TDPG.Templates.Grid.MapGen
             }
         }
 
-        private Vector2 DecideDestination(int value)
+        private Vector3Int DecideDestination(int value)
         {
             switch (value)
             {
@@ -220,26 +220,26 @@ namespace TDPG.Templates.Grid.MapGen
                 case 1:
                 case 2:
                     // Top-right corner 
-                    return FindCornerDestination(width - 1, height - 1, -1, -1);
+                    return FindCornerDestination(width - 2, height - 2, -1, -1);
 
                 case 3:
                 case 4:
                     // Top-left corner 
-                    return FindCornerDestination(0, height - 1, 1, -1);
+                    return FindCornerDestination(1, height - 2, 1, -1);
 
                 case 5:
                 case 6:
                     // Bottom-left corner 
-                    return FindCornerDestination(0, 0, 1, 1);
+                    return FindCornerDestination(1, 1, 1, 1);
 
                 case 7:
                 case 8:
                     // Bottom-right corner, inward diagonal
-                    return FindCornerDestination(width - 1, 0, -1, 1);
+                    return FindCornerDestination(width - 2, 1, -1, 1);
             }
         }
         
-        private Vector2 FindCentralDestination()
+        private Vector3Int FindCentralDestination()
         {
             int cx = width / 2;
             int cy = height / 2;
@@ -258,7 +258,7 @@ namespace TDPG.Templates.Grid.MapGen
             if (IsValidAndEmpty(x, y))
             {
                 CleanUpDestination(x, y);
-                return new Vector2(x, y);
+                return new Vector3Int(x, y,0);
             }
 
             int steps = 1;
@@ -278,7 +278,7 @@ namespace TDPG.Templates.Grid.MapGen
                         if (IsValidAndEmpty(x, y))
                         {
                             CleanUpDestination(x, y);
-                            return new Vector2(x, y);
+                            return new Vector3Int(x, y,0);
                         }
                     }
 
@@ -289,10 +289,10 @@ namespace TDPG.Templates.Grid.MapGen
             }
 
             Debug.LogWarning("No EMPTY destination found.");
-            return new Vector2(cx, cy);
+            return new Vector3Int(cx, cy,0);
         }
         
-        private Vector2 FindCornerDestination(int startX, int startY, int dx, int dy)
+        private Vector3Int FindCornerDestination(int startX, int startY, int dx, int dy)
         {
             int x = startX;
             int y = startY;
@@ -301,8 +301,28 @@ namespace TDPG.Templates.Grid.MapGen
             {
                 if (IsValidAndEmpty(x, y))
                 {
+                    bool isEdge =
+                        x == 0 || y == 0 ||
+                        x == width - 1 || y == height - 1;
+
+
+                    if (!isEdge)
+                    {
+                        bool isTooClose =
+                            x == 1 || y == 1 ||
+                            x == width - 2 || y == height - 2;
+
+                        if (isTooClose)
+                        {
+                            // Skip this tile, keep searching
+                            x += dx;
+                            y += dy;
+                            continue;
+                        }
+                    }
+
                     CleanUpDestination(x, y);
-                    return new Vector2(x, y);
+                    return new Vector3Int(x, y, 0);
                 }
 
                 x += dx;
@@ -310,7 +330,7 @@ namespace TDPG.Templates.Grid.MapGen
             }
 
             Debug.LogWarning("No EMPTY destination found.");
-            return new Vector2(startX, startY);
+            return new Vector3Int(startX + dx, startY + dy, 0);
         }
         
         private bool IsValidAndEmpty(int x, int y)
@@ -318,6 +338,9 @@ namespace TDPG.Templates.Grid.MapGen
             if (x < 0 || y < 0 || x >= width || y >= height)
                 return false;
 
+            if (_destinationPos.x == x && _destinationPos.y == y)
+                return false;
+            
             return _mapInit[x, y] == TileType.EMPTY;
         }
 
@@ -330,6 +353,107 @@ namespace TDPG.Templates.Grid.MapGen
         {
             return new Vector3Int(0, 0, 0); //TODO:
         }
+
+        public void setGrid(Grid grid)
+        {
+            this._grid = grid;
+
+            // Create pathfinding helper
+            _pathUtils = new PathFindingUtils(grid);
+        }
+
+        private bool IsCandidateSpawnerTile(int x, int y)
+        {
+            if (!IsValidAndEmpty(x, y))
+                return false;
+
+            // Distance from destination must be >= minimalDistance
+            int dx = Mathf.Abs(x - _destinationPos.x);
+            int dy = Mathf.Abs(y - _destinationPos.y);
+
+            if (dx + dy < minimalDistance)
+                return false;
+
+            return true;
+        }
+        
+        public void BuildValidSpawnerCandidates()
+        {
+            _reachableCandidates.Clear();
+
+            if (_pathUtils == null)
+            {
+                Debug.LogError("MapGenerator: PathFindingUtils not set! Did you call setGrid() first?");
+                return;
+            }
+
+            Vector3 dstWorld = new Vector3(_destinationPos.x, _destinationPos.y, 0);
+            for (int x = 0; x < width; x++)
+            {
+                for (int y = 0; y < height; y++)
+                {
+                    if (!IsCandidateSpawnerTile(x, y))
+                        continue;
+
+                    Vector3 startWorld = new Vector3(x, y, 0);
+                    List<Vector3> path = _pathUtils.FindPath(startWorld, dstWorld, false, false, false);
+                    if (path == null || path.Count < 2)
+                        continue;
+
+                    int pathLength = path.Count; 
+
+                    _reachableCandidates.Add(new SpawnerCandidate(
+                        new Vector3Int(x, y, 0),
+                        pathLength
+                    ));
+                }
+            }
+            Debug.Log($"Spawner candidate tiles found: {_reachableCandidates.Count}");
+        }
+
+        private void SortCandidatesByDistance()
+        {
+            _reachableCandidates.Sort((a, b) => b.distanceFromDestination.CompareTo(a.distanceFromDestination));
+        }
+        
+        public Vector3Int[] SelectSpawnerPositions(int count)
+        {
+            if (_reachableCandidates.Count == 0)
+            {
+                Debug.LogWarning("No reachable spawner candidates exist.");
+                return new Vector3Int[0]; //fallback here
+            }
+
+            SortCandidatesByDistance();
+
+            List<Vector3Int> result = new List<Vector3Int>();
+
+            foreach (var c in _reachableCandidates)
+            {
+                if (result.Count == count)
+                    break;
+
+                bool tooClose = false;
+
+                foreach (var existing in result)
+                {
+                    int dx = Mathf.Abs(existing.x - c.pos.x);
+                    int dy = Mathf.Abs(existing.y - c.pos.y);
+
+                    if (dx + dy < minimalDistance)
+                    {
+                        tooClose = true;
+                        break;
+                    }
+                }
+
+                if (!tooClose)
+                    result.Add(c.pos);
+            }
+
+            return result.ToArray();
+        }
+
         
     }
 }

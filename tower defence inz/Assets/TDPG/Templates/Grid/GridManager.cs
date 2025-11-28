@@ -38,6 +38,12 @@ namespace TDPG.Templates.Grid
         private TDPG.Templates.Grid.Grid grid;
         private GameObject[,] buildingsGrid;
         private bool mapGenerated = false;
+        private int numOfEnemySpawners;
+
+        private Vector3Int destpos;
+        private Vector3Int[] spawnerPositions;
+
+
         
         public Grid GetGrid() => grid;
         public float CellSize => cellSize;
@@ -71,6 +77,7 @@ namespace TDPG.Templates.Grid
                 hasMapGenerator = true;
                 width = mapGenerator.Width;
                 height = mapGenerator.Height;
+                numOfEnemySpawners = mapGenerator.NumOfEnemySpawners;
             }
             
             grid = new Grid(width, height, cellSize);
@@ -93,6 +100,12 @@ namespace TDPG.Templates.Grid
                 Grid.TileType[,] mapData = mapGenerator.GenerateMap(globalSeed.NextSubSeed("TMPHERE"));
                 
                 ApplyMapToGridWithTilemap(mapData);
+                
+                mapGenerator.setGrid(grid);
+
+                mapGenerator.BuildValidSpawnerCandidates();
+                spawnerPositions = mapGenerator.SelectSpawnerPositions(numOfEnemySpawners);
+                
                 mapGenerated = true;
             }
             else if (!hasMapGenerator && tilemap != null)
@@ -108,6 +121,9 @@ namespace TDPG.Templates.Grid
             }
             
             //Set Camera
+
+            destpos = mapGenerator.GetDestinationPosition();
+            
         }
         
         private void SetupTilemapGridAlignment()
@@ -468,6 +484,26 @@ namespace TDPG.Templates.Grid
                         10f);
 
                     Gizmos.DrawCube(center, new Vector3(tileSize, tileSize, 0.1f));
+                }
+            }
+            Vector3 destcentered = new Vector3(destpos.x  * tileSize + half, destpos.y * tileSize + half, 0);
+            Gizmos.color = new Color(1, 0f, 132f/255f, 0.7f);
+            Gizmos.DrawSphere(destcentered,0.5f);
+            
+            // Draw spawners
+            if (spawnerPositions != null)
+            {
+                Gizmos.color = new Color(1f, 0.5f, 0f, 0.7f); // Orange
+
+                foreach (var sp in spawnerPositions)
+                {
+                    Vector3 pos = new Vector3(
+                        sp.x * tileSize + half,
+                        sp.y * tileSize + half,
+                        0
+                    );
+
+                    Gizmos.DrawSphere(pos, 0.4f);
                 }
             }
         }
