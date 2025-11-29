@@ -1,112 +1,97 @@
-using System;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.InputSystem;
-using TDPG.Templates.Grid;
-using TDPG.Templates.Turret;
+using TDPG.Templates.Grid;   // Lib
+using TDPG.Templates.Turret; // Lib
 
 public class TurretSpawner : MonoBehaviour
 {
-    [Tooltip("grid based on where turret would spawn")]
     [SerializeField] private GridManager gridManager;
+    [SerializeField] private GameObject TurretBox;
+    [SerializeField] private TurretBase TurretVisualizer;
     
-    [Tooltip("GameObject in which turret would be spawned")]
-    [SerializeField] GameObject TurretBox;
-    
-    [Tooltip("It would show selected turret on grid")]
-    [SerializeField] TurretBase TurretVisualizer;
-    
-    private GameObject turretToSpawn;
-    private bool canSpawnTurret = true;
+    private string _selectedTurretID;
+    private bool _canSpawnTurret;
 
-    void Start()
+    // Renamed back to Set... for consistency
+    public void SetTurretToSpawn(string turretID)
     {
-        gridManager = GridManager.Instance;
-    }
-
-    //Set Turret to Spawn
-    public void SetTurretToSpawn(GameObject newTurret)
-    {
-        //Set turret
-        turretToSpawn = newTurret;
-        if (turretToSpawn == null)
+        _selectedTurretID = turretID;
+        
+        if (string.IsNullOrEmpty(turretID))
         {
             TurretVisualizer.gameObject.SetActive(false);
             return;
         }
-        //Set copy parameters from turret to spawn to preview
+
+        // Access Registry (Game Side)
+        TurretData data = TurretRegistry.Instance.Get(turretID);
+        if (data == null)
+        {
+            Debug.LogError($"Cannot find turret data: {turretID}");
+            TurretVisualizer.gameObject.SetActive(false);
+            return;
+        }
+
+        // Setup Visualizer
         TurretVisualizer.gameObject.SetActive(true);
-        TurretBase turret = turretToSpawn.GetComponent<TurretBase>();
-        if (turret == null)
-        {
-            TurretVisualizer.gameObject.SetActive(false);
-            return;
-        }
-        TurretVisualizer.SetId(turret.GetId());
-        TurretVisualizer.SetTileSize(turret.GetTileSize());
-        TurretVisualizer.SetMultiplier(turret.GetMultiplier());
-        TurretVisualizer.SetSprite(turret.GetSprite());
+        TurretVisualizer.Initialize(data); 
     }
 
-    //Return turret to Spawn
-    public GameObject GetTurretToSpawn()
+    public string GetTurretToSpawn()
     {
-        return turretToSpawn;
+        return _selectedTurretID;
     }
 
-    //Spawn turret on given position
     public GameObject SpawnTurret(Vector3 worldPosition)
     {
-        if (turretToSpawn != null && canSpawnTurret)
+        if (string.IsNullOrEmpty(_selectedTurretID) || !_canSpawnTurret) return null;
+
+        TurretData data = TurretRegistry.Instance.Get(_selectedTurretID);
+        
+        // Access ResourceSystem (Game Side) - No errors now!
+        if (ResourceSystem.Instance != null)
         {
-            worldPosition.z = 0f;
-            GameObject newTurret = Instantiate(turretToSpawn,gridManager.GetGridWorldTilePosition(worldPosition),Quaternion.identity);
-            newTurret.transform.SetParent(TurretBox.transform);
-            gridManager.PlaceTurret(worldPosition, newTurret);
-            SetTurretToSpawn(null);
-            return newTurret;
+            if (!ResourceSystem.Instance.money.CanAfford(data.Cost))
+            {
+                Debug.Log("Not enough resources.");
+                return null;
+            }
+            ResourceSystem.Instance.money.Claim(data.Cost);
         }
-        Debug.LogWarning("Turret is not set");
-        return null;
+
+        // Instantiate Visualizer (Assuming Visualizer is the Generic Prefab)
+        GameObject newTurret = Instantiate(TurretVisualizer.gameObject, gridManager.GetGridWorldTilePosition(worldPosition), Quaternion.identity);
+        newTurret.transform.SetParent(TurretBox.transform);
+        
+        // Init Logic
+        var logic = newTurret.GetComponent<TurretBase>();
+        logic.Initialize(data);
+        
+        gridManager.PlaceTurret(worldPosition, newTurret);
+        
+        return newTurret;
     }
 
     public void UpdateVisualizerPosition(Vector3 position)
     {
-        if (turretToSpawn != null && gridManager.IsOnGrid(position))
+        if (!string.IsNullOrEmpty(_selectedTurretID) && gridManager.IsOnGrid(position))
         {
             position.z = 0f;
             TurretVisualizer.transform.position = gridManager.GetGridWorldTilePosition(position);
             TurretVisualizer.gameObject.SetActive(true);
-            if (gridManager.CanPlaceTurret(position,TurretVisualizer.GetTileSize()))
+
+            if (gridManager.CanPlaceTurret(position, TurretVisualizer.GetTileSize()))
             {
-                TurretVisualizer.GetSpriteRenderer().color = Color.blue;
-                canSpawnTurret = true;
-                return;
+                _canSpawnTurret = true;
+                // Visual feedback (requires sprite renderer access)
+                // logic...
             }
-            TurretVisualizer.GetSpriteRenderer().color = Color.red; 
-            canSpawnTurret =  false;
+            else
+            {
+                _canSpawnTurret = false;
+                // logic...
+            }
             return;
-            
         }
         TurretVisualizer.gameObject.SetActive(false);
-        
-    }
-
-    //Validation
-    void OnValidate()
-    {
-        if (TurretBox == null)
-        {
-            Debug.LogWarning("Pause Menu is not assigned", this);
-        }
-        if (gridManager == null)
-        {
-            Debug.LogWarning("Grid Manager is not assigned", this);
-        }
-
-        if (TurretVisualizer == null)
-        {
-            Debug.LogWarning("Turret visualizer is not assigned", this);
-        }
     }
 }

@@ -1,27 +1,30 @@
 using UnityEngine;
 
-public class TurretSelection : MonoBehaviour
+namespace TDPG.Templates.Turret
 {
-    [SerializeField] private GameObject turretToSpawn;
-    [SerializeField] private TurretSpawner turretSpawner;
+    public class TurretSelection : MonoBehaviour
+    {
+        [SerializeField] string turretToSpawn;
+        [SerializeField] TurretSpawner turretSpawner;
 
-    public void SelectTurret()
-    {
-        if (turretToSpawn != null)
+        public void SelectTurret()
         {
-            turretSpawner.SetTurretToSpawn(turretToSpawn);
+            if (turretToSpawn != null)
+            {
+                turretSpawner.SetTurretToSpawn(turretToSpawn);
+            }
         }
-    }
     
-    void OnValidate()
-    {
-        if (turretSpawner == null)
+        void OnValidate()
         {
-            Debug.LogWarning("Turret Spawner is not assigned", this);
-        }
-        if (turretToSpawn == null)
-        {
-            Debug.LogWarning("Turret to spawn is null", this);
+            if (turretSpawner == null)
+            {
+                Debug.LogWarning("Turret Spawner is not assigned", this);
+            }
+            if (turretToSpawn == null)
+            {
+                Debug.LogWarning("Turret to spawn is null", this);
+            }
         }
     }
 }
