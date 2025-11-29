@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 using TDPG.Generators.Seed; // Namespace from your lib
+using TDPG.Templates.Grid;
 
 public class EnemySpawner : MonoBehaviour
 {
@@ -48,7 +49,8 @@ public class EnemySpawner : MonoBehaviour
     //     go.GetComponent<EnemyBehavior>().Initialize(logicalEnemy);
     // }
 
-    public void SpawnEnemy(string enemyID, int waveDifficulty)
+    // TODO: cleanup before release
+    public void SpawnEnemy(string enemyID, int waveDifficulty, bool debug = false)
     {
         // Debug 1: Check Registry
         if (EnemyRegistry.Instance == null) { Debug.LogError("❌ Registry is NULL"); return; }
@@ -60,6 +62,44 @@ public class EnemySpawner : MonoBehaviour
         if (_factory == null) { Debug.LogError("❌ Factory is NULL! InitializeFactory didn't run."); return; }
 
         Enemy logicalEnemy = (Enemy)_factory.GenerateNextEnemy(data, waveDifficulty);
+
+
+        // Debug path
+
+        if (debug)
+        {
+            // 1. Get Spawner's World Position
+            Vector3 spawnerPos = transform.position;
+
+            // 2. Snap to Grid Coordinates (int x, int y)
+            // Note: GridManager might return bottom-left of cell, we want Center for movement
+            Vector2Int gridStart = GridManager.Instance.WorldToGrid(spawnerPos);
+
+            // 3. Define Path in GRID UNITS (Relative Steps)
+            var gridSteps = new List<Vector2Int>
+            {
+                gridStart,                         // Start
+                gridStart + new Vector2Int(2, 0),  // Right 2 cells
+                gridStart + new Vector2Int(2, -2), // Down 2 cells
+                gridStart + new Vector2Int(0, -2), // Left 2 cells
+                gridStart                          // Back to Start
+            };
+
+            // 4. Convert Grid Steps -> World Positions (Centered)
+            var worldPath = new List<Vector2>();
+            foreach (var step in gridSteps)
+            {
+                // Use GridManager to get the CENTER of the tile
+                // GridToWorld in your script returns center:
+                // "return grid.GetWorldPosition(x, y) + new Vector3(cellSize * 0.5f, ...);"
+                Vector3 worldPos = GridManager.Instance.GridToWorld(step.x, step.y);
+                worldPath.Add(worldPos);
+            }
+
+            // 5. Apply to Enemy
+            logicalEnemy.Position = worldPath[0]; // Snap logic to valid start
+            logicalEnemy.SetPath(worldPath);
+        }
 
         // Debug 3: Check Compendium (Is object in scene?)
         if (EnemyCompendium.Instance == null) { Debug.LogError("❌ EnemyCompendium is NULL! Missing GameObject in scene?"); return; }
@@ -73,6 +113,6 @@ public class EnemySpawner : MonoBehaviour
 
     public void DebugSpawn()
     {
-        SpawnEnemy("Walker", 1);
+        SpawnEnemy("Walker", 1, true);
     }
 }

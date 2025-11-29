@@ -16,12 +16,14 @@ public class Enemy : EnemyBase
     private Queue<Vector2> _path;
     private Vector2? _currentTarget;
 
+    public Vector2? CurrentTarget => _currentTarget;
+
     public Enemy(EnemyData baseData, EnemyStatsOverride overrides) : base(baseData)
     {
         _baseData = baseData;
         EnemyID = baseData.EnemyName;
         Overrides = overrides;
-    
+
         // Initialize State
         CurrentHealth = baseData.MaxHealth * overrides.HealthMultiplier;
         CurrentSpeed = baseData.Speed * overrides.SpeedMultiplier;
@@ -38,7 +40,7 @@ public class Enemy : EnemyBase
     public void SetPath(IEnumerable<Vector2> pathPoints)
     {
         _path = new Queue<Vector2>(pathPoints);
-        if (_path.Count > 0) 
+        if (_path.Count > 0)
         {
             Position = _path.Peek(); // Snap to start
             GetNextTarget();
@@ -50,7 +52,7 @@ public class Enemy : EnemyBase
         // DeltaTime handling: Logic usually assumes a fixed step or needs DT passed in.
         // If OnUpdate() doesn't take float dt, we assume Time.deltaTime (which breaks strict lib separation)
         // OR we change the signature in EnemyBase to OnUpdate(float deltaTime).
-        Move(Time.deltaTime); 
+        Move(Time.deltaTime);
     }
 
     private void Move(float deltaTime)
@@ -73,6 +75,23 @@ public class Enemy : EnemyBase
             _currentTarget = _path.Dequeue();
         else
             _currentTarget = null; // Reached end of path
+    }
+
+    public void ApplyDebugPath(Vector2 startOrigin)
+    {
+        // Create a hardcoded square path relative to spawn
+        var debugPoints = new List<Vector2>
+        {
+        startOrigin,                         // Start
+        startOrigin + new Vector2(2, 0),     // Right 2
+        startOrigin + new Vector2(2, -2),    // Down 2
+        startOrigin + new Vector2(0, -2),    // Left 2
+        startOrigin + new Vector2(0, 0)      // Back to Start
+        };
+
+        // Reuse the existing SetPath logic
+        SetPath(debugPoints);
+        Debug.Log($"[Enemy] Debug path applied with {debugPoints.Count} nodes.");
     }
 
 }
