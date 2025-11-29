@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
+using TDPG.Templates.Grid;
 
 namespace TDPG.Templates.Turret
 {
@@ -17,30 +18,85 @@ namespace TDPG.Templates.Turret
         [SerializeField] private SpriteRenderer crystalRenderer;
         [SerializeField] private Transform rotator;
 
+        private Vector3 _baseDesignPos;
+        private Vector3 _crystalDesignPos;
+        private Vector3 _baseDesignScale;
+        private Vector3 _crystalDesignScale;
+        private bool _initializedOffsets = false;
+
+
         void Awake()
         {
             _enemyLayerMask = LayerMask.GetMask("Enemy");
+            EnsureOffsetsCached();
+        }
+
+        private void EnsureOffsetsCached()
+        {
+            if (_initializedOffsets) return;
+
+            if (baseRenderer != null)
+            {
+                _baseDesignPos = baseRenderer.transform.localPosition;
+                _baseDesignScale = baseRenderer.transform.localScale; // Capture Scale
+            }
+
+            if (crystalRenderer != null)
+            {
+                _crystalDesignPos = crystalRenderer.transform.localPosition;
+                _crystalDesignScale = crystalRenderer.transform.localScale; // Capture Scale
+            }
+            _initializedOffsets = true;
         }
         public void Initialize(TurretData data)
         {
+            EnsureOffsetsCached(); // Safety check
             Data = data;
-            
-            // Setup Visuals
-            if (baseRenderer != null) 
+
+            // Safety: Default to 1.0 if GridManager is missing (e.g. prefab mode)
+            float cellSize = (GridManager.Instance != null) ? GridManager.Instance.CellSize : 1.0f;
+
+            // Calculate the specific offset to center this turret on its tiles
+            // Vector3 gridCenterOffset = new Vector3(
+            //     data.TileSize.x * cellSize * 0.5f,
+            //     data.TileSize.y * cellSize * 0.5f,
+            //     0f
+            // );
+
+            // APPLY: Always set relative to the CLEAN Design Position
+            if (baseRenderer != null)
             {
                 baseRenderer.sprite = data.BaseSprite;
-                // Center alignment logic (optional depending on sprite pivot)
-                baseRenderer.transform.localPosition = new Vector3(data.TileSize.x * 0.5f, data.TileSize.y * 0.5f, 0);
+                baseRenderer.transform.localScale = new Vector3(
+                    _baseDesignScale.x * data.Multiplayer,
+                    _baseDesignScale.y * data.Multiplayer,
+                    1f
+                );
+                Vector3 scaledDesignPos = new Vector3(
+                    _baseDesignPos.x * data.Multiplayer,
+                    _baseDesignPos.y * data.Multiplayer,
+                    _baseDesignPos.z
+                );
+
+                baseRenderer.transform.localPosition = scaledDesignPos;
             }
 
-            if (crystalRenderer != null) 
+            if (crystalRenderer != null)
             {
                 crystalRenderer.sprite = data.CrystalSprite;
-                // Inherit position from base or set manually
-                if (rotator != null)
-                {
-                    rotator.localPosition = new Vector3(data.TileSize.x * 0.5f, data.TileSize.y * 0.5f, 0);
-                }
+                crystalRenderer.transform.localScale = new Vector3(
+                    _crystalDesignScale.x * data.Multiplayer,
+                    _crystalDesignScale.y * data.Multiplayer,
+                    1f
+                );
+                Vector3 scaledDesignPos = new Vector3(
+                    _crystalDesignPos.x * data.Multiplayer,
+                    _crystalDesignPos.y * data.Multiplayer,
+                    _crystalDesignPos.z
+                );
+
+                crystalRenderer.transform.localPosition = scaledDesignPos;
+
             }
         }
 
@@ -66,6 +122,11 @@ namespace TDPG.Templates.Turret
             // Step 2: Select Target (Strategy)
             _currentTarget = SelectTarget(candidates);
 
+            foreach (var item in candidates)
+            {
+                Debug.Log($"target in sight: {item}");
+            }
+
             // Step 3: Shoot
             if (_currentTarget != null)
             {
@@ -78,8 +139,10 @@ namespace TDPG.Templates.Turret
         {
             List<Transform> validTargets = new List<Transform>();
 
+            float cellSize = (GridManager.Instance != null) ? GridManager.Instance.CellSize : 1.0f;
+
             // A. Range Check (Physics)
-            Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, Data.Range, _enemyLayerMask);
+            Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, Data.Range*cellSize, _enemyLayerMask);
 
             foreach (var hit in hits)
             {

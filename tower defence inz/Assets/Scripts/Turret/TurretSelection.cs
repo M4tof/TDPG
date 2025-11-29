@@ -9,6 +9,7 @@ namespace TDPG.Templates.Turret
 
         public void SelectTurret()
         {
+            Debug.Log("SelectTurret");
             if (turretToSpawn != null)
             {
                 turretSpawner.SetTurretToSpawn(turretToSpawn);

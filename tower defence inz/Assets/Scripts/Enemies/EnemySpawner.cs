@@ -108,6 +108,11 @@ public class EnemySpawner : MonoBehaviour
 
         // ... Visuals ...
         GameObject go = Instantiate(EnemyPrefab, transform.position, Quaternion.identity);
+        float cellSize = GridManager.Instance.CellSize;
+        if (go.TryGetComponent(out BoxCollider2D col))
+        {
+            col.size *= cellSize;
+        }
         go.GetComponent<EnemyBehavior>().Initialize(logicalEnemy);
     }
 
