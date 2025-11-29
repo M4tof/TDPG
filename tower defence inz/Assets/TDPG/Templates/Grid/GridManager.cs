@@ -17,10 +17,9 @@ namespace TDPG.Templates.Grid
         [SerializeField] private Camera mainCamera;
     
         [Header("Parameters")]
-        [SerializeField] private int width = 10;
-        [SerializeField] private int height = 10;
+        private int width = 10;
+        private int height = 10;
         [SerializeField] private float cellSize = 1;
-        [SerializeField] private float pixelsPerUnit = 100f;
         
         [Header("Map Generation")]
         [SerializeField] private MapGenerator mapGenerator;
@@ -32,10 +31,14 @@ namespace TDPG.Templates.Grid
         [SerializeField] private TileBase wallTile;
         [SerializeField] private TileBase waterTile;
         
+        [Header("Spawns")]
+        [SerializeField] private GameObject Player;
+        [SerializeField] private GameObject EnemySpawnerPrefab;
+        
         [Header("Debug")]
         [SerializeField] private GridDebugFiller debugFiller;
         
-        private TDPG.Templates.Grid.Grid grid;
+        private Grid grid;
         private GameObject[,] buildingsGrid;
         private bool mapGenerated = false;
         
@@ -106,7 +109,9 @@ namespace TDPG.Templates.Grid
             {
                 debugFiller.Initialize(this);
             }
-            
+
+            SetStartPlayerPosition();
+
             //Set Camera
         }
         
@@ -115,7 +120,8 @@ namespace TDPG.Templates.Grid
             // Ensure the Tilemap's grid component matches our cell size
             if (gridComponent != null)
             {
-                gridComponent.cellSize = new Vector3(cellSize, cellSize, 0);
+                //gridComponent.cellSize = new Vector3(cellSize, cellSize, 0);
+                //gridComponent.cellSize = new Vector3(1, 1, 0);
                 Debug.Log($"Set Grid component cell size to: {cellSize}");
             }
             else if (tilemap != null)
@@ -123,7 +129,8 @@ namespace TDPG.Templates.Grid
                 gridComponent = tilemap.layoutGrid;
                 if (gridComponent != null)
                 {
-                    gridComponent.cellSize = new Vector3(cellSize, cellSize, 0);
+                    //gridComponent.cellSize = new Vector3(cellSize, cellSize, 0);
+                    //gridComponent.cellSize = new Vector3(1, 1, 0);
                     Debug.Log($"Set Grid component cell size to: {cellSize}");
                 }
             }
@@ -138,7 +145,8 @@ namespace TDPG.Templates.Grid
             // Set the tilemap's transform scale if needed
             if (tilemap != null)
             {
-                tilemap.transform.localScale = Vector3.one;
+                transform.localScale = Vector3.one;
+                //transform.localScale = new Vector3(cellSize, cellSize, 0);
             }
         }
 
@@ -405,6 +413,13 @@ namespace TDPG.Templates.Grid
         {
             Vector2Int position = grid.GetXY(worldPosition);
             return buildingsGrid[position.x, position.y];
+        }
+
+        public void SetStartPlayerPosition()
+        {
+            Vector3 newPosition = GetCenterGrid();
+            newPosition.z = 0f;
+            Player.transform.position = newPosition;
         }
         
         public void PrintGridCell(Vector3 worldPosition)

@@ -30,12 +30,6 @@ public class EnemyBehavior : MonoBehaviour
 
         // 2. Sync Unity Transform to Logic Position
         transform.position = Logic.Position;
-
-        // 3. Check Death Condition
-        if (Logic.CurrentHealth <= 0)
-        {
-            Die();
-        }
     }
 
     private void Die()
@@ -43,5 +37,14 @@ public class EnemyBehavior : MonoBehaviour
         Logic.OnDeath();
         EnemyCompendium.Instance.UnregisterEnemy(Logic);
         Destroy(gameObject); // TODO: Replace with Object Pooling
+    }
+
+    public void DealDamage(float damage)
+    {
+        Logic.DealDamage(damage);
+        if (Logic.CurrentHealth <= 0)
+        {
+            Die();
+        }
     }
 }

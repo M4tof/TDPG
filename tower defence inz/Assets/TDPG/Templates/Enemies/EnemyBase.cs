@@ -17,5 +17,10 @@ public abstract class EnemyBase
     {
         
     }
+    
+    public void DealDamage(float damage)
+    {
+        CurrentHealth -= damage;
+    }
 
 }
