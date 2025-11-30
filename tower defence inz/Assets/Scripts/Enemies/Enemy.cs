@@ -18,6 +18,9 @@ public class Enemy : EnemyBase
 
     public Vector2? CurrentTarget => _currentTarget;
 
+    public float CurrentHealth;
+    public float CurrentSpeed;
+
     public Enemy(EnemyData baseData, EnemyStatsOverride overrides) : base(baseData)
     {
         _baseData = baseData;
