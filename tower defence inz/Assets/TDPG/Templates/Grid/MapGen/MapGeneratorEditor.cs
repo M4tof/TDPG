@@ -26,17 +26,23 @@ namespace TDPG.Templates.Grid.MapGen
             {
                 case MapTypes.Smooth:
                     minWater = -1f;
-                    maxWater = -0.001f;
+                    maxWater = -0.09f;
+                    minWall = 0.09f;
+                    maxWall = 1f;
                     break;
 
-                case MapTypes.Lakes:
+                case MapTypes.Chaotic:
                     minWater = -1f;
-                    maxWater = -0.3f;   
+                    maxWater = -0.15f;  
+                    minWall = 0.1f;
+                    maxWall = 1f;
                     break;
 
                 case MapTypes.Mountainous:
                     minWater = -1f;
-                    maxWater = -0.1f;
+                    maxWater = -0.2f;
+                    minWall = 0.3f;
+                    maxWall = 1f;
                     break;
             }
 

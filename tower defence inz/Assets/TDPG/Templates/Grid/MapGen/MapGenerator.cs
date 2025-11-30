@@ -23,6 +23,7 @@ namespace TDPG.Templates.Grid.MapGen
         [SerializeField,Range(1,3)] private int emptyCellsAroundPoints = 1;
         [SerializeField, Min(1)] private int numOfEnemySpawners = 1;
         [SerializeField, Min(1)] private int minimalDistance = 1;
+        [SerializeField] private bool assumeCanSwim = false;
 
         [Header("Debug Seed")] 
         [SerializeField] private GlobalSeedGameObject providedSeed;
@@ -111,7 +112,7 @@ namespace TDPG.Templates.Grid.MapGen
                     noise.SetFractalType(FastNoiseLite.FractalType.Ridged);
                     break;
 
-                case MapTypes.Lakes:
+                case MapTypes.Chaotic:
                     // Clamp to higher frequency, more water
                     freq = Mathf.Clamp(freq, 0.04f, 0.05f);
                     octaves = Mathf.Clamp(octaves, 4, 5);
@@ -163,7 +164,6 @@ namespace TDPG.Templates.Grid.MapGen
             
             return _mapInit;
         }
-        
         
         public int Width => width;
         public int Height => height;
@@ -401,16 +401,7 @@ namespace TDPG.Templates.Grid.MapGen
                     Vector3 startWorld = new Vector3(x, y, 0);
                     List<Vector3> path;
                     
-                    switch (mapType)
-                    {
-                        case MapTypes.Lakes:
-                        case MapTypes.Mountainous:
-                            path = _pathUtils.FindPath(startWorld, dstWorld, true, false, false);
-                            break;
-                        default:
-                            path = _pathUtils.FindPath(startWorld, dstWorld, false, false, false);
-                            break;
-                    }
+                    path = _pathUtils.FindPath(startWorld, dstWorld, assumeCanSwim, false, false);
                     
                     if (path == null || path.Count < 2)
                         continue;

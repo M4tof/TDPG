@@ -4,7 +4,7 @@ namespace TDPG.Templates.Grid.MapGen
     {
         Smooth,
         Mountainous,
-        Lakes,
+        Chaotic,
         Static
     }
 }
