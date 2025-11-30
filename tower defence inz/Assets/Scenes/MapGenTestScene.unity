@@ -255,11 +255,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 70c5e98b4e4f42a18888d92b66fc4ba3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mapType: 0
+  mapType: 3
   width: 30
   height: 30
-  waterLevel: -0.173
-  wallLevel: 0.27
+  waterLevel: -0.001
+  wallLevel: 0.001
   emptyCellsAroundPoints: 1
   numOfEnemySpawners: 10
   minimalDistance: 12
