@@ -5,7 +5,7 @@ using static TDPG.Templates.Pathfinding.PathfindingEvents;
 
 namespace TDPG.Templates.Pathfinding
 {
-    public class EnemyPathFollower : MonoBehaviour
+    public class EnemyPathFollowerMock : MonoBehaviour
     {
         public GridManager gridManager;
         [SerializeField] internal GameObject destinationObject;
@@ -124,54 +124,6 @@ namespace TDPG.Templates.Pathfinding
                 hasReachedDestination = true;
                 path = null;
             }
-        }
-
-        public Vector3 GetTargetPosition()
-        {
-            if (hasReachedDestination) return transform.position;
-            
-            if (path == null || path.Count == 0 || index >= path.Count || gridManager == null)
-                return transform.position;
-            
-            //If Destroying Building
-            if (isDestroyingBuilding)
-            {
-                return transform.position;
-            }
-
-            Vector3 target = (path[index] * gridManager.CellSize) + new Vector3(half, half, 0);
-            
-            if (Vector3.Distance(transform.position, target) < 0.1f)
-            {
-                index++; //move to next point in path
-                    
-                // Check if we've reached the final destination
-                if (index >= path.Count)
-                {
-                    hasReachedDestination = true;
-                    path = null; 
-                }
-                
-                return (path[index] * gridManager.CellSize) + new Vector3(half, half, 0);
-            }
-            
-            // Additional check: if we're very close to the actual destination object, consider it reached
-            if (destinationObject != null && Vector3.Distance(transform.position, destinationObject.transform.position) < 0.5f)
-            {
-                hasReachedDestination = true;
-                path = null;
-                return transform.position;
-            }
-            
-            return target;
-
-        }
-
-        public void Initialize(GridManager gridManager, GameObject destinationObject)
-        {
-            this.gridManager = gridManager;
-            this.destinationObject = destinationObject;
-            Start();
         }
         
         private System.Collections.IEnumerator DestroyBuilding(Vector3 buildingPosition)

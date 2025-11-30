@@ -1,14 +1,18 @@
+using TDPG.Templates.Pathfinding;
 using UnityEngine;
 
+[RequireComponent(typeof(EnemyPathFollower))]
 public class EnemyBehavior : MonoBehaviour
 {
     public Enemy Logic { get; private set; }
     private SpriteRenderer _renderer;
+    private EnemyPathFollower _enemyPathFollower;
 
     public void Initialize(Enemy logic)
     {
         Logic = logic;
         _renderer = GetComponent<SpriteRenderer>();
+        _enemyPathFollower = GetComponent<EnemyPathFollower>();
 
         // 1. Setup Visuals
         _renderer.sprite = Logic.Data.EnemySprite;
@@ -23,13 +27,18 @@ public class EnemyBehavior : MonoBehaviour
 
     void Update()
     {
-        if (Logic == null) return;
+        //TODO PORUSZANIE SIĘ
+
+        Vector3 target = _enemyPathFollower.GetTargetPosition();
+        Debug.Log($"NEXT TARGET: {target}");
+
+        /*if (Logic == null) return;
 
         // 1. Run Logic (Movement, Status Effects)
         Logic.OnUpdate();
 
         // 2. Sync Unity Transform to Logic Position
-        transform.position = Logic.Position;
+        transform.position = Logic.Position;*/
     }
 
     private void Die()

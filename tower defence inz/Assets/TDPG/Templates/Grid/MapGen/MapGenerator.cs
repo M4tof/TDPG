@@ -396,17 +396,18 @@ namespace TDPG.Templates.Grid.MapGen
                 return;
             }
 
-            Vector3 dstWorld = new Vector3(_destinationPos.x, _destinationPos.y, 0);
+            int licz = 0;
+            Vector3 dstWorld = GetDestinationWorldPosition();
             for (int x = 0; x < width; x++)
             {
                 for (int y = 0; y < height; y++)
                 {
                     if (!IsCandidateSpawnerTile(x, y))
                         continue;
-
-                    Vector3 startWorld = new Vector3(x, y, 0);
+                    float cellSize = _grid.GetCellSize();
+                    Vector3 startWorld = new Vector3(x * cellSize, y * cellSize, 0);
                     List<Vector3> path;
-                    
+                    licz += 1;
                     path = _pathUtils.FindPath(startWorld, dstWorld, assumeCanSwim, false, false);
                     
                     if (path == null || path.Count < 2)
@@ -421,6 +422,7 @@ namespace TDPG.Templates.Grid.MapGen
                 }
             }
             Debug.Log($"Spawner candidate tiles found: {_reachableCandidates.Count}");
+            Debug.Log($"Licz: {licz}");
         }
 
         private void SortCandidatesByDistance()
