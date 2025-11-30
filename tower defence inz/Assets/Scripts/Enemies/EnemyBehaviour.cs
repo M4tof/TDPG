@@ -47,4 +47,17 @@ public class EnemyBehavior : MonoBehaviour
             Die();
         }
     }
+    
+    void OnDrawGizmos()
+    {
+        // Only draw if we have a target
+        if (Logic != null && Logic.CurrentTarget.HasValue)
+        {
+            Gizmos.color = Color.green;
+            // Draw line to current target
+            Gizmos.DrawLine(transform.position, Logic.CurrentTarget.Value);
+            // Draw sphere at target
+            Gizmos.DrawWireSphere(Logic.CurrentTarget.Value, 0.2f);
+        }
+    }
 }

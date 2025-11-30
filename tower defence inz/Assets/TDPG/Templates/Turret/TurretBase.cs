@@ -1,81 +1,224 @@
 using UnityEngine;
+using System.Collections.Generic;
+using TDPG.Templates.Grid;
 
 namespace TDPG.Templates.Turret
 {
     public class TurretBase : MonoBehaviour
     {
 
-        [Header("Parameters")] 
-        [SerializeField] private int id;    //TODO Serialize is only for testing
-        [SerializeField] private Vector2 tileSize = new Vector2(1, 1);
-        [SerializeField] private float multiplayer = 5.0f;
-    
-        [SerializeField] private GameObject spriteObject;
-    
-        // Start is called once before the first execution of Update after the MonoBehaviour is created
-        void Start()
+        [Header("Runtime State")]
+        public TurretData Data;
+        private float _cooldownTimer;
+        private Transform _currentTarget;
+        private int _enemyLayerMask;
+
+        [Header("Visuals")]
+        [SerializeField] private SpriteRenderer baseRenderer;
+        [SerializeField] private SpriteRenderer crystalRenderer;
+        [SerializeField] private Transform rotator;
+
+        private Vector3 _baseDesignPos;
+        private Vector3 _crystalDesignPos;
+        private Vector3 _baseDesignScale;
+        private Vector3 _crystalDesignScale;
+        private bool _initializedOffsets = false;
+
+
+        void Awake()
         {
-            spriteObject.transform.localPosition = new Vector2(tileSize.x * multiplayer, tileSize.x * multiplayer);
+            _enemyLayerMask = LayerMask.GetMask("Enemy");
+            EnsureOffsetsCached();
         }
 
-        //Set Id
-        public void SetId(int id)
+        private void EnsureOffsetsCached()
         {
-            this.id = id;
-        }
-    
-        public int GetId()
-        {
-            return this.id;
-        }
-        
-        //Set TileSize
-        public void SetTileSize(Vector2 tileSize)
-        {
-            this.tileSize = tileSize;
-            spriteObject.transform.localPosition = new Vector2(tileSize.x * multiplayer, tileSize.x * multiplayer);
-        }
+            if (_initializedOffsets) return;
 
-        //Get tile size
-        public Vector2 GetTileSize()
-        {
-            return tileSize;
-        }
-
-        //Set Multiplayer
-        public void SetMultiplier(float multiplayer)
-        {
-            this.multiplayer = multiplayer;
-            spriteObject.transform.localPosition = new Vector2(tileSize.x * multiplayer, tileSize.x * multiplayer);
-        }
-    
-        //Get Multiplayer
-        public float GetMultiplier()
-        {
-            return multiplayer;
-        }
-
-        public void SetSprite(Sprite sprite)
-        {
-            spriteObject.GetComponent<SpriteRenderer>().sprite = sprite;
-        }
-
-        public Sprite GetSprite()
-        {
-            return spriteObject.GetComponent<SpriteRenderer>().sprite;
-        }
-
-        public SpriteRenderer GetSpriteRenderer()
-        {
-            return spriteObject.GetComponent<SpriteRenderer>();
-        }
-    
-        void OnValidate()
-        {
-            if (spriteObject == null)
+            if (baseRenderer != null)
             {
-                Debug.LogWarning("Sprite Object is not assigned", this);
+                _baseDesignPos = baseRenderer.transform.localPosition;
+                _baseDesignScale = baseRenderer.transform.localScale; // Capture Scale
+            }
+
+            if (crystalRenderer != null)
+            {
+                _crystalDesignPos = crystalRenderer.transform.localPosition;
+                _crystalDesignScale = crystalRenderer.transform.localScale; // Capture Scale
+            }
+            _initializedOffsets = true;
+        }
+        public void Initialize(TurretData data)
+        {
+            EnsureOffsetsCached(); // Safety check
+            Data = data;
+
+            // Safety: Default to 1.0 if GridManager is missing (e.g. prefab mode)
+            float cellSize = (GridManager.Instance != null) ? GridManager.Instance.CellSize : 1.0f;
+
+            // Calculate the specific offset to center this turret on its tiles
+            // Vector3 gridCenterOffset = new Vector3(
+            //     data.TileSize.x * cellSize * 0.5f,
+            //     data.TileSize.y * cellSize * 0.5f,
+            //     0f
+            // );
+
+            // APPLY: Always set relative to the CLEAN Design Position
+            if (baseRenderer != null)
+            {
+                baseRenderer.sprite = data.BaseSprite;
+                baseRenderer.transform.localScale = new Vector3(
+                    _baseDesignScale.x * data.Multiplayer,
+                    _baseDesignScale.y * data.Multiplayer,
+                    1f
+                );
+                Vector3 scaledDesignPos = new Vector3(
+                    _baseDesignPos.x * data.Multiplayer,
+                    _baseDesignPos.y * data.Multiplayer,
+                    _baseDesignPos.z
+                );
+
+                baseRenderer.transform.localPosition = scaledDesignPos;
+            }
+
+            if (crystalRenderer != null)
+            {
+                crystalRenderer.sprite = data.CrystalSprite;
+                crystalRenderer.transform.localScale = new Vector3(
+                    _crystalDesignScale.x * data.Multiplayer,
+                    _crystalDesignScale.y * data.Multiplayer,
+                    1f
+                );
+                Vector3 scaledDesignPos = new Vector3(
+                    _crystalDesignPos.x * data.Multiplayer,
+                    _crystalDesignPos.y * data.Multiplayer,
+                    _crystalDesignPos.z
+                );
+
+                crystalRenderer.transform.localPosition = scaledDesignPos;
+
             }
         }
+
+        void Update()
+        {
+            if (Data == null) return;
+
+            // Cooldown Management
+            if (_cooldownTimer > 0) _cooldownTimer -= Time.deltaTime;
+
+            // Combat Loop
+            if (_cooldownTimer <= 0)
+            {
+                PerformCombatLoop();
+            }
+        }
+
+        private void PerformCombatLoop()
+        {
+            // Step 1: Get Possible Targets (Range + Visibility)
+            List<Transform> candidates = GetPossibleTargets();
+
+            // Step 2: Select Target (Strategy)
+            _currentTarget = SelectTarget(candidates);
+
+            foreach (var item in candidates)
+            {
+                Debug.Log($"target in sight: {item}");
+            }
+
+            // Step 3: Shoot
+            if (_currentTarget != null)
+            {
+                Shoot(_currentTarget);
+                _cooldownTimer = 1f / Data.FireRate;
+            }
+        }
+
+        private List<Transform> GetPossibleTargets()
+        {
+            List<Transform> validTargets = new List<Transform>();
+
+            float cellSize = (GridManager.Instance != null) ? GridManager.Instance.CellSize : 1.0f;
+
+            // A. Range Check (Physics)
+            Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, Data.Range*cellSize, _enemyLayerMask);
+
+            foreach (var hit in hits)
+            {
+                // B. Line of Sight Check (Optional/Placeholder)
+                // If you add walls later, perform a Raycast here.
+                if (CheckLineOfSight(hit.transform))
+                {
+                    validTargets.Add(hit.transform);
+                }
+            }
+            return validTargets;
+        }
+
+        private bool CheckLineOfSight(Transform target)
+        {
+            // Placeholder: Simply return true for now.
+            // Future implementation: Raycast from Turret center to Target center. 
+            // If it hits "Wall" layer before "Enemy", return false.
+            return true;
+        }
+
+        private Transform SelectTarget(List<Transform> candidates)
+        {
+            if (candidates.Count == 0) return null;
+
+            // Strategy: CLOSEST (Default)
+            // TODO: Refactor this into a Strategy Pattern (e.g., ITargetingStrategy)
+
+            Transform bestTarget = null;
+            float closestDistSqr = Mathf.Infinity;
+            Vector3 currentPos = transform.position;
+
+            foreach (var candidate in candidates)
+            {
+                if (candidate == null) continue;
+
+                float dSqr = (candidate.position - currentPos).sqrMagnitude;
+                if (dSqr < closestDistSqr)
+                {
+                    closestDistSqr = dSqr;
+                    bestTarget = candidate;
+                }
+            }
+            return bestTarget;
+        }
+
+        private void Shoot(Transform target)
+        {
+            if (Data.ProjectilePrefab == null) return;
+
+            // Calculate rotation towards target
+            Vector3 direction = (target.position - transform.position).normalized;
+            float rotZ = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+            Quaternion bulletRotation = Quaternion.Euler(0f, 0f, rotZ);
+
+            // Spawn Projectile
+            // Use center of tile (transform.position) + offset if needed
+            Vector3 spawnPos = transform.position + (Vector3)(Data.TileSize * 0.5f);
+
+            Instantiate(Data.ProjectilePrefab, spawnPos, bulletRotation);
+
+            // Note: We stop here. 
+            // The BasicProjectile script takes over movement via its FixedUpdate.
+            // Damage application is handled by the projectile's collision logic (not implemented here).
+        }
+        public Vector2 GetTileSize() => Data != null ? Data.TileSize : Vector2.one;
+        public string GetTurretID() => Data != null ? Data.TurretID : "";
+
+        void OnDrawGizmosSelected()
+        {
+            if (Data != null)
+            {
+                Gizmos.color = Color.cyan;
+                Gizmos.DrawWireSphere(transform.position, Data.Range);
+            }
+        }
+
     }
 }
