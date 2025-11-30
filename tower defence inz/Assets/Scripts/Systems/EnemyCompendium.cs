@@ -30,9 +30,41 @@ public class EnemyCompendium : MonoBehaviour
         }
     }
 
-    // Call this from your SaveSystem to get the data object
-    public List<Enemy> GetSaveData()
+    public List<EnemySaveData> GetSaveData()
     {
-        return ActiveEnemies;
+        var list = new List<EnemySaveData>();
+        foreach (var enemy in ActiveEnemies)
+        {
+            if (enemy.CurrentHealth > 0)
+            {
+                list.Add(new EnemySaveData
+                {
+                    EnemyID = enemy.EnemyID,
+                    Health = enemy.CurrentHealth,
+                    Position = enemy.Position
+                });
+            }
+        }
+        return list;
+    }
+
+    public void LoadFromData(List<EnemySaveData> data)
+    {
+        // 1. Clear existing
+        foreach (var enemy in ActiveEnemies)
+        {
+            // Destroy View/GameObject linked to this enemy? 
+            // We need a reference to the View to destroy it, or clear the scene beforehand.
+        }
+        ActiveEnemies.Clear();
+
+        // 2. Find Spawner
+        var spawner = FindFirstObjectByType<EnemySpawner>();
+
+        // 3. Respawn
+        foreach (var save in data)
+        {
+            spawner.ForceSpawnEnemy(save); // Need to implement this in Spawner
+        }
     }
 }

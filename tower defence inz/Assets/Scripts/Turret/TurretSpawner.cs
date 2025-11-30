@@ -4,7 +4,7 @@ using TDPG.Templates.Turret; // Lib
 
 public class TurretSpawner : MonoBehaviour
 {
-    [SerializeField] private GridManager gridManager;
+    // [SerializeField] private GridManager gridManager;
     [SerializeField] private GameObject TurretBox;
 
     [Header("References")]
@@ -65,11 +65,11 @@ public class TurretSpawner : MonoBehaviour
             ResourceSystem.Instance.mana.Claim(data.Cost);
         }
 
-        Vector3 gridBottomLeft = gridManager.GetGridWorldTilePosition(worldPosition);
+        Vector3 gridBottomLeft = GridManager.Instance.GetGridWorldTilePosition(worldPosition);
 
         // 2. Calculate Center Offset
         // (TileDimensions * CellSize) / 2
-        float cellSize = gridManager.CellSize;
+        float cellSize = GridManager.Instance.CellSize;
         Vector3 centerOffset = new Vector3(
             data.TileSize.x * cellSize * 0.5f,
             data.TileSize.y * cellSize * 0.5f,
@@ -86,19 +86,19 @@ public class TurretSpawner : MonoBehaviour
         var logic = newTurret.GetComponent<TurretBase>();
         logic.Initialize(data);
 
-        gridManager.PlaceTurret(worldPosition, newTurret);
+        GridManager.Instance.PlaceTurret(worldPosition, newTurret);
         return newTurret;
     }
 
     public void UpdateVisualizerPosition(Vector3 position)
     {
-        if (!string.IsNullOrEmpty(_selectedTurretID) && gridManager.IsOnGrid(position))
+        if (!string.IsNullOrEmpty(_selectedTurretID) && GridManager.Instance.IsOnGrid(position))
         {
             position.z = 0f;
-            TurretVisualizer.transform.position = gridManager.GetGridWorldTilePosition(position);
+            TurretVisualizer.transform.position = GridManager.Instance.GetGridWorldTilePosition(position);
             TurretVisualizer.gameObject.SetActive(true);
 
-            if (gridManager.CanPlaceTurret(position, TurretVisualizer.GetTileSize()))
+            if (GridManager.Instance.CanPlaceTurret(position, TurretVisualizer.GetTileSize()))
             {
                 _canSpawnTurret = true;
                 // Visual feedback (requires sprite renderer access)
@@ -112,5 +112,26 @@ public class TurretSpawner : MonoBehaviour
             return;
         }
         TurretVisualizer.gameObject.SetActive(false);
+    }
+
+    public void ForceSpawnTurret(string turretID, Vector3 worldPosition)
+    {
+        TurretData data = TurretRegistry.Instance.Get(turretID);
+        if (data == null)
+        {
+            Debug.LogError($"[Load] Unknown Turret ID: {turretID}");
+            return;
+        }
+
+        // Instantiate
+        GameObject newTurret = Instantiate(GenericTurretPrefab, worldPosition, Quaternion.identity);
+        newTurret.SetActive(true);
+        newTurret.transform.SetParent(TurretBox.transform);
+        
+        // Init Logic
+        newTurret.GetComponent<TurretBase>().Initialize(data);
+        
+        // Register in Grid
+        GridManager.Instance.PlaceTurret(worldPosition, newTurret);
     }
 }

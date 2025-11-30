@@ -11,9 +11,9 @@ using TDPG.Templates.Grid;
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance { get; private set; }
-    public ResourceSystem RSInstance;
-    public TurretCompendium TCInstance;
-    public ElementCompendium ECInstance;
+    // public ResourceSystem RSInstance;
+    // public TurretCompendium TCInstance;
+    // public ElementCompendium ECInstance;
 
     public GlobalSeed GSeed;
 
@@ -27,9 +27,9 @@ public class GameManager : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        RSInstance = ResourceSystem.Instance;
-        TCInstance = TurretCompendium.Instance;
-        ECInstance = ElementCompendium.Instance;
+        // RSInstance = ResourceSystem.Instance;
+        // TCInstance = TurretCompendium.Instance;
+        // ECInstance = ElementCompendium.Instance;
         Slot = 1;
         GSeed = new GlobalSeed(InitializerFromDate.QuickGenerate(Slot), "main", "Main global seed for this save slot");
     }
@@ -57,7 +57,7 @@ public class GameManager : MonoBehaviour
             DontDestroyOnLoad(gameObject);
             Debug.Log("GameManager created and set to not destroy on load.");
 
-            SceneManager.sceneLoaded += OnSceneLoaded; 
+            SceneManager.sceneLoaded += OnSceneLoaded;
         }
     }
 
@@ -68,6 +68,7 @@ public class GameManager : MonoBehaviour
 
     void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
+        // if (RSInstance == null) RSInstance = ResourceSystem.Instance;
         if (scene.name == "MainGame" && !string.IsNullOrEmpty(PendingLoadPath))
         {
             // Now that the scene systems (like GridManager) exist, load the data.
@@ -87,18 +88,53 @@ public class GameManager : MonoBehaviour
     public void GetGrid()
     {
 
-        G = GridManager.Instance.GetCurrentGrid();
+        if (GridManager.Instance != null) G = GridManager.Instance.GetCurrentGrid();
     }
     public void SaveGame(string path)
     {
         GetGrid();
+
+        List<TurretSaveData> currentTurrets = new List<TurretSaveData>();
+
+        if (GridManager.Instance != null && G != null)
+        {
+            var gridRef = GridManager.Instance;
+            for (int x = 0; x < G.width; x++)
+            {
+                for (int y = 0; y < G.height; y++)
+                {
+                    GameObject building = gridRef.GetBuilding(gridRef.GridToWorld(x, y));
+                    if (building != null)
+                    {
+                        var tb = building.GetComponent<TDPG.Templates.Turret.TurretBase>();
+                        if (tb != null && tb.Data != null)
+                        {
+                            currentTurrets.Add(new TurretSaveData
+                            {
+                                TurretID = tb.Data.TurretID,
+                                GridX = x,
+                                GridY = y
+                            });
+                        }
+                    }
+                }
+            }
+        }
+
+        List<EnemySaveData> currentEnemies = new List<EnemySaveData>();
+        if (EnemyCompendium.Instance != null)
+        {
+            currentEnemies = EnemyCompendium.Instance.GetSaveData();
+        }
+
         GameSaveData data = new GameSaveData
         {
             // SlotNumber = Slot,
             GS = GSeed,
-            Resources = RSInstance.GetData(),
+            Resources = ResourceSystem.Instance.GetData(),
             Elements = new ElementSaveData { },
-            Turrets = new List<TurretSaveData>(),
+            Turrets = currentTurrets,
+            Enemies = currentEnemies,
             GData = new GridSaveData
             {
                 Width = G.width,
@@ -106,7 +142,7 @@ public class GameManager : MonoBehaviour
                 CellSize = G.cellSize,
                 Grid = G.grid,
                 TypeGrid = G.typeGrid,
-                BuildingGrid = G.turretId
+                // BuildingGrid = G.turretId
             }
         };
 
@@ -139,19 +175,68 @@ public class GameManager : MonoBehaviour
             {
                 // Slot = data.SlotNumber;
                 GSeed = data.GS;
-                RSInstance.LoadData(data.Resources);
+                if (ResourceSystem.Instance != null && data.Resources != null)
+                {
+                    ResourceSystem.Instance.LoadData(data.Resources);
+                }
+                else
+                {
+                    Debug.LogWarning("Skipping Resources Load: ResourceSystem or Data is null.");
+                }
                 // TODO: implement rest of the systems
-                G = new TDPG.Templates.Grid.Grid(data.GData.Width, data.GData.Height, data.GData.CellSize);
-                G.grid = data.GData.Grid;
-                G.typeGrid = data.GData.TypeGrid;
-                G.turretId = data.GData.BuildingGrid;
-                GridManager.Instance.SetCurrentGrid(G);
+                if (data.GData != null)
+                {
+                    G = new TDPG.Templates.Grid.Grid(data.GData.Width, data.GData.Height, data.GData.CellSize);
+                    G.grid = data.GData.Grid;
+                    G.typeGrid = data.GData.TypeGrid;
+                }
+                // G.turretId = data.GData.BuildingGrid;
+                if (GridManager.Instance != null)
+                {
+                    GridManager.Instance.SetCurrentGrid(G);
+                    GridManager.Instance.ClearMap();
+
+                    for (int x = 0; x < G.width; x++)
+                    {
+                        for (int y = 0; y < G.height; y++)
+                        {
+                            GridManager.Instance.UpdateTileVisual(x, y, G.GetTileType(x, y));
+                        }
+                    }
+
+                    var spawner = FindFirstObjectByType<TurretSpawner>();
+                    if (spawner != null)
+                    {
+                        foreach (var tData in data.Turrets)
+                        {
+                            // Convert Grid X,Y to World Position for the Spawner
+                            // (Or update ForceSpawnTurret to take Grid Coordinates as discussed in TODO)
+                            Vector3 worldPos = GridManager.Instance.GridToWorld(tData.GridX, tData.GridY);
+
+                            // Spawner handles instantiation AND calling GridManager.PlaceTurret
+                            spawner.ForceSpawnTurret(tData.TurretID, worldPos);
+                        }
+                    }
+                    else
+                    {
+                        Debug.LogWarning("TurretSpawner not found. Turrets will not be placed.");
+                    }
+                }
+                else
+                {
+                    Debug.LogError("GridManager.Instance is NULL!");
+                }
+
+                if (EnemyCompendium.Instance != null)
+                {
+                    EnemyCompendium.Instance.LoadFromData(data.Enemies);
+                }
                 Debug.Log($"Game Loaded successfully. Version: {data.SaveVersion}");
             }
         }
         catch (System.Exception e)
         {
-            Debug.LogError($"Failed to load game: {e.Message}");
+            Debug.LogError($"CRITICAL LOAD ERROR: {e.Message}\nStack Trace: {e.StackTrace}");
         }
 
     }
