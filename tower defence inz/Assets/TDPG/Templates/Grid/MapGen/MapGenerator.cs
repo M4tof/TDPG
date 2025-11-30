@@ -15,8 +15,9 @@ namespace TDPG.Templates.Grid.MapGen
         [Header("Map Settings")]
         [SerializeField, Min(1)] private int width = 140;
         [SerializeField, Min(1)] private int height = 140;
-        [SerializeField, Range(-1.0f,-0.001f)] private float waterLevel = -0.5f;
-        [SerializeField, Range(0.001f,1.0f)] private float wallLevel = 0.5f;
+        [SerializeField] private float waterLevel = -0.5f;
+        [SerializeField] private float wallLevel = 0.5f;
+
         
         [Header("Points of Interest Settings")]
         [SerializeField,Range(1,3)] private int emptyCellsAroundPoints = 1;
