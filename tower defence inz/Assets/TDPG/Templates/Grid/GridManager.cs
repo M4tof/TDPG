@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using TDPG.Generators.Seed;
 using TDPG.Templates.Grid.MapGen;
 using TDPG.Templates.Turret;
@@ -12,29 +13,29 @@ namespace TDPG.Templates.Grid
     public class GridManager : MonoBehaviour
     {
         public static GridManager Instance { get; set; }
-        
+
         [Header("Required elements")]
         [SerializeField] private Camera mainCamera;
-    
+
         [Header("Parameters")]
         [SerializeField] private int width = 10;
         [SerializeField] private int height = 10;
         [SerializeField] private float cellSize = 1;
         [SerializeField] private float pixelsPerUnit = 100f;
-        
+
         [Header("Map Generation")]
         [SerializeField] private MapGenerator mapGenerator;
-        
+
         [Header("Tilemap")]
         [SerializeField] private Tilemap tilemap;
-        [SerializeField] private UnityEngine.Grid gridComponent; 
+        [SerializeField] private UnityEngine.Grid gridComponent;
         [SerializeField] private TileBase emptyTile;
         [SerializeField] private TileBase wallTile;
         [SerializeField] private TileBase waterTile;
-        
+
         [Header("Debug")]
         [SerializeField] private GridDebugFiller debugFiller;
-        
+
         private TDPG.Templates.Grid.Grid grid;
         private GameObject[,] buildingsGrid;
         private bool mapGenerated = false;
@@ -44,7 +45,7 @@ namespace TDPG.Templates.Grid
         private Vector3Int[] spawnerPositions;
 
 
-        
+
         public Grid GetGrid() => grid;
         public float CellSize => cellSize;
 
@@ -62,7 +63,7 @@ namespace TDPG.Templates.Grid
                 // If this is the first GameManager, make it the instance
                 Instance = this;
                 // Prevents the GameObject from being destroyed when reloading a scene
-                DontDestroyOnLoad(gameObject);
+                // DontDestroyOnLoad(gameObject);
                 Debug.Log("GridManager created and set to not destroy on load.");
             }
         }
@@ -70,64 +71,56 @@ namespace TDPG.Templates.Grid
         void Start()
         {
             SetupTilemapGridAlignment();
-            
-            bool hasMapGenerator = false;
-            if (mapGenerator != null)
+
+            bool hasMapGenerator = mapGenerator != null;
+            if (hasMapGenerator)
             {
-                hasMapGenerator = true;
                 width = mapGenerator.Width;
                 height = mapGenerator.Height;
                 numOfEnemySpawners = mapGenerator.NumOfEnemySpawners;
             }
-            
-            grid = new Grid(width, height, cellSize);
-            buildingsGrid = new GameObject[width, height];
-            
-            for (int x = 0; x < buildingsGrid.GetLength(0); x++)
+
+            // FIX: Only initialize a NEW grid if we haven't already loaded one via GameManager
+            if (grid == null)
             {
-                for (int y = 0; y < buildingsGrid.GetLength(1); y++)
+                grid = new Grid(width, height, cellSize);
+                buildingsGrid = new GameObject[width, height];
+
+                // Initialize array to avoid nulls
+                for (int x = 0; x < width; x++)
+                    for (int y = 0; y < height; y++)
+                        buildingsGrid[x, y] = null;
+
+                // Only run generation logic if we created a new grid
+                if (hasMapGenerator && !mapGenerated)
                 {
-                    buildingsGrid[x, y] = null;
+                    Debug.Log("Map generation initializing");
+                    // ... existing map gen logic ...
+                    // (Keep your existing generation code block here)
+                    GlobalSeed globalSeed = new GlobalSeed(QuickGenerate(1));
+                    Grid.TileType[,] mapData = mapGenerator.GenerateMap(globalSeed.NextSubSeed("TMPHERE"));
+                    ApplyMapToGridWithTilemap(mapData);
+                    mapGenerator.setGrid(grid);
+                    mapGenerator.BuildValidSpawnerCandidates();
+                    spawnerPositions = mapGenerator.SelectSpawnerPositions(numOfEnemySpawners);
+                    destpos = mapGenerator.GetDestinationPosition();
+                    mapGenerated = true;
+                }
+                else if (!hasMapGenerator && tilemap != null)
+                {
+                    InitializeEmptyTilemap();
+                }
+                else if (debugFiller != null)
+                {
+                    debugFiller.Initialize(this);
                 }
             }
-            
-            if (hasMapGenerator && !mapGenerated)
+            else
             {
-                Debug.Log("Map generation initializing");
-                
-                //tmp TODO: replace by properly reading globalseed
-                GlobalSeed globalSeed = new GlobalSeed(QuickGenerate(1));
-                Grid.TileType[,] mapData = mapGenerator.GenerateMap(globalSeed.NextSubSeed("TMPHERE"));
-                
-                ApplyMapToGridWithTilemap(mapData);
-                
-                mapGenerator.setGrid(grid);
-
-                mapGenerator.BuildValidSpawnerCandidates();
-                spawnerPositions = mapGenerator.SelectSpawnerPositions(numOfEnemySpawners);
-                
-                destpos = mapGenerator.GetDestinationPosition();
-                
-                mapGenerated = true;
+                Debug.Log("GridManager started with existing (loaded) grid. Skipping initialization.");
             }
-            else if (!hasMapGenerator && tilemap != null)
-            {
-                // If no map generator, initialize with empty tiles
-                InitializeEmptyTilemap();
-            }
-            
-            // Initialize debug filler if assigned and not using mapGenerator
-            else if (debugFiller != null)
-            {
-                debugFiller.Initialize(this);
-            }
-            
-            //Set Camera
-
-            
-            
         }
-        
+
         private void SetupTilemapGridAlignment()
         {
             // Ensure the Tilemap's grid component matches our cell size
@@ -152,7 +145,7 @@ namespace TDPG.Templates.Grid
                 tilemap.transform.position = Vector3.zero;
                 Debug.Log("Reset Tilemap position to origin");
             }
-            
+
             // Set the tilemap's transform scale if needed
             if (tilemap != null)
             {
@@ -170,30 +163,30 @@ namespace TDPG.Templates.Grid
                 PrintGridCell(worldMousePosition);
             }
         }
-        
+
         private void ApplyMapToGridWithTilemap(Grid.TileType[,] mapData)
         {
-            if (tilemap == null) 
+            if (tilemap == null)
             {
                 Debug.LogWarning("Tilemap is not assigned in GridManager!");
                 return;
             }
-    
+
             tilemap.ClearAllTiles();
-    
+
             for (int x = 0; x < width; x++)
             {
                 for (int y = 0; y < height; y++)
                 {
                     Grid.TileType type = mapData[x, y];
                     grid.SetTileType(x, y, type);
-            
+
                     TileBase tileToPlace = GetTileBase(type);
                     if (tileToPlace != null)
                     {
                         Vector3Int tilePos = new Vector3Int(x, y, 0);
                         tilemap.SetTile(tilePos, tileToPlace);
-                        
+
                         // Debug positioning for first tile
                         if (x == 0 && y == 0)
                         {
@@ -203,18 +196,18 @@ namespace TDPG.Templates.Grid
                     }
                 }
             }
-            
+
             Debug.Log($"Tilemap populated with {width}x{height} tiles");
             Debug.Log($"Expected grid bounds: (0,0) to ({width},{height})");
             Debug.Log($"Expected world bounds: (0,0) to ({width * cellSize},{height * cellSize})");
         }
-        
+
         private void InitializeEmptyTilemap()
         {
             if (tilemap == null) return;
-            
+
             tilemap.ClearAllTiles();
-            
+
             for (int x = 0; x < width; x++)
             {
                 for (int y = 0; y < height; y++)
@@ -224,7 +217,7 @@ namespace TDPG.Templates.Grid
                 }
             }
         }
-        
+
         private TileBase GetTileBase(Grid.TileType type)
         {
             switch (type)
@@ -235,18 +228,18 @@ namespace TDPG.Templates.Grid
                 default: return emptyTile;
             }
         }
-        
+
         public void UpdateTileVisual(int x, int y, Grid.TileType tileType)
         {
             if (tilemap == null) return;
-            
+
             TileBase tileToPlace = GetTileBase(tileType);
             if (tileToPlace != null)
             {
                 tilemap.SetTile(new Vector3Int(x, y, 0), tileToPlace);
             }
         }
-        
+
         // Convert world position to grid coordinates using Tilemap
         public Vector2Int WorldToGrid(Vector3 worldPosition)
         {
@@ -255,11 +248,11 @@ namespace TDPG.Templates.Grid
                 Vector3Int cellPos = gridComponent.WorldToCell(worldPosition);
                 return new Vector2Int(cellPos.x, cellPos.y);
             }
-            
+
             // Fallback
             return grid.GetXY(worldPosition);
         }
-        
+
         // Convert grid coordinates to world position using Tilemap
         public Vector3 GridToWorld(int x, int y)
         {
@@ -270,17 +263,17 @@ namespace TDPG.Templates.Grid
                 worldPos += gridComponent.cellSize * 0.5f;
                 return worldPos;
             }
-            
+
             // Fallback
             return grid.GetWorldPosition(x, y) + new Vector3(cellSize * 0.5f, cellSize * 0.5f, 0);
         }
-        
+
         //Return tile postition on grid
         public Vector2 GetGridTilePosition(Vector3 worldPosition)
         {
             return grid.GetXY(worldPosition);
         }
-    
+
         //Return tile world postition on grid
         public Vector2 GetGridWorldTilePosition(Vector3 worldPosition)
         {
@@ -300,7 +293,7 @@ namespace TDPG.Templates.Grid
 
             return true;
         }
-    
+
         //Check if world point is on Grid
         public bool IsTileOnGrid(Vector3 position)
         {
@@ -320,14 +313,14 @@ namespace TDPG.Templates.Grid
             {
                 for (int y = 0; y < TurretSize.y; y++)
                 {
-                    Vector3Int tile = new Vector3Int(firstTile.x + x, firstTile.y + y,0);
+                    Vector3Int tile = new Vector3Int(firstTile.x + x, firstTile.y + y, 0);
                     if (!IsTileOnGrid(tile))
                     {
                         Debug.Log($"Tile {tile} Out of Grid");
                         return false;
                     }
 
-                    if (grid.GetTileType(tile.x,tile.y) != Templates.Grid.Grid.TileType.EMPTY)
+                    if (grid.GetTileType(tile.x, tile.y) != Templates.Grid.Grid.TileType.EMPTY)
                     {
                         Debug.Log($"Tile Blocked");
                         return false;
@@ -363,13 +356,13 @@ namespace TDPG.Templates.Grid
                     Vector2Int tile = new Vector2Int(firstTile.x + x, firstTile.y + y);
                     buildingsGrid[tile.x, tile.y] = turret;
                     //grid.SetBuilding(tile.x,tile.y,turret);
-                    grid.SetTileType(tile.x,tile.y,Grid.TileType.BUILDING);
+                    grid.SetTileType(tile.x, tile.y, Grid.TileType.BUILDING);
                 }
             }
             Debug.Log("FINISH Place Turrets");
         }
-    
-        
+
+
         public int GetWidth()
         {
             return width;
@@ -378,7 +371,7 @@ namespace TDPG.Templates.Grid
         {
             return height;
         }
-        
+
         public Vector3 GetCenterGrid()
         {
             return new Vector3(width * cellSize / 2, width * cellSize / 2, -10f);
@@ -391,9 +384,9 @@ namespace TDPG.Templates.Grid
 
         internal void SetTileType(Vector3 worldPosition, Grid.TileType tileType)
         {
-            grid.SetTileType(worldPosition,tileType);
+            grid.SetTileType(worldPosition, tileType);
         }
-        
+
         public Grid GetCurrentGrid()
         {
             return grid;
@@ -402,8 +395,23 @@ namespace TDPG.Templates.Grid
         public void SetCurrentGrid(Grid g)
         {
             grid = g;
+            
+            // FIX: Sync dimensions and force initialization of the buildings array
+            // This ensures ClearMap has something to work with immediately
+            this.width = g.width;
+            this.height = g.height;
+            this.cellSize = g.cellSize; // Update cell size too if needed
+
+            if (buildingsGrid == null || buildingsGrid.GetLength(0) != width || buildingsGrid.GetLength(1) != height)
+            {
+                buildingsGrid = new GameObject[width, height];
+                // Wipe it to be safe
+                for (int x = 0; x < width; x++)
+                    for (int y = 0; y < height; y++)
+                        buildingsGrid[x, y] = null;
+            }
         }
-        
+
         //Set Building based on world position
         public void SetBuilding(Vector3 worldPosition, GameObject building)
         {
@@ -411,20 +419,20 @@ namespace TDPG.Templates.Grid
             position = grid.GetXY(worldPosition);
             SetBuilding(position.x, position.y, building);
         }
-    
+
         //Set Building based on tile position
         public void SetBuilding(int x, int y, GameObject building)
         {
             buildingsGrid[x, y] = building;
         }
-    
+
         //return building
         public GameObject GetBuilding(Vector3 worldPosition)
         {
             Vector2Int position = grid.GetXY(worldPosition);
             return buildingsGrid[position.x, position.y];
         }
-        
+
         public void PrintGridCell(Vector3 worldPosition)
         {
             Vector2Int position = grid.GetXY(worldPosition);
@@ -433,9 +441,9 @@ namespace TDPG.Templates.Grid
                 return;
             }
             string buildingInfo = "Building: " + buildingsGrid[position.x, position.y];
-            grid.PrintGridCell(worldPosition,buildingInfo);
+            grid.PrintGridCell(worldPosition, buildingInfo);
         }
-        
+
         void OnValidate()
         {
             if (mainCamera == null)
@@ -466,32 +474,32 @@ namespace TDPG.Templates.Grid
                     switch (tileType)
                     {
                         case Grid.TileType.WALL:
-                            Gizmos.color = new Color(1,0,0,0.2f);
+                            Gizmos.color = new Color(1, 0, 0, 0.2f);
                             break;
                         case Grid.TileType.WATER:
-                            Gizmos.color = new Color(0,0,1,0.2f);
+                            Gizmos.color = new Color(0, 0, 1, 0.2f);
                             break;
                         case Grid.TileType.BUILDING:
-                            Gizmos.color = new Color(1,1,0,0.2f);
+                            Gizmos.color = new Color(1, 1, 0, 0.2f);
                             break;
                         default:
-                            Gizmos.color = new Color(0,1,0,0.2f); // EMPTY or unknown
+                            Gizmos.color = new Color(0, 1, 0, 0.2f); // EMPTY or unknown
                             break;
                     }
-                    
-                    
+
+
                     Vector3 center = new Vector3(
-                        x * tileSize + half, 
+                        x * tileSize + half,
                         y * tileSize + half,
                         10f);
 
                     Gizmos.DrawCube(center, new Vector3(tileSize, tileSize, 0.1f));
                 }
             }
-            Vector3 destcentered = new Vector3(destpos.x  * tileSize + half, destpos.y * tileSize + half, 0);
-            Gizmos.color = new Color(1, 0f, 132f/255f, 0.7f);
-            Gizmos.DrawSphere(destcentered,0.5f);
-            
+            Vector3 destcentered = new Vector3(destpos.x * tileSize + half, destpos.y * tileSize + half, 0);
+            Gizmos.color = new Color(1, 0f, 132f / 255f, 0.7f);
+            Gizmos.DrawSphere(destcentered, 0.5f);
+
             // Draw spawners
             if (spawnerPositions != null)
             {
@@ -509,8 +517,35 @@ namespace TDPG.Templates.Grid
                 }
             }
         }
-        
-        
-        
+
+
+        public void ClearMap()
+        {
+            if (tilemap != null)
+            {
+                tilemap.ClearAllTiles();
+            }
+
+            // FIX: Defensive check (though SetCurrentGrid should have fixed this)
+            if (buildingsGrid == null) return;
+
+            for (int x = 0; x < width; x++)
+            {
+                for (int y = 0; y < height; y++)
+                {
+                    if (buildingsGrid[x, y] != null)
+                    {
+                        Destroy(buildingsGrid[x, y]);
+                        buildingsGrid[x, y] = null;
+                    }
+
+                    // Reset Logic Grid (Prevent ghost buildings)
+                    if (grid != null && grid.GetTileType(x, y) == TDPG.Templates.Grid.Grid.TileType.BUILDING)
+                    {
+                        grid.SetTileType(x, y, TDPG.Templates.Grid.Grid.TileType.EMPTY);
+                    }
+                }
+            }
+        }
     }
 }

@@ -6,7 +6,7 @@ namespace TDPG.Templates.Turret
     public class TurretData : ScriptableObject
     {
         public string TurretID; // Key for Serialization/Registry
-        
+
         [Header("Visuals")]
         public Sprite BaseSprite;    // The static base
         public Sprite CrystalSprite; // The rotating/color-swapped part
@@ -14,6 +14,7 @@ namespace TDPG.Templates.Turret
         [Header("Building")]
         public float Cost = 50f;
         public Vector2 TileSize = new Vector2(1, 1);
+        public float Multiplayer;
 
         [Header("Combat")]
         public float Range = 5f;

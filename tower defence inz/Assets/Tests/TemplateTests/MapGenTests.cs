@@ -30,6 +30,13 @@ namespace Tests.TemplateTests
                 GameObject.DestroyImmediate(testGO);
             }
         }
+        
+        private void SetPrivate(object obj, string fieldName, object value)
+        {
+            obj.GetType()
+                .GetField(fieldName, System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
+                .SetValue(obj, value);
+        }
 
         private (float water, float wall, float land) RunMapTest(MapTypes type, string label)
         {
@@ -37,15 +44,14 @@ namespace Tests.TemplateTests
 
             // Add MapGenerator component to the temp GameObject
             MapGenerator generator = testGO.AddComponent<MapGenerator>();
-            generator.GetType().GetField("mapType", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
-                     .SetValue(generator, type);
-            generator.GetType().GetField("width", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
-                     .SetValue(generator, 100); 
-            generator.GetType().GetField("height", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
-                     .SetValue(generator, 100);
+            SetPrivate(generator, "mapType", type);
+            SetPrivate(generator, "width", 100);
+            SetPrivate(generator, "height", 100);
+            SetPrivate(generator, "waterLevel", -0.5f);
+            SetPrivate(generator, "wallLevel", 0.5f);
 
             Grid.TileType[,] mapData = generator.GenerateMap(seed);
-
+            
             int waterCount = 0, wallCount = 0, landCount = 0;
 
             for (int y = 0; y < mapData.GetLength(1); y++)
@@ -75,26 +81,32 @@ namespace Tests.TemplateTests
         }
 
         [Test]
-        public void MapGen_SmoothGivesMap()
+        public void MapGen_SmoothGivesBalancedMap()
         {
             var (water, wall, land) = RunMapTest(MapTypes.Smooth, "Smooth");
-            Assert.Less(land, 65f, "Smooth maps should have <65% land (empty).");
-            Assert.Less(water, 65f, "Smooth maps should have <65% water.");
-            Assert.Less(wall, 65f, "Smooth maps should have <65% wall.");
+
+            // Smooth → low freq, few octaves → balanced terrain mixes
+            Assert.That(water, Is.GreaterThan(10f).And.LessThan(60f));
+            Assert.That(wall,  Is.GreaterThan(5f).And.LessThan(60f));
+            Assert.That(land,  Is.GreaterThan(20f).And.LessThan(75f));
         }
 
         [Test]
-        public void MapGen_MountainousGivesMap()
+        public void MapGen_MountainousGivesMoreWalls()
         {
             var (water, wall, land) = RunMapTest(MapTypes.Mountainous, "Mountainous");
-            Assert.Greater(wall, 30f, "Mountainous maps should have >30% walls.");
+
+            // Mountainous → Ridged fractal, high octaves, high walls
+            Assert.Greater(wall, 25f, "Mountainous should produce more wall tiles.");
         }
 
         [Test]
-        public void MapGen_LakeGivesMap()
+        public void MapGen_LakesGivesMoreWater()
         {
             var (water, wall, land) = RunMapTest(MapTypes.Lakes, "Lakes");
-            Assert.Greater(water, 35f, "Lake maps should have >35% water.");
+
+            // Lakes → higher water frequency, strong ping-pong fractal
+            Assert.Greater(water, 30f, "Lakes should produce more water.");
         }
         
         

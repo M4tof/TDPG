@@ -7,6 +7,7 @@ public class EnemySpawner : MonoBehaviour
 {
     [Header("Configuration")]
     public GameObject EnemyPrefab;
+    public Transform EndPoint;
 
     [Header("Runtime")]
     private EnemyFactory _factory;
@@ -108,11 +109,38 @@ public class EnemySpawner : MonoBehaviour
 
         // ... Visuals ...
         GameObject go = Instantiate(EnemyPrefab, transform.position, Quaternion.identity);
+        float cellSize = GridManager.Instance.CellSize;
+        if (go.TryGetComponent(out BoxCollider2D col))
+        {
+            col.size *= cellSize;
+        }
         go.GetComponent<EnemyBehavior>().Initialize(logicalEnemy);
     }
 
     public void DebugSpawn()
     {
         SpawnEnemy("Walker", 1, true);
+    }
+
+    public void ForceSpawnEnemy(EnemySaveData save)
+    {
+        EnemyData data = EnemyRegistry.Instance.Get(save.EnemyID);
+        if (data == null) return;
+
+        // Create Logic manually
+        // Note: You might need to handle Seed/Overrides differently here for loading
+        var logic = new Enemy(data, EnemyStatsOverride.Default);
+        logic.CurrentHealth = save.Health;
+        logic.Position = save.Position;
+
+        // Create Visuals
+        GameObject go = Instantiate(EnemyPrefab, save.Position, Quaternion.identity);
+        if (go.TryGetComponent(out EnemyBehavior behavior))
+        {
+            behavior.Initialize(logic);
+        }
+
+        // Register
+        EnemyCompendium.Instance.RegisterEnemy(logic);
     }
 }
