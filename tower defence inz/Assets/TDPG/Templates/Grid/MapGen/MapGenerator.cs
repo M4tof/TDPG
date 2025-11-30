@@ -30,7 +30,7 @@ namespace TDPG.Templates.Grid.MapGen
         
         private TileType[,] _mapInit;
         private Vector3Int _destinationPos;
-        private TDPG.Templates.Grid.Grid _grid;
+        private Grid _grid;
         private List<SpawnerCandidate> _reachableCandidates = new List<SpawnerCandidate>();
         private PathFindingUtils _pathUtils;
         
@@ -90,7 +90,7 @@ namespace TDPG.Templates.Grid.MapGen
             // Weighted strength: [0.0, 1.0]
             float weightedStrength = d4 / 9f;
             
-            Debug.Log($"Seed = {(int)seedVal}");
+            Debug.Log($"Seed = {seedVal}");
             Debug.Log($"Raw: ({mapType}): freq={freq}, oct={octaves}, gain={gain}");
             
             // Configure per map type
@@ -356,6 +356,12 @@ namespace TDPG.Templates.Grid.MapGen
         {
             return this._destinationPos;
         }
+        
+        public Vector3 GetDestinationWorldPosition()
+        {
+            Vector3 destinationWorldPosition = new Vector3(_destinationPos.x * _grid.GetCellSize(), _destinationPos.y * _grid.GetCellSize(), 0);
+            return destinationWorldPosition;
+        }
 
         public void setGrid(Grid grid)
         {
@@ -459,7 +465,6 @@ namespace TDPG.Templates.Grid.MapGen
 
             return result.ToArray();
         }
-
         
     }
 }

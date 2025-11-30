@@ -35,6 +35,8 @@ namespace TDPG.Templates.Grid
         [Header("Spawns")]
         [SerializeField] private GameObject Player;
         [SerializeField] private GameObject EnemySpawnerPrefab;
+        [Tooltip("Game Object which would be a parent for spawned EnemySpawners")]
+        [SerializeField] GameObject SpawnerContainer;
         
         [Header("Debug")]
         [SerializeField] private GridDebugFiller debugFiller;
@@ -46,8 +48,6 @@ namespace TDPG.Templates.Grid
 
         private Vector3Int destpos;
         private Vector3Int[] spawnerPositions;
-
-
 
         public Grid GetGrid() => grid;
         public float CellSize => cellSize;
@@ -98,8 +98,6 @@ namespace TDPG.Templates.Grid
                 if (hasMapGenerator && !mapGenerated)
                 {
                     Debug.Log("Map generation initializing");
-                    // ... existing map gen logic ...
-                    // (Keep your existing generation code block here)
                     GlobalSeed globalSeed = new GlobalSeed(QuickGenerate(1));
                     Grid.TileType[,] mapData = mapGenerator.GenerateMap(globalSeed.NextSubSeed("TMPHERE"));
                     ApplyMapToGridWithTilemap(mapData);
@@ -122,7 +120,7 @@ namespace TDPG.Templates.Grid
             {
                 Debug.Log("GridManager started with existing (loaded) grid. Skipping initialization.");
             }
-            else if (!hasMapGenerator && tilemap != null)
+            if (!hasMapGenerator && tilemap != null)
             {
                 // If no map generator, initialize with empty tiles
                 InitializeEmptyTilemap();
@@ -135,6 +133,7 @@ namespace TDPG.Templates.Grid
             }
 
             SetStartPlayerPosition();
+            SetSpawners();
 
             //Set Camera
         }
@@ -454,11 +453,18 @@ namespace TDPG.Templates.Grid
             return buildingsGrid[position.x, position.y];
         }
 
-        public void SetStartPlayerPosition()
+        private void SetStartPlayerPosition()
         {
-            Vector3 newPosition = GetCenterGrid();
-            newPosition.z = 0f;
+            Vector3 newPosition = mapGenerator.GetDestinationWorldPosition();
             Player.transform.position = newPosition;
+        }
+
+        private void SetSpawners()
+        {
+            foreach (Vector3Int pos in spawnerPositions)
+            {
+                GameObject spawner = Instantiate(EnemySpawnerPrefab,GridToWorld(pos.x,pos.y), Quaternion.identity,SpawnerContainer.transform);
+            }
         }
         
         public void PrintGridCell(Vector3 worldPosition)

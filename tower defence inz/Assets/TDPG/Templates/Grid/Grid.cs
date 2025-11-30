@@ -256,6 +256,11 @@ namespace TDPG.Templates.Grid
             }
             return new Vector3Int(0, 0, 0); // fallback
         }
+
+        public float GetCellSize()
+        {
+            return cellSize;
+        }
     
     }
 }
