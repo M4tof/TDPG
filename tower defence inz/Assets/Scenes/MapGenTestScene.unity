@@ -255,15 +255,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 70c5e98b4e4f42a18888d92b66fc4ba3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mapType: 3
-  width: 30
-  height: 30
-  waterLevel: -0.001
-  wallLevel: 0.001
+  mapType: 2
+  width: 40
+  height: 40
+  waterLevel: -0.252
+  wallLevel: 0.243
   emptyCellsAroundPoints: 1
-  numOfEnemySpawners: 10
+  numOfEnemySpawners: 5
   minimalDistance: 12
-  providedSeed: {fileID: 538746519}
+  assumeCanSwim: 1
+  providedSeed: {fileID: 0}
 --- !u!1 &1231574636
 GameObject:
   m_ObjectHideFlags: 0
