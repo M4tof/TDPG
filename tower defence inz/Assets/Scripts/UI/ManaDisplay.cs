@@ -10,7 +10,7 @@ public class ManaDisplay : MonoBehaviour
         tmpText = GetComponentInChildren<TextMeshProUGUI>();
         if (tmpText != null)
         {
-            tmpText.text = $"Mana: {GameManager.Instance.RSInstance.mana.Value:F2}";
+            tmpText.text = $"Mana: {ResourceSystem.Instance.mana.Value:F2}";
 
         }
         else
@@ -26,7 +26,7 @@ public class ManaDisplay : MonoBehaviour
         tmpText = GetComponentInChildren<TextMeshProUGUI>();
         if (tmpText != null)
         {
-            tmpText.text = $"Mana: {GameManager.Instance.RSInstance.mana.Value:F2}";
+            tmpText.text = $"Mana: {ResourceSystem.Instance.mana.Value:F2}";
 
         }
         else

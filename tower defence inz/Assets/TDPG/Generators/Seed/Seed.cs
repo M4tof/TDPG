@@ -17,7 +17,8 @@ namespace TDPG.Generators.Seed
         public ulong Value { get => value; private set => this.value = value; }
         public int Id { get => id; internal set => id = value; }
         public string ParentName { get => parentName; internal set => parentName = value; }
-        public bool IsBitBased { get => isBitBased; internal set => isBitBased = value; }
+        public bool IsBitBased { get => isBitBased;
+            set => isBitBased = value; }
 
         public Seed(ulong key, int id, string parentName = null, bool isBitBased = true)
         {

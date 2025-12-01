@@ -169,6 +169,18 @@ namespace Tests.GeneratorTests.SeedTests
             seedValue = 0b_0000_0000_0000_0000_0000_0000_0001_1111UL;
             Assert.That(seedValue == 31);
         }
+
+        [Test]
+        public void Seed_NotBitwise_Normalized()
+        {
+            Seed seed = new Seed(24011, -1,"missingSeedInMapGen",false);
+            seed.IsBitBased =  false;
+            seed.NormalizeSeedValue();
+            ulong seedVal = seed.GetBaseValue();
+            string seedStr = seedVal.ToString();
+            
+            Assert.That(seedStr == "240110000", "Int based seed should normalize to longer form");
+        }
         
     }
 }

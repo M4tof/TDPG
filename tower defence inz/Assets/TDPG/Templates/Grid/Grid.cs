@@ -37,14 +37,15 @@ namespace TDPG.Templates.Grid
         
             grid = new int[width, height];
             typeGrid = new TileType[width, height];
-
+            
             for (int x = 0; x < grid.GetLength(0); x++)
             {
                 for (int y = 0; y < grid.GetLength(1); y++)
                 {
                     typeGrid[x,y] = TileType.EMPTY;
+                    
                     //buildingsGrid[x, y] = null;
-                    Debug.Log(x+":"+y);
+                    // Debug.Log(x+":"+y);
                     Debug.DrawLine(GetWorldPosition(x,y),GetWorldPosition(x,y+1),Color.yellow,100f);
                     Debug.DrawLine(GetWorldPosition(x,y),GetWorldPosition(x+1,y),Color.yellow,100f);
                 }

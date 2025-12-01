@@ -55,7 +55,13 @@ public class ResourceSystem : MonoBehaviour
             }
         }
 
-        // TODO: check availble func
+        // If non-bool value needed use Resource.Value
+        public bool CanAfford(float amount)
+        {
+            float compTarget = canGoIntoDebt ? 0.0f : amount;
+            return value >= compTarget;
+        }
+
 
         public void Update()
         {
