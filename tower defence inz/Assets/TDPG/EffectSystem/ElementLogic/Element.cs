@@ -37,8 +37,8 @@ namespace TDPG.EffectSystem.ElementLogic
         {
             {
                 0, values => {
-                    var v = NormalizeValues(values, 2);
-                    return new SlowDown(v[0], v[1]);
+                    var v = NormalizeValues(values, 1);
+                    return new SlowDown(v[0]);
                 }
             },
             {
@@ -51,6 +51,30 @@ namespace TDPG.EffectSystem.ElementLogic
                 2, values => {
                     var v = NormalizeValues(values, 1);
                     return new Heal(v[0]);
+                }
+            },
+            {
+                3, values => {
+                    var v = NormalizeValues(values, 2);
+                    return new TempSlowDown(v[0], v[1]);
+                }
+            },
+            {
+                4, values => {
+                    var v = NormalizeValues(values, 3);
+                    return new HealthDrain(v[0], v[1], v[2]);
+                }
+            },
+            {
+                5, values => {
+                    var v = NormalizeValues(values, 1);
+                    return new Stun(v[0]);
+                }
+            },
+            {
+                6, values => {
+                    var v = NormalizeValues(values, 1);
+                    return new Scale(v[0]);
                 }
             }
             //TODO: LONG TERM FILL HERE
@@ -79,7 +103,11 @@ namespace TDPG.EffectSystem.ElementLogic
         {
             { 0, typeof(SlowDown) },
             { 1, typeof(HealthDown) },
-            { 2, typeof(Heal) }
+            { 2, typeof(Heal) },
+            { 3, typeof(TempSlowDown) },
+            { 4, typeof(HealthDrain) },
+            { 5, typeof(Stun) },
+            { 6, typeof(Scale) }
         };
         public Element(string name, int id, List<Effect> effects)
         {

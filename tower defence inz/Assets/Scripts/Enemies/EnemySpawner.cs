@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 using TDPG.Generators.Seed; // Namespace from your lib
+using TDPG.Templates.Enemies;
 
 public class EnemySpawner : MonoBehaviour
 {

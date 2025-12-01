@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
-
+using TDPG.Templates.Enemies;
 
 [System.Serializable]
 public class Enemy : EnemyBase

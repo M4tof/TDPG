@@ -1,21 +1,24 @@
 using UnityEngine;
 
-public abstract class EnemyBase
+namespace TDPG.Templates.Enemies
 {
-    public EnemyData Data {get; private set;}
-    public float CurrentHealth {get; protected set;}
-    public float CurrentSpeed {get; protected set;}
-    public Vector2 Position {get; set;}
-    public EnemyBase(EnemyData data)
+    public abstract class EnemyBase
     {
-        Data = data;    
-    }
-    public virtual void OnCreation(){}
-    public virtual void OnUpdate(){}
-    public virtual void OnDeath(){}
-    public void ApplyStatus(StatusComponent status)
-    {
-        
-    }
+        public EnemyData Data { get; private set; }
+        public float CurrentHealth { get; set; }
+        public float CurrentSpeed { get; set; }
+        public Vector2 Position { get; set; }
+        public EnemyBase(EnemyData data)
+        {
+            Data = data;
+        }
+        public virtual void OnCreation() { }
+        public virtual void OnUpdate() { }
+        public virtual void OnDeath() { }
+        public void ApplyStatus(StatusComponent status)
+        {
 
+        }
+
+    }
 }

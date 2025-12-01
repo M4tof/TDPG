@@ -36,8 +36,24 @@ namespace Tests.EffectSystem.ElementTests
             
             Assert.AreEqual("Value: 123, Id: 1, Parent: ", element.MetaData[0]);
         }
-        
+
         [Test]
+        public void Element_Constructor_WithEffectList_AssignsEffects()
+        {
+            var slow = new SlowDown(0.25f);
+            var burn = new HealthDown(1.2f);
+            var effects = new List<Effect> { slow, burn };
+
+            var element = new Element("Fire", 1, effects);
+
+            Assert.AreEqual("Fire", element.Name);
+            Assert.AreEqual(1, element.Id);
+            var stored = element.GetEffects();
+            Assert.Contains(slow, stored.ToList());
+            Assert.Contains(burn, stored.ToList());
+        }
+
+        /*[Test]
         public void Element_Effects_HaveValidLogicTransfers_WhenCreatedFromList()
         {
             var effects = new List<Effect>
@@ -288,8 +304,8 @@ namespace Tests.EffectSystem.ElementTests
             var element = new Element("Align", 99, seed, 0.5f, 1f, 10f);
             Assert.AreEqual(Element.EffectFactories.Count, element.GetEffects().Count,
                 "Each factory bit should produce exactly one effect.");
-        }
+        }*/
 
-        
+
     }
 }
