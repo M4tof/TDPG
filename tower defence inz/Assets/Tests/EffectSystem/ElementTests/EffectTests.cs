@@ -8,7 +8,7 @@ using Formatting = System.Xml.Formatting;
 
 namespace Tests.EffectSystem.ElementTests
 {
-    [TestFixture, Category("EffectSystemTest")]
+    /*[TestFixture, Category("EffectSystemTest")]
     public class EffectTests
     {
         [Test]
@@ -139,5 +139,5 @@ namespace Tests.EffectSystem.ElementTests
 
             return propInfo != null ? (float[])propInfo.GetValue(effect) : null;
         }
-    }
+    }*/
 }

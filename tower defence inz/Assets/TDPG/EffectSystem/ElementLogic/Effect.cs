@@ -19,7 +19,7 @@ namespace TDPG.EffectSystem.ElementLogic
 
 
         // Transfer structured data
-        public abstract Dictionary<EffectParameter, float> LogicTransfer(); // For use in planners, etc.
+        public abstract Dictionary<EffectParameter, List<float>> LogicTransfer(); // For use in planners, etc.
         public abstract int ParamNum(); // How many parameters (Values.Length)
 
         public float[] GetValues() => Values;

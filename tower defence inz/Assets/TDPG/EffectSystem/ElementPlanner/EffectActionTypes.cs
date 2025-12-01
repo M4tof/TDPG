@@ -1,10 +1,15 @@
-﻿using System;
+﻿using TDPG.Templates.Enemies;
+using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 using TDPG.EffectSystem.ElementPlanner;
+using TDPG.Templates.Enemies;
 using UnityEngine;
+using static UnityEngine.EventSystems.EventTrigger;
 
 namespace TDPG.EffectSystem.ElementPlanner
 {
@@ -25,15 +30,161 @@ namespace TDPG.EffectSystem.ElementPlanner
         {
             if (context.Target == null) return;
 
-            if (context.Target.TryGetComponent<EnemyStats>(out var stats))
+            if (context.Target.TryGetComponent<EnemyBaseBehaviour>(out var behaviour))
             {
-                stats.Speed *= (1f - factor);
+                behaviour.Logic.CurrentSpeed *= (1f - factor);
             }
             else
             {
                 Debug.LogWarning("SlowDownAction: Target has no EnemyStats.");
             }
         }
+    }
+
+    public class TempSlowDownAction : IEffectAction
+    {
+        private readonly float factor;
+        private readonly float duration;
+
+        public TempSlowDownAction(float factor, float duration)
+        {
+            this.factor = factor;
+            this.duration = duration;
+        }
+
+        public string Name => "TempSlowDown";
+        public float Intensity => factor;
+
+        public void Execute(EffectContext context)
+        {
+            if (context.Target == null) return;
+
+            if (context.Target.TryGetComponent<EnemyBaseBehaviour>(out var behaviour))
+            {
+                behaviour.Logic.CurrentSpeed *= (1f - factor);
+                behaviour.ApplyWait(duration);
+                behaviour.Logic.CurrentSpeed /= (1f - factor);
+            }
+            else
+            {
+                Debug.LogWarning("TempSlowDownAction: Target has no CurrentSpeed.");
+            }
+        }
+
+        /*private IEnumerator ApplyRoutine(EnemyBase logic)
+        {
+            logic.CurrentSpeed *= (1f - factor);
+            yield return new WaitForSeconds(duration);
+            logic.CurrentSpeed /= (1f - factor);
+        }*/
+    }
+
+    public class HealthDrainAction : IEffectAction
+    {
+        private readonly float healthPerDrain;
+        private readonly float drainCount;
+        private readonly float idleTime;
+
+        public HealthDrainAction(float healthPerDrain, float drainCount, float idleTime)
+        {
+            this.healthPerDrain = healthPerDrain;
+            this.idleTime = idleTime;
+            this.drainCount = drainCount;
+        }
+
+        public string Name => "HealthDrain";
+        public float Intensity => healthPerDrain;
+
+        public void Execute(EffectContext context)
+        {
+            if (context.Target == null) return;
+
+            if (drainCount <= 0) return; //meaningful drainCount is positive only
+
+            if (context.Target.TryGetComponent<EnemyBaseBehaviour>(out var behaviour))
+            {
+                for(int i=0; i < drainCount; i++)
+                {
+                    behaviour.Logic.CurrentHealth -= healthPerDrain;
+                    behaviour.ApplyWait(idleTime);
+                }
+                
+            }
+            else
+            {
+                Debug.LogWarning("HealthDrainAction: Target has no CurrentHealth.");
+            }
+        }
+    }
+
+    public class StunAction : IEffectAction
+    {
+        private readonly float duration;
+
+        public StunAction(float duration)
+        {
+            this.duration = duration;
+        }
+
+        public string Name => "Stun";
+        public float Intensity => duration;
+
+        public void Execute(EffectContext context)
+        {
+            if (context.Target == null) return;
+
+            if (context.Target.TryGetComponent<EnemyBaseBehaviour>(out var behaviour))
+            {
+                float temp = behaviour.Logic.CurrentSpeed;
+                behaviour.Logic.CurrentSpeed = 0.0f;
+                behaviour.ApplyWait(duration);
+                behaviour.Logic.CurrentSpeed = temp;
+            }
+            else
+            {
+                Debug.LogWarning("StunAction: Target has no CurrentSpeed.");
+            }
+        }
+
+        /*private IEnumerator ApplyRoutine(EnemyBase logic)
+        {
+            logic.CurrentSpeed *= (1f - factor);
+            yield return new WaitForSeconds(duration);
+            logic.CurrentSpeed /= (1f - factor);
+        }*/
+    }
+
+    public class ScaleAction : IEffectAction
+    {
+        private readonly float scale;
+
+        public ScaleAction(float scale)
+        {
+            this.scale = scale;
+        }
+
+        public string Name => "Scale";
+        public float Intensity => scale;
+
+        public void Execute(EffectContext context)
+        {
+            if (context.Target == null) return;
+            if (context.Target.TryGetComponent<Transform>(out var transform))
+            {
+                transform.localScale = new UnityEngine.Vector3(scale, scale, 1f);
+            }
+            else
+            {
+                Debug.LogWarning("ScaleAction: Target has no transform.");
+            }
+        }
+
+        /*private IEnumerator ApplyRoutine(EnemyBase logic)
+        {
+            logic.CurrentSpeed *= (1f - factor);
+            yield return new WaitForSeconds(duration);
+            logic.CurrentSpeed /= (1f - factor);
+        }*/
     }
 
     public class HealthDownAction : IEffectAction
@@ -52,9 +203,9 @@ namespace TDPG.EffectSystem.ElementPlanner
         {
             if (context.Target == null) return;
 
-            if (context.Target.TryGetComponent<EnemyStats>(out var stats))
+            if (context.Target.TryGetComponent<EnemyBaseBehaviour>(out var behaviour))
             {
-                stats.Health += amount; // amount < 0
+                behaviour.Logic.CurrentHealth += amount; // amount < 0
             }
             else
             {
@@ -93,34 +244,6 @@ namespace TDPG.EffectSystem.ElementPlanner
             }
         }
     }
-
-    public class DurationAction : IEffectAction
-    {
-        private readonly float duration;
-
-        public DurationAction(float duration)
-        {
-            this.duration = duration;
-        }
-
-        public string Name => "Duration";
-        public float Intensity => duration;
-
-        public void Execute(EffectContext context)
-        {
-            if (context.Target == null) return;
-
-            if (context.Target.TryGetComponent<EnemyStatusEffects>(out var status))
-            {
-                status.ApplyDuration(duration);
-            }
-            else
-            {
-                Debug.Log($"DurationAction executed (duration: {duration}), " +
-                          $"but target has no status effect handler.");
-            }
-            
-        }
-    }
+    //TODO: long-term + change initial ones
 
 }

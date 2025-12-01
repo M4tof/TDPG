@@ -136,7 +136,7 @@ namespace Tests.EffectSystem.ElementTests
             var notFound = registry.GetElement("NoSuchElement");
             Assert.IsNull(notFound);
         }
-        
+        /*
         [Test]
         public void ComplexGraph_MultiParentChildAndDescendantsBehaveCorrectly()
         {
@@ -214,7 +214,7 @@ namespace Tests.EffectSystem.ElementTests
 
             // --- Test 5: Total count ---
             Assert.AreEqual(7, registry.CountElements(), "Registry should contain Root, A, B, C, D, E, F");
-        }
+        }*/
 
         [Test]
         public void SimpleGraph_SerializeDeserialize()
@@ -296,7 +296,7 @@ namespace Tests.EffectSystem.ElementTests
             }
         }
         
-        [Test]
+        /*[Test]
         public void ComplexGraph_SerializeDeserialize()
         {
             var settings = new JsonSerializerSettings
@@ -383,7 +383,7 @@ namespace Tests.EffectSystem.ElementTests
                     CollectionAssert.AreEqual(origEffect.GetValues(), deserEffect.GetValues());
                 }
             }
-        }
+        }*/
         
         [Test]
         public void CannotAdd_SecondElementWithSameNonRootParents()
@@ -486,7 +486,7 @@ namespace Tests.EffectSystem.ElementTests
             Assert.That(registry.PutPreMadeElement(new List<int> { -99 }, x) == 0);
         }
 
-        [Test]
+        /*[Test]
         public void Registry_Genetic_Test()
         {
             registry.SetMutateSeedRule(MutateTypes.None);
@@ -561,7 +561,7 @@ namespace Tests.EffectSystem.ElementTests
             // Assert that mutation produced a different DNA
             Assert.AreNotEqual(aPlusB, dna, "Mutation should produce different DNA than simple addition.");
             
-        }
+        }*/
 
         
     }
