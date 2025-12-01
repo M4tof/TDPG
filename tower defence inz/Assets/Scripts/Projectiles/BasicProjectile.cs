@@ -1,6 +1,7 @@
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody2D))]
+[RequireComponent(typeof(Collider2D))]
 public class BasicProjectile : MonoBehaviour
 {
     [SerializeField] private float speed = 10;
@@ -33,5 +34,11 @@ public class BasicProjectile : MonoBehaviour
     public void OnDestroy()
     {
         Destroy(gameObject);
+    }
+    
+    private void OnTriggerEnter(Collider other)
+    {
+        // Kod wykonywany przy wejściu w trigger
+        Debug.Log("Obiekt " + other.gameObject.name + " wszedł w trigger");
     }
 }

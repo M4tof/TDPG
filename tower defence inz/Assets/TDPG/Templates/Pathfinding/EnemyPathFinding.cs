@@ -85,6 +85,7 @@ namespace TDPG.Templates.Pathfinding
 
         void Update()
         {
+            return;
             if (hasReachedDestination) return;
             
             if (path == null || path.Count == 0 || index >= path.Count || gridManager == null)

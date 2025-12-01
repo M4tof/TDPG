@@ -7,6 +7,8 @@ public class EnemyBehavior : MonoBehaviour
     public Enemy Logic { get; private set; }
     private SpriteRenderer _renderer;
     private EnemyPathFollower _enemyPathFollower;
+    
+    private Vector2 direction = Vector2.zero;
 
     public void Initialize(Enemy logic)
     {
@@ -27,18 +29,23 @@ public class EnemyBehavior : MonoBehaviour
 
     void Update()
     {
-        //TODO PORUSZANIE SIĘ
-
         Vector3 target = _enemyPathFollower.GetTargetPosition();
-        Debug.Log($"NEXT TARGET: {target}");
+        //Debug.Log($"NEXT TARGET: {target}");
+        direction = Vector2.MoveTowards(transform.position, target, 10 * Time.deltaTime);
+        transform.position = direction;
+        MoveDirection();
+    }
 
-        /*if (Logic == null) return;
-
-        // 1. Run Logic (Movement, Status Effects)
-        Logic.OnUpdate();
-
-        // 2. Sync Unity Transform to Logic Position
-        transform.position = Logic.Position;*/
+    void MoveDirection()
+    {
+        if (direction.x > 0)
+        {
+            _renderer.flipX = true;
+        }
+        else if (direction.x < 0)
+        {
+            _renderer.flipX = false;
+        }
     }
 
     private void Die()
