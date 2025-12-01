@@ -97,10 +97,4 @@ public class Enemy : EnemyBase
         SetPath(debugPoints);
         Debug.Log($"[Enemy] Debug path applied with {debugPoints.Count} nodes.");
     }
-
-    public float GetCurrentSpeed()
-    {
-        return CurrentSpeed;
-    }
-
 }

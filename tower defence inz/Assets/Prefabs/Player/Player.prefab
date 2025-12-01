@@ -320,6 +320,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 49783302685db444aa48eaf2edf7c885, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  projectileDamage: 2
   projectile: {fileID: 1195895545647384619, guid: 54f1a2241ea8b704390fa0976c4ece48, type: 3}
 --- !u!114 &4867039639046970502
 MonoBehaviour:
@@ -333,6 +334,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 30a4f9226d413274bb3d3e60b7c2eac4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gridManager: {fileID: 0}
   TurretBox: {fileID: 0}
   TurretVisualizer: {fileID: 0}
+  GenericTurretPrefab: {fileID: 0}

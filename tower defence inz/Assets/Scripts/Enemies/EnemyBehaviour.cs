@@ -55,10 +55,12 @@ public class EnemyBehavior : MonoBehaviour
         Destroy(gameObject); // TODO: Replace with Object Pooling
     }
 
-    public void DealDamage(float damage)
+    public void DealDamage(int damage)
     {
+        //Debug.Log($"DEAL {damage} DMG");
         Logic.DealDamage(damage);
-        if (Logic.CurrentHealth <= 0)
+        Debug.Log($"HP {Logic.GetCurrentHealth()}");
+        if (Logic.GetCurrentHealth() <= 0)
         {
             Die();
         }

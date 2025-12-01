@@ -6,6 +6,7 @@ public class BasicProjectile : MonoBehaviour
 {
     [SerializeField] private float speed = 10;
     [SerializeField] private float lifeTime = 2;
+    private int damage = 1;
 
     private Rigidbody2D rb;
     private float timeRemaining = 0f;
@@ -36,9 +37,18 @@ public class BasicProjectile : MonoBehaviour
         Destroy(gameObject);
     }
     
-    private void OnTriggerEnter(Collider other)
+    private void OnTriggerEnter2D(Collider2D other)
     {
-        // Kod wykonywany przy wejściu w trigger
-        Debug.Log("Obiekt " + other.gameObject.name + " wszedł w trigger");
+        EnemyBehavior enemyBehavior = other.gameObject.GetComponent<EnemyBehavior>();
+        if (enemyBehavior != null)
+        {
+            enemyBehavior.DealDamage(damage);
+        }
+        Destroy(gameObject);
+    }
+
+    public void SetDamage(int damage)
+    {
+        this.damage = damage;
     }
 }
