@@ -1,10 +1,12 @@
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody2D))]
+[RequireComponent(typeof(Collider2D))]
 public class BasicProjectile : MonoBehaviour
 {
     [SerializeField] private float speed = 10;
     [SerializeField] private float lifeTime = 2;
+    private int damage = 1;
 
     private Rigidbody2D rb;
     private float timeRemaining = 0f;
@@ -33,5 +35,20 @@ public class BasicProjectile : MonoBehaviour
     public void OnDestroy()
     {
         Destroy(gameObject);
+    }
+    
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        EnemyBehavior enemyBehavior = other.gameObject.GetComponent<EnemyBehavior>();
+        if (enemyBehavior != null)
+        {
+            enemyBehavior.DealDamage(damage);
+        }
+        Destroy(gameObject);
+    }
+
+    public void SetDamage(int damage)
+    {
+        this.damage = damage;
     }
 }

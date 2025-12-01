@@ -1,14 +1,20 @@
+using TDPG.Templates.Pathfinding;
 using UnityEngine;
 
+[RequireComponent(typeof(EnemyPathFollower))]
 public class EnemyBehavior : MonoBehaviour
 {
     public Enemy Logic { get; private set; }
     private SpriteRenderer _renderer;
+    private EnemyPathFollower _enemyPathFollower;
+    
+    private Vector2 direction = Vector2.zero;
 
     public void Initialize(Enemy logic)
     {
         Logic = logic;
         _renderer = GetComponent<SpriteRenderer>();
+        _enemyPathFollower = GetComponent<EnemyPathFollower>();
 
         // 1. Setup Visuals
         _renderer.sprite = Logic.Data.EnemySprite;
@@ -23,18 +29,22 @@ public class EnemyBehavior : MonoBehaviour
 
     void Update()
     {
-        if (Logic == null) return;
+        Vector3 target = _enemyPathFollower.GetTargetPosition();
+        //Debug.Log($"NEXT TARGET: {target}");
+        direction = Vector2.MoveTowards(transform.position, target, 10 * Time.deltaTime);
+        transform.position = direction;
+        MoveDirection();
+    }
 
-        // 1. Run Logic (Movement, Status Effects)
-        Logic.OnUpdate();
-
-        // 2. Sync Unity Transform to Logic Position
-        transform.position = Logic.Position;
-
-        // 3. Check Death Condition
-        if (Logic.CurrentHealth <= 0)
+    void MoveDirection()
+    {
+        if (direction.x > 0)
         {
-            Die();
+            _renderer.flipX = true;
+        }
+        else if (direction.x < 0)
+        {
+            _renderer.flipX = false;
         }
     }
 
@@ -45,6 +55,17 @@ public class EnemyBehavior : MonoBehaviour
         Destroy(gameObject); // TODO: Replace with Object Pooling
     }
 
+    public void DealDamage(int damage)
+    {
+        //Debug.Log($"DEAL {damage} DMG");
+        Logic.DealDamage(damage);
+        Debug.Log($"HP {Logic.GetCurrentHealth()}");
+        if (Logic.GetCurrentHealth() <= 0)
+        {
+            Die();
+        }
+    }
+    
     void OnDrawGizmos()
     {
         // Only draw if we have a target

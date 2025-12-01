@@ -1,9 +1,9 @@
 using UnityEngine;
 using System.Collections.Generic;
-using TDPG.Generators.Seed; // Namespace from your lib
 using TDPG.Templates.Grid;
+using TDPG.Templates.Pathfinding;
 
-public class EnemySpawner : MonoBehaviour
+public class EnemysSpawner : MonoBehaviour
 {
     [Header("Configuration")]
     public GameObject EnemyPrefab;
@@ -12,9 +12,21 @@ public class EnemySpawner : MonoBehaviour
     [Header("Runtime")]
     private EnemyFactory _factory;
 
+    private bool spanwed = false; //TODO USUNĄĆ
+    
     void Start()
     {
+        EndPoint = GridManager.Instance.GetDestinationObject().transform;
         InitializeFactory();
+    }
+
+    void Update()
+    {
+        if (!spanwed)
+        {
+            SpawnEnemy("Walker",1);
+            spanwed = true;
+        }
     }
 
     private void InitializeFactory()
@@ -102,12 +114,15 @@ public class EnemySpawner : MonoBehaviour
             logicalEnemy.SetPath(worldPath);
         }
 
+        logicalEnemy.Position = transform.position;
+        
         // Debug 3: Check Compendium (Is object in scene?)
         if (EnemyCompendium.Instance == null) { Debug.LogError("❌ EnemyCompendium is NULL! Missing GameObject in scene?"); return; }
 
         EnemyCompendium.Instance.RegisterEnemy(logicalEnemy);
 
         // ... Visuals ...
+        Debug.Log($"ENEMY SPAWNER {transform.position}");
         GameObject go = Instantiate(EnemyPrefab, transform.position, Quaternion.identity);
         float cellSize = GridManager.Instance.CellSize;
         if (go.TryGetComponent(out BoxCollider2D col))
@@ -115,6 +130,7 @@ public class EnemySpawner : MonoBehaviour
             col.size *= cellSize;
         }
         go.GetComponent<EnemyBehavior>().Initialize(logicalEnemy);
+        go.GetComponent<EnemyPathFollower>().Initialize(GridManager.Instance, EndPoint.gameObject);
     }
 
     public void DebugSpawn()
@@ -142,5 +158,10 @@ public class EnemySpawner : MonoBehaviour
 
         // Register
         EnemyCompendium.Instance.RegisterEnemy(logic);
+    }
+
+    public void SetEndPoint(Transform transform)
+    {
+        EndPoint = transform;
     }
 }

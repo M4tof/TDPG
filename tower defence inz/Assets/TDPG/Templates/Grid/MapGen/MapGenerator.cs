@@ -30,7 +30,8 @@ namespace TDPG.Templates.Grid.MapGen
         
         private TileType[,] _mapInit;
         private Vector3Int _destinationPos;
-        private TDPG.Templates.Grid.Grid _grid;
+        private Grid _grid;
+
         private List<SpawnerCandidate> _reachableCandidates = new List<SpawnerCandidate>();
         private PathFindingUtils _pathUtils;
         
@@ -90,7 +91,7 @@ namespace TDPG.Templates.Grid.MapGen
             // Weighted strength: [0.0, 1.0]
             float weightedStrength = d4 / 9f;
             
-            Debug.Log($"Seed = {(int)seedVal}");
+            Debug.Log($"Seed = {seedVal}");
             Debug.Log($"Raw: ({mapType}): freq={freq}, oct={octaves}, gain={gain}");
             
             // Configure per map type
@@ -460,6 +461,272 @@ namespace TDPG.Templates.Grid.MapGen
             return result.ToArray();
         }
 
+        private void CleanUpDestination(int posX, int posY)
+        {
+            int x0Bound = Mathf.Clamp(posX - emptyCellsAroundPoints, 0, width-1);
+            int x1Bound = Mathf.Clamp(posX + emptyCellsAroundPoints, 0, width-1);
+            int y0Bound = Mathf.Clamp(posY - emptyCellsAroundPoints, 0, height-1);
+            int y1Bound = Mathf.Clamp(posY + emptyCellsAroundPoints, 0, height-1);
+
+            for (int x = x0Bound; x <= x1Bound; x++)
+            {
+                for (int y = y0Bound; y <= y1Bound; y++)
+                {
+                    _mapInit[x, y] = TileType.EMPTY;
+                }
+            }
+        }
+
+        private Vector3Int DecideDestination(int value)
+        {
+            switch (value)
+            {
+                default:
+                    return FindCentralDestination();   // 0 or 9
+
+                case 1:
+                case 2:
+                    // Top-right corner 
+                    return FindCornerDestination(width - 2, height - 2, -1, -1);
+
+                case 3:
+                case 4:
+                    // Top-left corner 
+                    return FindCornerDestination(1, height - 2, 1, -1);
+
+                case 5:
+                case 6:
+                    // Bottom-left corner 
+                    return FindCornerDestination(1, 1, 1, 1);
+
+                case 7:
+                case 8:
+                    // Bottom-right corner, inward diagonal
+                    return FindCornerDestination(width - 2, 1, -1, 1);
+            }
+        }
+        
+        private Vector3Int FindCentralDestination()
+        {
+            int cx = width / 2;
+            int cy = height / 2;
+
+            int[][] directions = new int[][]
+            {
+                new[]{ 1, 0 },   // right
+                new[]{ 0, 1 },   // up
+                new[]{ -1,0 },   // left
+                new[]{ 0,-1 }    // down
+            };
+
+            int x = cx;
+            int y = cy;
+
+            if (IsValidAndEmpty(x, y))
+            {
+                CleanUpDestination(x, y);
+                return new Vector3Int(x, y,0);
+            }
+
+            int steps = 1;
+            int dirIndex = 0;
+
+            while (steps < Mathf.Max(width, height))
+            {
+                for (int i = 0; i < 2; i++)
+                {
+                    var d = directions[dirIndex];
+
+                    for (int s = 0; s < steps; s++)
+                    {
+                        x += d[0];
+                        y += d[1];
+
+                        if (IsValidAndEmpty(x, y))
+                        {
+                            CleanUpDestination(x, y);
+                            return new Vector3Int(x, y,0);
+                        }
+                    }
+
+                    dirIndex = (dirIndex + 1) % 4;
+                }
+
+                steps++;
+            }
+
+            Debug.LogWarning("No EMPTY destination found.");
+            return new Vector3Int(cx, cy,0);
+        }
+        
+        private Vector3Int FindCornerDestination(int startX, int startY, int dx, int dy)
+        {
+            int x = startX;
+            int y = startY;
+
+            while (x >= 0 && x < width && y >= 0 && y < height)
+            {
+                if (IsValidAndEmpty(x, y))
+                {
+                    bool isEdge =
+                        x == 0 || y == 0 ||
+                        x == width - 1 || y == height - 1;
+
+
+                    if (!isEdge)
+                    {
+                        bool isTooClose =
+                            x == 1 || y == 1 ||
+                            x == width - 2 || y == height - 2;
+
+                        if (isTooClose)
+                        {
+                            // Skip this tile, keep searching
+                            x += dx;
+                            y += dy;
+                            continue;
+                        }
+                    }
+
+                    CleanUpDestination(x, y);
+                    return new Vector3Int(x, y, 0);
+                }
+
+                x += dx;
+                y += dy;
+            }
+
+            Debug.LogWarning("No EMPTY destination found.");
+            return new Vector3Int(startX + dx, startY + dy, 0);
+        }
+        
+        private bool IsValidAndEmpty(int x, int y)
+        {
+            if (x < 0 || y < 0 || x >= width || y >= height)
+                return false;
+
+            if (_destinationPos.x == x && _destinationPos.y == y)
+                return false;
+            
+            return _mapInit[x, y] == TileType.EMPTY;
+        }
+
+        public Vector3Int GetDestinationPosition()
+        {
+            return this._destinationPos;
+        }
+        
+        public Vector3 GetDestinationWorldPosition()
+        {
+            Vector3 destinationWorldPosition = new Vector3(_destinationPos.x * _grid.GetCellSize(), _destinationPos.y * _grid.GetCellSize(), 0);
+            return destinationWorldPosition;
+        }
+
+        public void setGrid(Grid grid)
+        {
+            this._grid = grid;
+
+            // Create pathfinding helper
+            _pathUtils = new PathFindingUtils(grid);
+        }
+
+        private bool IsCandidateSpawnerTile(int x, int y)
+        {
+            if (!IsValidAndEmpty(x, y))
+                return false;
+
+            // Distance from destination must be >= minimalDistance
+            int dx = Mathf.Abs(x - _destinationPos.x);
+            int dy = Mathf.Abs(y - _destinationPos.y);
+
+            if (dx + dy < minimalDistance)
+                return false;
+
+            return true;
+        }
+        
+        public void BuildValidSpawnerCandidates()
+        {
+            _reachableCandidates.Clear();
+
+            if (_pathUtils == null)
+            {
+                Debug.LogError("MapGenerator: PathFindingUtils not set! Did you call setGrid() first?");
+                return;
+            }
+
+            int licz = 0;
+            Vector3 dstWorld = GetDestinationWorldPosition();
+            for (int x = 0; x < width; x++)
+            {
+                for (int y = 0; y < height; y++)
+                {
+                    if (!IsCandidateSpawnerTile(x, y))
+                        continue;
+                    float cellSize = _grid.GetCellSize();
+                    Vector3 startWorld = new Vector3(x * cellSize, y * cellSize, 0);
+                    List<Vector3> path;
+                    licz += 1;
+                    path = _pathUtils.FindPath(startWorld, dstWorld, assumeCanSwim, false, false);
+
+                    
+                    if (path == null || path.Count < 2)
+                        continue;
+
+                    int pathLength = path.Count; 
+
+                    _reachableCandidates.Add(new SpawnerCandidate(
+                        new Vector3Int(x, y, 0),
+                        pathLength
+                    ));
+                }
+            }
+            Debug.Log($"Spawner candidate tiles found: {_reachableCandidates.Count}");
+            Debug.Log($"Licz: {licz}");
+        }
+
+        private void SortCandidatesByDistance()
+        {
+            _reachableCandidates.Sort((a, b) => b.distanceFromDestination.CompareTo(a.distanceFromDestination));
+        }
+        
+        public Vector3Int[] SelectSpawnerPositions(int count)
+        {
+            if (_reachableCandidates.Count == 0)
+            {
+                Debug.LogWarning("No reachable spawner candidates exist.");
+                return new Vector3Int[0]; //fallback here
+            }
+
+            SortCandidatesByDistance();
+
+            List<Vector3Int> result = new List<Vector3Int>();
+
+            foreach (var c in _reachableCandidates)
+            {
+                if (result.Count == count)
+                    break;
+
+                bool tooClose = false;
+
+                foreach (var existing in result)
+                {
+                    int dx = Mathf.Abs(existing.x - c.pos.x);
+                    int dy = Mathf.Abs(existing.y - c.pos.y);
+
+                    if (dx + dy < minimalDistance)
+                    {
+                        tooClose = true;
+                        break;
+                    }
+                }
+
+                if (!tooClose)
+                    result.Add(c.pos);
+            }
+
+            return result.ToArray();
+        }
         
     }
 }

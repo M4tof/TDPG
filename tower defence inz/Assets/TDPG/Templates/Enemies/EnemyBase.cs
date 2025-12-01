@@ -17,5 +17,21 @@ public abstract class EnemyBase
     {
         
     }
+    
+    public void DealDamage(int damage)
+    {
+        CurrentHealth -= damage;
+        //Debug.Log($"DEAL {damage} DMG {CurrentHealth} HP");
+    }
+    
+    public float GetCurrentSpeed()
+    {
+        return CurrentSpeed;
+    }
+    
+    public float GetCurrentHealth()
+    {
+        return CurrentHealth;
+    }
 
 }
