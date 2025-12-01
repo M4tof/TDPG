@@ -149,9 +149,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mainCamera: {fileID: 1796767792}
-  width: 20
-  height: 20
-  cellSize: 2
+  cellSize: 5
+  mapGenerator: {fileID: 0}
+  tilemap: {fileID: 0}
+  gridComponent: {fileID: 0}
+  emptyTile: {fileID: 0}
+  wallTile: {fileID: 0}
+  waterTile: {fileID: 0}
+  Player: {fileID: 0}
+  EnemySpawnerPrefab: {fileID: 0}
+  DestinationPrefab: {fileID: 0}
+  SpawnerContainer: {fileID: 0}
   debugFiller: {fileID: 769840562}
 --- !u!4 &310619388
 Transform:

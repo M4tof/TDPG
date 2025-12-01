@@ -53,7 +53,7 @@ public class EnemySpawner : MonoBehaviour
         GameObject enemy = Instantiate(enemyPrefab, worldPos, Quaternion.identity);
 
         // Set references on EnemyPathFollower
-        EnemyPathFollower follower = enemy.GetComponent<EnemyPathFollower>();
+        EnemyPathFollowerMock follower = enemy.GetComponent<EnemyPathFollowerMock>();
         if (follower != null)
         {
             follower.gridManager = gridManager;

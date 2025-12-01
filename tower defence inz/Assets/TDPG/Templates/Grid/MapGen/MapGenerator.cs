@@ -409,6 +409,7 @@ namespace TDPG.Templates.Grid.MapGen
                     List<Vector3> path;
                     licz += 1;
                     path = _pathUtils.FindPath(startWorld, dstWorld, assumeCanSwim, false, false);
+
                     
                     if (path == null || path.Count < 2)
                         continue;
