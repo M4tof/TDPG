@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
+using TDPG.Templates.Enemies;
 using TDPG.Templates.Grid;
 using TDPG.Templates.Pathfinding;
 

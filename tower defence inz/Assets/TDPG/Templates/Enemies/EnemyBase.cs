@@ -10,35 +10,43 @@ namespace TDPG.Templates.Enemies
         public float CurrentSpeed { get; set; }
 
         public Vector2 Position { get; set; }
+
         public EnemyBase(EnemyData data)
         {
             Data = data;
         }
-        public virtual void OnCreation() { }
-        public virtual void OnUpdate() { }
-        public virtual void OnDeath() { }
+
+        public virtual void OnCreation()
+        {
+        }
+
+        public virtual void OnUpdate()
+        {
+        }
+
+        public virtual void OnDeath()
+        {
+        }
+
         public void ApplyStatus(StatusComponent status)
         {
-            
+
         }
-        
+
         public void DealDamage(int damage)
         {
             CurrentHealth -= damage;
             //Debug.Log($"DEAL {damage} DMG {CurrentHealth} HP");
         }
-    
+
         public float GetCurrentSpeed()
         {
             return CurrentSpeed;
         }
-    
+
         public float GetCurrentHealth()
         {
             return CurrentHealth;
-        }
-
-
         }
 
     }
