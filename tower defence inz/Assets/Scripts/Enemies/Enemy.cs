@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
-using System.Collections.Generic;
-
+using TDPG.Templates.Enemies;
 
 [System.Serializable]
 public class Enemy : EnemyBase
@@ -27,7 +26,7 @@ public class Enemy : EnemyBase
         _baseData = baseData;
         EnemyID = baseData.EnemyName;
         Overrides = overrides;
-
+    
         // Initialize State
         CurrentHealth = baseData.MaxHealth * overrides.HealthMultiplier;
         CurrentSpeed = baseData.Speed * overrides.SpeedMultiplier;
@@ -44,7 +43,7 @@ public class Enemy : EnemyBase
     public void SetPath(IEnumerable<Vector2> pathPoints)
     {
         _path = new Queue<Vector2>(pathPoints);
-        if (_path.Count > 0)
+        if (_path.Count > 0) 
         {
             Position = _path.Peek(); // Snap to start
             GetNextTarget();

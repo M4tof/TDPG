@@ -3,6 +3,7 @@ using TDPG.Generators.Seed;
 using TDPG.Generators.Scalars;
 using System;
 
+namespace TDPG.Templates.Enemies { 
 public class EnemyFactory
 {
     private Seed EnemySeed;
@@ -35,4 +36,6 @@ public class EnemyFactory
 
         return _creationStrategy(template, overrides);
     }
+}
+
 }

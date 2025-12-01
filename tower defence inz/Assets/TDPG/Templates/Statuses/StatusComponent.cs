@@ -1,4 +1,5 @@
 using UnityEngine;
+using TDPG.Templates.Enemies;
 
 public abstract class StatusComponent : ScriptableObject
 {
