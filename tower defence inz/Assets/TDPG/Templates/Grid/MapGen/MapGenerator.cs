@@ -9,31 +9,56 @@ namespace TDPG.Templates.Grid.MapGen
 {
     public class MapGenerator : MonoBehaviour
     {
-        [Header("Map Type")]
-        [SerializeField] private MapTypes mapType = MapTypes.Smooth;
-        
-        [Header("Map Settings")]
-        [SerializeField, Min(1)] private int width = 140;
-        [SerializeField, Min(1)] private int height = 140;
+        [Header("Map Type")] [SerializeField] private MapTypes mapType = MapTypes.Smooth;
+
+        [Header("Map Settings")] [SerializeField, Min(MINSIZE)]
+        private int width = 60;
+
+        [SerializeField, Min(MINSIZE)] private int height = 60;
         [SerializeField] private float waterLevel = -0.5f;
         [SerializeField] private float wallLevel = 0.5f;
 
-        
-        [Header("Points of Interest Settings")]
-        [SerializeField,Range(1,3)] private int emptyCellsAroundPoints = 1;
+
+        [Header("Points of Interest Settings")] [SerializeField, Range(1, 3)]
+        private int emptyCellsAroundPoints = 1;
+
         [SerializeField, Min(1)] private int numOfEnemySpawners = 1;
         [SerializeField, Min(1)] private int minimalDistance = 1;
         [SerializeField] private bool assumeCanSwim = false;
 
-        [Header("Debug Seed")] 
-        [SerializeField] private GlobalSeedGameObject providedSeed;
-        
+        [Header("Debug Seed")] [SerializeField]
+        private GlobalSeedGameObject providedSeed;
+
         private TileType[,] _mapInit;
         private Vector3Int _destinationPos;
         private Grid _grid;
 
         private List<SpawnerCandidate> _reachableCandidates = new List<SpawnerCandidate>();
         private PathFindingUtils _pathUtils;
+
+        private const int MINSIZE = 20;
+        private const int FOGLAND = 10;
+        private int boundsW_0;
+        private int boundsH_0;
+        private int boundsW_X;
+        private int boundsH_Y;
+
+        public void Awake()
+        {
+            //TODO: still not it
+            boundsH_0 = height;
+            boundsW_0 = width;
+            
+            int modX = (int)Mathf.Clamp(width * 0.2f, FOGLAND, FOGLAND + width/2);
+            int modY = (int)Mathf.Clamp(height * 0.2f, FOGLAND, FOGLAND + height/2);
+            width += modX;
+            height += modY;
+
+            boundsW_X = modX;
+            boundsH_Y = modY;
+            
+            Debug.Log($"[Map Generator]: Actual size = 0-{width} x 0-{height}, Playable area in = {boundsW_0}-{boundsW_X} x {boundsH_0}-{boundsH_Y}");
+        }
         
         public TileType[,] GenerateMap(Seed seed)
         {
