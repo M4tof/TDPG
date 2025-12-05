@@ -30,6 +30,7 @@ namespace TDPG.Templates.Grid
         [SerializeField] private TileBase emptyTile;
         [SerializeField] private TileBase wallTile;
         [SerializeField] private TileBase waterTile;
+        [SerializeField] private TileBase nullTile;
 
         [Header("Spawns")] [SerializeField] private GameObject Player;
         [SerializeField] private GameObject EnemySpawnerPrefab;
@@ -137,6 +138,7 @@ namespace TDPG.Templates.Grid
             SetStartPlayerPosition();
             SetDestination();
             SetSpawners();
+            mapGenerator.CreateMapBounds();
 
             //Set Camera
         }
@@ -248,6 +250,7 @@ namespace TDPG.Templates.Grid
                 case Grid.TileType.EMPTY: return emptyTile;
                 case Grid.TileType.WALL: return wallTile;
                 case Grid.TileType.WATER: return waterTile;
+                case Grid.TileType.DONT_EXISTS: return nullTile;
                 default: return emptyTile;
             }
         }
@@ -519,6 +522,9 @@ namespace TDPG.Templates.Grid
                             break;
                         case Grid.TileType.BUILDING:
                             Gizmos.color = new Color(1, 1, 0, 0.2f);
+                            break;
+                        case Grid.TileType.DONT_EXISTS:
+                            Gizmos.color = new Color(128/255, 128/255, 128/255, 0.4f);
                             break;
                         default:
                             Gizmos.color = new Color(0, 1, 0, 0.2f); // EMPTY or unknown

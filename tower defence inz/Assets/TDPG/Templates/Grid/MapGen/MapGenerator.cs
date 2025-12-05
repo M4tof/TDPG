@@ -37,27 +37,33 @@ namespace TDPG.Templates.Grid.MapGen
         private PathFindingUtils _pathUtils;
 
         private const int MINSIZE = 20;
-        private const int FOGLAND = 10;
-        private int boundsW_0;
-        private int boundsH_0;
-        private int boundsW_X;
-        private int boundsH_Y;
+        private const int FOGLAND = 5;
+        private int boundsW_0; // playable start X
+        private int boundsH_0; // playable start Y
+        private int boundsW_X; // playable end X
+        private int boundsH_Y; // playable end Y;
 
         public void Awake()
         {
-            //TODO: still not it
-            boundsH_0 = height;
-            boundsW_0 = width;
-            
-            int modX = (int)Mathf.Clamp(width * 0.2f, FOGLAND, FOGLAND + width/2);
-            int modY = (int)Mathf.Clamp(height * 0.2f, FOGLAND, FOGLAND + height/2);
-            width += modX;
-            height += modY;
+            int playableWidth  = width;
+            int playableHeight = height;
 
-            boundsW_X = modX;
-            boundsH_Y = modY;
-            
-            Debug.Log($"[Map Generator]: Actual size = 0-{width} x 0-{height}, Playable area in = {boundsW_0}-{boundsW_X} x {boundsH_0}-{boundsH_Y}");
+            // padding is at max FOGLAND, or 20% of size
+            int padX = Mathf.Max((int)(playableWidth  * 0.20f), FOGLAND);
+            int padY = Mathf.Max((int)(playableHeight * 0.20f), FOGLAND);
+
+            // Expand total map by padding on BOTH sides
+            width  = playableWidth  + padX * 2;
+            height = playableHeight + padY * 2;
+
+            // playable bounds inside the expanded map
+            boundsW_0 = padX;                     // start X
+            boundsH_0 = padY;                     // start Y
+            boundsW_X = padX + playableWidth;     // end X
+            boundsH_Y = padY + playableHeight;    // end Y
+
+            Debug.Log($"[Map Generator]: Actual size = 0-{width} x 0-{height}, " +
+                      $"Playable area = {boundsW_0}-{boundsW_X} x {boundsH_0}-{boundsH_Y}");
         }
         
         public TileType[,] GenerateMap(Seed seed)
@@ -167,6 +173,14 @@ namespace TDPG.Templates.Grid.MapGen
                 {
                     for (int y = 0; y < height; y++)
                     {
+                        // Outside Playable Area
+                        if (x < boundsW_0 || x >= boundsW_X ||
+                            y < boundsH_0 || y >= boundsH_Y)
+                        {
+                            _mapInit[x, y] = TileType.DONT_EXISTS;
+                            continue;
+                        }
+                        
                         float n = noise.GetNoise(x, y);
 
                         TileType tile;
@@ -207,6 +221,13 @@ namespace TDPG.Templates.Grid.MapGen
             {
                 for (int y = 0; y < height; y++)
                 {
+                    if (x < boundsW_0 || x >= boundsW_X ||
+                        y < boundsH_0 || y >= boundsH_Y)
+                    {
+                        _mapInit[x, y] = TileType.DONT_EXISTS;
+                        continue;
+                    }
+                    
                     int nx = x % noiseSize;
                     int ny = (height - 1 - y) % noiseSize;
 
@@ -230,10 +251,10 @@ namespace TDPG.Templates.Grid.MapGen
 
         private void CleanUpDestination(int posX, int posY)
         {
-            int x0Bound = Mathf.Clamp(posX - emptyCellsAroundPoints, 0, width-1);
-            int x1Bound = Mathf.Clamp(posX + emptyCellsAroundPoints, 0, width-1);
-            int y0Bound = Mathf.Clamp(posY - emptyCellsAroundPoints, 0, height-1);
-            int y1Bound = Mathf.Clamp(posY + emptyCellsAroundPoints, 0, height-1);
+            int x0Bound = Mathf.Clamp(posX - emptyCellsAroundPoints, boundsW_0, boundsW_X-1);
+            int x1Bound = Mathf.Clamp(posX + emptyCellsAroundPoints, boundsW_0, boundsW_X-1);
+            int y0Bound = Mathf.Clamp(posY - emptyCellsAroundPoints, boundsH_0, boundsH_Y-1);
+            int y1Bound = Mathf.Clamp(posY + emptyCellsAroundPoints, boundsH_0, boundsH_Y-1);
 
             for (int x = x0Bound; x <= x1Bound; x++)
             {
@@ -254,29 +275,29 @@ namespace TDPG.Templates.Grid.MapGen
                 case 1:
                 case 2:
                     // Top-right corner 
-                    return FindCornerDestination(width - 2, height - 2, -1, -1);
+                    return FindCornerDestination(boundsW_X - 2, boundsH_Y - 2, -1, -1);
 
                 case 3:
                 case 4:
                     // Top-left corner 
-                    return FindCornerDestination(1, height - 2, 1, -1);
+                    return FindCornerDestination(boundsW_0 + 1, boundsH_Y - 2, 1, -1);
 
                 case 5:
                 case 6:
                     // Bottom-left corner 
-                    return FindCornerDestination(1, 1, 1, 1);
+                    return FindCornerDestination(boundsW_0 + 1, boundsH_0 + 1, 1, 1);
 
                 case 7:
                 case 8:
                     // Bottom-right corner, inward diagonal
-                    return FindCornerDestination(width - 2, 1, -1, 1);
+                    return FindCornerDestination(boundsW_X - 2, boundsH_0 + 1, -1, 1);
             }
         }
         
         private Vector3Int FindCentralDestination()
         {
-            int cx = width / 2;
-            int cy = height / 2;
+            int cx = boundsW_X;
+            int cy = boundsH_Y / 2;
 
             int[][] directions = new int[][]
             {
@@ -298,7 +319,7 @@ namespace TDPG.Templates.Grid.MapGen
             int steps = 1;
             int dirIndex = 0;
 
-            while (steps < Mathf.Max(width, height))
+            while (steps < Mathf.Max(boundsW_X, boundsH_Y))
             {
                 for (int i = 0; i < 2; i++)
                 {
@@ -331,20 +352,20 @@ namespace TDPG.Templates.Grid.MapGen
             int x = startX;
             int y = startY;
 
-            while (x >= 0 && x < width && y >= 0 && y < height)
+            while (x >= boundsW_0 && x < boundsW_X && y >= boundsH_0 && y < boundsH_Y)
             {
                 if (IsValidAndEmpty(x, y))
                 {
                     bool isEdge =
-                        x == 0 || y == 0 ||
-                        x == width - 1 || y == height - 1;
+                        x == boundsW_0 || y == boundsH_0 ||
+                        x == boundsW_X - 1 || y == boundsH_Y - 1;
 
 
                     if (!isEdge)
                     {
                         bool isTooClose =
-                            x == 1 || y == 1 ||
-                            x == width - 2 || y == height - 2;
+                            x == boundsW_0 + 1 || y == boundsH_0 + 1 ||
+                            x == boundsW_X - 2 || y == boundsH_Y - 2;
 
                         if (isTooClose)
                         {
@@ -369,7 +390,7 @@ namespace TDPG.Templates.Grid.MapGen
         
         private bool IsValidAndEmpty(int x, int y)
         {
-            if (x < 0 || y < 0 || x >= width || y >= height)
+            if (x < boundsW_0 || y < boundsH_0 || x >= boundsW_X || y >= boundsH_Y)
                 return false;
 
             if (_destinationPos.x == x && _destinationPos.y == y)
@@ -421,19 +442,18 @@ namespace TDPG.Templates.Grid.MapGen
                 Debug.LogError("MapGenerator: PathFindingUtils not set! Did you call setGrid() first?");
                 return;
             }
-
-            int licz = 0;
+            
             Vector3 dstWorld = GetDestinationWorldPosition();
-            for (int x = 0; x < width; x++)
+            for (int x = boundsW_0; x < boundsW_X; x++)
             {
-                for (int y = 0; y < height; y++)
+                for (int y = boundsH_0; y < boundsH_Y; y++)
                 {
                     if (!IsCandidateSpawnerTile(x, y))
                         continue;
+                    
                     float cellSize = _grid.GetCellSize();
                     Vector3 startWorld = new Vector3(x * cellSize, y * cellSize, 0);
                     List<Vector3> path;
-                    licz += 1;
                     path = _pathUtils.FindPath(startWorld, dstWorld, assumeCanSwim, false, false);
 
                     
@@ -449,7 +469,6 @@ namespace TDPG.Templates.Grid.MapGen
                 }
             }
             Debug.Log($"Spawner candidate tiles found: {_reachableCandidates.Count}");
-            Debug.Log($"Licz: {licz}");
         }
 
         private void SortCandidatesByDistance()
@@ -462,7 +481,7 @@ namespace TDPG.Templates.Grid.MapGen
             if (_reachableCandidates.Count == 0)
             {
                 Debug.LogWarning("No reachable spawner candidates exist.");
-                return new Vector3Int[0]; //fallback here
+                return new Vector3Int[0]; //fallback here TODO
             }
 
             SortCandidatesByDistance();
@@ -494,6 +513,68 @@ namespace TDPG.Templates.Grid.MapGen
 
             return result.ToArray();
         }
+
+        public void CreateMapBounds()
+        {
+            float cellSize = _grid.GetCellSize();
+
+            // Convert grid bounds to world-space coordinates
+            float left   = boundsW_0 * cellSize;
+            float right  = boundsW_X * cellSize;
+            float bottom = boundsH_0 * cellSize;
+            float top    = boundsH_Y * cellSize;
+            
+            float thickness = cellSize * 2f;   // wall thickness
+            float overlap   = thickness;  // extension to avoid all gaps
+            
+            // Create parent object for organization
+            GameObject wallsParent = new GameObject("MapBounds2D");
+            wallsParent.transform.SetParent(transform);
+            
+            float heightExtended = (top - bottom) + overlap * 2f;
+            float widthExtended  = (right - left) + overlap * 2f;
+            
+            // LEFT
+            CreateWall2D(
+                new Vector2(left - thickness / 2f, (top + bottom) / 2f),
+                new Vector2(thickness, heightExtended),
+                wallsParent.transform
+            );
+
+            // RIGHT
+            CreateWall2D(
+                new Vector2(right + thickness / 2f, (top + bottom) / 2f),
+                new Vector2(thickness, heightExtended),
+                wallsParent.transform
+            );
+
+            // BOTTOM
+            CreateWall2D(
+                new Vector2((left + right) / 2f, bottom - thickness / 2f),
+                new Vector2(widthExtended, thickness),
+                wallsParent.transform
+            );
+
+            // TOP
+            CreateWall2D(
+                new Vector2((left + right) / 2f, top + thickness / 2f),
+                new Vector2(widthExtended, thickness),
+                wallsParent.transform
+            );
+            
+        }
+        
+        private void CreateWall2D(Vector2 center, Vector2 size, Transform parent)
+        {
+            GameObject wall = new GameObject("Wall2D");
+            wall.transform.position = center;
+            wall.transform.SetParent(parent);
+
+            BoxCollider2D col = wall.AddComponent<BoxCollider2D>();
+            col.size = size;
+            col.isTrigger = false;
+        }
+        
         
     }
 }

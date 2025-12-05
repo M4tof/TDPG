@@ -2313,6 +2313,7 @@ MonoBehaviour:
   emptyTile: {fileID: 11400000, guid: 245591f996e999de48158143c4425721, type: 2}
   wallTile: {fileID: 11400000, guid: f46228e9649d55d45aec48fab5bea00c, type: 2}
   waterTile: {fileID: 11400000, guid: f6e626b381b1328bf94dc4ac32fbddf5, type: 2}
+  nullTile: {fileID: 11400000, guid: d8cf39669b147634780ad63fd6ff9a21, type: 2}
   Player: {fileID: 2044208077}
   EnemySpawnerPrefab: {fileID: 2678492726334369885, guid: 8172fa5e9ed9e4748ae399e9923d2284, type: 3}
   DestinationPrefab: {fileID: 376578793457453823, guid: f3a8bfe13a6f2149e9cc98aeda3e409e, type: 3}
