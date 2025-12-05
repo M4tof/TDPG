@@ -26,6 +26,7 @@ namespace TDPG.Templates.Grid
         private MapGenerator mapGenerator;
 
         [Header("Tilemap")] [SerializeField] private Tilemap tilemap;
+        [SerializeField] private Tilemap fogTilemap;
         [SerializeField] private UnityEngine.Grid gridComponent;
         [SerializeField] private TileBase emptyTile;
         [SerializeField] private TileBase wallTile;
@@ -167,14 +168,14 @@ namespace TDPG.Templates.Grid
             if (tilemap != null)
             {
                 tilemap.transform.position = Vector3.zero;
+                transform.localScale = Vector3.one;
                 Debug.Log("Reset Tilemap position to origin");
             }
-
-            // Set the tilemap's transform scale if needed
-            if (tilemap != null)
+            
+            if (fogTilemap != null)
             {
-                transform.localScale = Vector3.one;
-                //transform.localScale = new Vector3(cellSize, cellSize, 0);
+                fogTilemap.transform.position = Vector3.zero;
+                Debug.Log("Reset Fog Tilemap position to origin");
             }
         }
 
@@ -191,10 +192,21 @@ namespace TDPG.Templates.Grid
 
         private void ApplyMapToGridWithTilemap(Grid.TileType[,] mapData)
         {
+            bool hasFog = false;
             if (tilemap == null)
             {
                 Debug.LogWarning("Tilemap is not assigned in GridManager!");
                 return;
+            }
+            
+            if (fogTilemap == null)
+            {
+                Debug.LogWarning("FogTilemap is not assigned in GridManager!");
+            }
+            else
+            {
+                hasFog = true;
+                fogTilemap.ClearAllTiles();
             }
 
             tilemap.ClearAllTiles();
@@ -210,6 +222,13 @@ namespace TDPG.Templates.Grid
                     if (tileToPlace != null)
                     {
                         Vector3Int tilePos = new Vector3Int(x, y, 0);
+                        
+                        if (hasFog && tileToPlace == nullTile)
+                        {
+                            fogTilemap.SetTile(tilePos, tileToPlace);
+                            continue;
+                        }
+
                         tilemap.SetTile(tilePos, tileToPlace);
 
                         // Debug positioning for first tile
@@ -568,6 +587,11 @@ namespace TDPG.Templates.Grid
             if (tilemap != null)
             {
                 tilemap.ClearAllTiles();
+            }
+            
+            if (fogTilemap != null)
+            {
+                fogTilemap.ClearAllTiles();
             }
 
             // FIX: Defensive check (though SetCurrentGrid should have fixed this)
