@@ -10,17 +10,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 48b7f4daa554cd410be8710ad2974482, type: 3}
-  m_Name: Chicken
+  m_Name: WallTurret
   m_EditorClassIdentifier: 
-  TurretID: Chicken
+  TurretID: Wall
   BaseSprite: {fileID: -1515134823594722529, guid: ccaa28a09cade8dda8cd7fdb786d0609, type: 3}
-  CrystalSprite: {fileID: -1493861469240322331, guid: 8b3353a0a94e47e4dbff64f918723be9, type: 3}
-  Cost: 250
-  TileSize: {x: 2, y: 2}
-  Multiplayer: 2.5
+  CrystalSprite: {fileID: -690352682, guid: 71acbc7519fc62b4192c07d648f52b4b, type: 3}
+  Cost: 25
+  TileSize: {x: 1, y: 1}
+  Multiplayer: 0
   CanShoot: 1
-  Range: 10
-  Damage: 10
+  Range: 0
+  Damage: 0
   FireRate: 1
-  MaxHP: 20
-  ProjectilePrefab: {fileID: 1195895545647384619, guid: 54f1a2241ea8b704390fa0976c4ece48, type: 3}
+  MaxHP: 30
+  ProjectilePrefab: {fileID: 0}
