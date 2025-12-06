@@ -258,7 +258,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6f41e9a0564e4e5ab286802ce94ef66a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  initVal: 10
+  initVal: 4
 --- !u!4 &538746520
 Transform:
   m_ObjectHideFlags: 0
@@ -318,12 +318,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 70c5e98b4e4f42a18888d92b66fc4ba3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mapType: 0
+  mapType: 1
   width: 20
   height: 20
-  waterLevel: -1
-  wallLevel: 1
-  emptyCellsAroundPoints: 3
+  waterLevel: -0.2
+  wallLevel: 0.001
+  emptyCellsAroundPoints: 1
   numOfEnemySpawners: 5
   minimalDistance: 12
   assumeCanSwim: 1

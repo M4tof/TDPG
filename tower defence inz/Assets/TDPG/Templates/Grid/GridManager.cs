@@ -101,11 +101,33 @@ namespace TDPG.Templates.Grid
                 if (hasMapGenerator && !mapGenerated)
                 {
                     Debug.Log("Map generation initializing");
+
                     GlobalSeed globalSeed = new GlobalSeed(QuickGenerate(1));
-                    Grid.TileType[,] mapData = mapGenerator.GenerateMap(globalSeed.NextSubSeed("TMPHERE"));
-                    ApplyMapToGridWithTilemap(mapData);
-                    mapGenerator.setGrid(grid);
-                    mapGenerator.BuildValidSpawnerCandidates();
+
+                    const int MaxFullRegenerations = 5;   // how many reseeded attempts allowed
+                    bool success = false;
+
+                    for (int attempt = 0; attempt < MaxFullRegenerations; attempt++)
+                    {
+                        Debug.Log($"--- Map Generation Attempt {attempt + 1}/{MaxFullRegenerations} ---");
+
+                        if (TryGenerateMapWithFallback(globalSeed))
+                        {
+                            success = true;
+                            break;
+                        }
+
+                        // fallback failed → try full regeneration with new subseed
+                        Debug.LogWarning("Regenerating with new seed...");
+                    }
+
+                    if (!success)
+                    {
+                        Debug.LogError("All map generation attempts failed. Unable to produce valid map, something went catastrophically wrong.");
+                        return;
+                    }
+
+                    // If we reach here, map is valid
                     spawnerPositions = mapGenerator.SelectSpawnerPositions(numOfEnemySpawners);
                     destpos = mapGenerator.GetDestinationPosition();
                     mapGenerated = true;
@@ -478,6 +500,55 @@ namespace TDPG.Templates.Grid
             destinationObject = Instantiate(DestinationPrefab, mapGenerator.GetDestinationWorldPosition(),
                 Quaternion.identity, gameObject.transform);
         }
+        
+        private bool TryGenerateMapWithFallback(GlobalSeed globalSeed)
+        {
+            const int MaxFallbackPasses = 4;     // how many times fallback widens
+            const int CarveStep = 2;             // widen radius each pass
+
+            //Generate the initial map
+            Grid.TileType[,] mapData = mapGenerator.GenerateMap(globalSeed.NextSubSeed("MAP_MAIN"));
+            ApplyMapToGridWithTilemap(mapData);
+
+            mapGenerator.setGrid(grid);
+            mapGenerator.BuildValidSpawnerCandidates();
+
+            //If OK, done
+            if (mapGenerator.ReachableCandidatesCount() > 0)
+                return true;
+
+            Debug.LogWarning("No reachable spawner candidates. Starting fallback recovery.");
+
+            //Attempt local fallback recovery
+            int radius = 2;
+            for (int pass = 0; pass < MaxFallbackPasses; pass++)
+            {
+                Debug.Log($"Fallback pass #{pass + 1}, carving radius = {radius}");
+
+                // Carve around destination
+                mapGenerator.SpawnersFallback(radius);
+
+                // Reapply modified map
+                Grid.TileType[,] fallbackMap = mapGenerator.GetCurrentMap();
+                ApplyMapToGridWithTilemap(fallbackMap);
+                mapGenerator.setGrid(grid);
+
+                // Recalculate candidates
+                mapGenerator.BuildValidSpawnerCandidates();
+
+                if (mapGenerator.ReachableCandidatesCount() > 0)
+                {
+                    Debug.Log("Fallback succeeded!");
+                    return true;
+                }
+
+                radius += CarveStep;
+            }
+
+            Debug.LogError("Fallback failed. Map is unsalvageable.");
+            return false; // fallback failed
+        }
+
 
         private void SetSpawners()
         {

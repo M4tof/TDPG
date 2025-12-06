@@ -11,10 +11,10 @@ namespace TDPG.Templates.Grid.MapGen
     {
         [Header("Map Type")] [SerializeField] private MapTypes mapType = MapTypes.Smooth;
 
-        [Header("Map Settings")] [SerializeField, Min(MINSIZE)]
+        [Header("Map Settings")] [SerializeField, Min(Minsize)]
         private int width = 60;
 
-        [SerializeField, Min(MINSIZE)] private int height = 60;
+        [SerializeField, Min(Minsize)] private int height = 60;
         [SerializeField] private float waterLevel = -0.5f;
         [SerializeField] private float wallLevel = 0.5f;
 
@@ -24,7 +24,7 @@ namespace TDPG.Templates.Grid.MapGen
 
         [SerializeField, Min(1)] private int numOfEnemySpawners = 1;
         [SerializeField, Min(1)] private int minimalDistance = 1;
-        [SerializeField] private bool assumeCanSwim = false;
+        [SerializeField] private bool assumeCanSwim; 
 
         [Header("Debug Seed")] [SerializeField]
         private GlobalSeedGameObject providedSeed;
@@ -36,12 +36,12 @@ namespace TDPG.Templates.Grid.MapGen
         private List<SpawnerCandidate> _reachableCandidates = new List<SpawnerCandidate>();
         private PathFindingUtils _pathUtils;
 
-        private const int MINSIZE = 20;
-        private const int FOGLAND = 5;
-        private int boundsW_0; // playable start X
-        private int boundsH_0; // playable start Y
-        private int boundsW_X; // playable end X
-        private int boundsH_Y; // playable end Y;
+        private const int Minsize = 20;
+        private const int Fogland = 5;
+        private int _boundsW0; // playable start X
+        private int _boundsH0; // playable start Y
+        private int _boundsWX; // playable end X
+        private int _boundsHY; // playable end Y;
 
         public void Awake()
         {
@@ -49,21 +49,21 @@ namespace TDPG.Templates.Grid.MapGen
             int playableHeight = height;
 
             // padding is at max FOGLAND, or 20% of size
-            int padX = Mathf.Max((int)(playableWidth  * 0.20f), FOGLAND);
-            int padY = Mathf.Max((int)(playableHeight * 0.20f), FOGLAND);
+            int padX = Mathf.Max((int)(playableWidth  * 0.20f), Fogland);
+            int padY = Mathf.Max((int)(playableHeight * 0.20f), Fogland);
 
             // Expand total map by padding on BOTH sides
             width  = playableWidth  + padX * 2;
             height = playableHeight + padY * 2;
 
             // playable bounds inside the expanded map
-            boundsW_0 = padX;                     // start X
-            boundsH_0 = padY;                     // start Y
-            boundsW_X = padX + playableWidth;     // end X
-            boundsH_Y = padY + playableHeight;    // end Y
+            _boundsW0 = padX;                     // start X
+            _boundsH0 = padY;                     // start Y
+            _boundsWX = padX + playableWidth;     // end X
+            _boundsHY = padY + playableHeight;    // end Y
 
             Debug.Log($"[Map Generator]: Actual size = 0-{width} x 0-{height}, " +
-                      $"Playable area = {boundsW_0}-{boundsW_X} x {boundsH_0}-{boundsH_Y}");
+                      $"Playable area = {_boundsW0}-{_boundsWX} x {_boundsH0}-{_boundsHY}");
         }
         
         public TileType[,] GenerateMap(Seed seed)
@@ -76,11 +76,7 @@ namespace TDPG.Templates.Grid.MapGen
                 seed = providedSeed.GetNextSeed();
             }
             
-            if (seed == null)
-            {
-                //                  012 34 5
-                seed = new Seed(240_11_8, -1,"missingSeedInMapGen",false);
-            }
+            seed ??= new Seed(240_11_8, -1, "missingSeedInMapGen", false);
             
             seed.IsBitBased =  false;
             seed.NormalizeSeedValue();
@@ -174,8 +170,8 @@ namespace TDPG.Templates.Grid.MapGen
                     for (int y = 0; y < height; y++)
                     {
                         // Outside Playable Area
-                        if (x < boundsW_0 || x >= boundsW_X ||
-                            y < boundsH_0 || y >= boundsH_Y)
+                        if (x < _boundsW0 || x >= _boundsWX ||
+                            y < _boundsH0 || y >= _boundsHY)
                         {
                             _mapInit[x, y] = TileType.DONT_EXISTS;
                             continue;
@@ -221,8 +217,8 @@ namespace TDPG.Templates.Grid.MapGen
             {
                 for (int y = 0; y < height; y++)
                 {
-                    if (x < boundsW_0 || x >= boundsW_X ||
-                        y < boundsH_0 || y >= boundsH_Y)
+                    if (x < _boundsW0 || x >= _boundsWX ||
+                        y < _boundsH0 || y >= _boundsHY)
                     {
                         _mapInit[x, y] = TileType.DONT_EXISTS;
                         continue;
@@ -251,10 +247,10 @@ namespace TDPG.Templates.Grid.MapGen
 
         private void CleanUpDestination(int posX, int posY)
         {
-            int x0Bound = Mathf.Clamp(posX - emptyCellsAroundPoints, boundsW_0, boundsW_X-1);
-            int x1Bound = Mathf.Clamp(posX + emptyCellsAroundPoints, boundsW_0, boundsW_X-1);
-            int y0Bound = Mathf.Clamp(posY - emptyCellsAroundPoints, boundsH_0, boundsH_Y-1);
-            int y1Bound = Mathf.Clamp(posY + emptyCellsAroundPoints, boundsH_0, boundsH_Y-1);
+            int x0Bound = Mathf.Clamp(posX - emptyCellsAroundPoints, _boundsW0, _boundsWX-1);
+            int x1Bound = Mathf.Clamp(posX + emptyCellsAroundPoints, _boundsW0, _boundsWX-1);
+            int y0Bound = Mathf.Clamp(posY - emptyCellsAroundPoints, _boundsH0, _boundsHY-1);
+            int y1Bound = Mathf.Clamp(posY + emptyCellsAroundPoints, _boundsH0, _boundsHY-1);
 
             for (int x = x0Bound; x <= x1Bound; x++)
             {
@@ -275,29 +271,29 @@ namespace TDPG.Templates.Grid.MapGen
                 case 1:
                 case 2:
                     // Top-right corner 
-                    return FindCornerDestination(boundsW_X - 2, boundsH_Y - 2, -1, -1);
+                    return FindCornerDestination(_boundsWX - 2, _boundsHY - 2, -1, -1);
 
                 case 3:
                 case 4:
                     // Top-left corner 
-                    return FindCornerDestination(boundsW_0 + 1, boundsH_Y - 2, 1, -1);
+                    return FindCornerDestination(_boundsW0 + 1, _boundsHY - 2, 1, -1);
 
                 case 5:
                 case 6:
                     // Bottom-left corner 
-                    return FindCornerDestination(boundsW_0 + 1, boundsH_0 + 1, 1, 1);
+                    return FindCornerDestination(_boundsW0 + 1, _boundsH0 + 1, 1, 1);
 
                 case 7:
                 case 8:
                     // Bottom-right corner, inward diagonal
-                    return FindCornerDestination(boundsW_X - 2, boundsH_0 + 1, -1, 1);
+                    return FindCornerDestination(_boundsWX - 2, _boundsH0 + 1, -1, 1);
             }
         }
         
         private Vector3Int FindCentralDestination()
         {
-            int cx = boundsW_X;
-            int cy = boundsH_Y / 2;
+            int cx = _boundsWX;
+            int cy = _boundsHY / 2;
 
             int[][] directions = new int[][]
             {
@@ -319,7 +315,7 @@ namespace TDPG.Templates.Grid.MapGen
             int steps = 1;
             int dirIndex = 0;
 
-            while (steps < Mathf.Max(boundsW_X, boundsH_Y))
+            while (steps < Mathf.Max(_boundsWX, _boundsHY))
             {
                 for (int i = 0; i < 2; i++)
                 {
@@ -352,20 +348,20 @@ namespace TDPG.Templates.Grid.MapGen
             int x = startX;
             int y = startY;
 
-            while (x >= boundsW_0 && x < boundsW_X && y >= boundsH_0 && y < boundsH_Y)
+            while (x >= _boundsW0 && x < _boundsWX && y >= _boundsH0 && y < _boundsHY)
             {
                 if (IsValidAndEmpty(x, y))
                 {
                     bool isEdge =
-                        x == boundsW_0 || y == boundsH_0 ||
-                        x == boundsW_X - 1 || y == boundsH_Y - 1;
+                        x == _boundsW0 || y == _boundsH0 ||
+                        x == _boundsWX - 1 || y == _boundsHY - 1;
 
 
                     if (!isEdge)
                     {
                         bool isTooClose =
-                            x == boundsW_0 + 1 || y == boundsH_0 + 1 ||
-                            x == boundsW_X - 2 || y == boundsH_Y - 2;
+                            x == _boundsW0 + 1 || y == _boundsH0 + 1 ||
+                            x == _boundsWX - 2 || y == _boundsHY - 2;
 
                         if (isTooClose)
                         {
@@ -390,13 +386,24 @@ namespace TDPG.Templates.Grid.MapGen
         
         private bool IsValidAndEmpty(int x, int y)
         {
-            if (x < boundsW_0 || y < boundsH_0 || x >= boundsW_X || y >= boundsH_Y)
+            if (x < _boundsW0 || y < _boundsH0 || x >= _boundsWX || y >= _boundsHY)
                 return false;
 
             if (_destinationPos.x == x && _destinationPos.y == y)
                 return false;
             
             return _mapInit[x, y] == TileType.EMPTY;
+        }
+
+        private bool IsValidForFallback(int x, int y)
+        {
+            if (x < _boundsW0 || y < _boundsH0 || x >= _boundsWX || y >= _boundsHY)
+                return false;
+
+            if (_destinationPos.x == x && _destinationPos.y == y)
+                return false;
+            
+            return (_mapInit[x, y] == TileType.WALL) || (_mapInit[x, y] == TileType.WATER);
         }
 
         public Vector3Int GetDestinationPosition()
@@ -444,9 +451,9 @@ namespace TDPG.Templates.Grid.MapGen
             }
             
             Vector3 dstWorld = GetDestinationWorldPosition();
-            for (int x = boundsW_0; x < boundsW_X; x++)
+            for (int x = _boundsW0; x < _boundsWX; x++)
             {
-                for (int y = boundsH_0; y < boundsH_Y; y++)
+                for (int y = _boundsH0; y < _boundsHY; y++)
                 {
                     if (!IsCandidateSpawnerTile(x, y))
                         continue;
@@ -478,12 +485,6 @@ namespace TDPG.Templates.Grid.MapGen
         
         public Vector3Int[] SelectSpawnerPositions(int count)
         {
-            if (_reachableCandidates.Count == 0)
-            {
-                Debug.LogWarning("No reachable spawner candidates exist.");
-                return new Vector3Int[0]; //fallback here TODO
-            }
-
             SortCandidatesByDistance();
 
             List<Vector3Int> result = new List<Vector3Int>();
@@ -519,10 +520,10 @@ namespace TDPG.Templates.Grid.MapGen
             float cellSize = _grid.GetCellSize();
 
             // Convert grid bounds to world-space coordinates
-            float left   = boundsW_0 * cellSize;
-            float right  = boundsW_X * cellSize;
-            float bottom = boundsH_0 * cellSize;
-            float top    = boundsH_Y * cellSize;
+            float left   = _boundsW0 * cellSize;
+            float right  = _boundsWX * cellSize;
+            float bottom = _boundsH0 * cellSize;
+            float top    = _boundsHY * cellSize;
             
             float thickness = cellSize * 2f;   // wall thickness
             float overlap   = thickness;  // extension to avoid all gaps
@@ -574,7 +575,41 @@ namespace TDPG.Templates.Grid.MapGen
             col.size = size;
             col.isTrigger = false;
         }
-        
-        
+
+        public void SpawnersFallback(int reach)
+        {
+            Vector3Int dest = GetDestinationPosition();
+
+            // Loop through all coordinates in a square around dest
+            for (int dx = -reach; dx <= reach; dx++)
+            {
+                for (int dy = -reach; dy <= reach; dy++)
+                {
+                    // Chebyshev distance: ensures we include diagonals and everything within "reach"
+                    if (Mathf.Max(Mathf.Abs(dx), Mathf.Abs(dy)) <= reach)
+                    {
+                        int x = dest.x + dx;
+                        int y = dest.y + dy;
+                        
+                        if (IsValidForFallback(x, y))
+                        {
+                            _mapInit[x, y] = TileType.EMPTY;
+                        }
+                    }
+                }
+            }
+            
+        }
+
+        public int ReachableCandidatesCount()
+        {
+            return _reachableCandidates.Count;
+        }
+
+        public Grid.TileType[,] GetCurrentMap()
+        {
+            return _mapInit;
+        }
+
     }
 }
