@@ -8,6 +8,7 @@ using static TDPG.Generators.Scalars.InitializerFromDate;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Tilemaps;
+using UnityEngine.Events;
 
 namespace TDPG.Templates.Grid
 {
@@ -34,6 +35,9 @@ namespace TDPG.Templates.Grid
         [Header("Spawns")] [SerializeField] private GameObject Player;
         [SerializeField] private GameObject EnemySpawnerPrefab;
         [SerializeField] private GameObject DestinationPrefab;
+        
+        [Header("Events")]
+        [SerializeField] private UnityEvent MapLoaded;
 
         [Tooltip("Game Object which would be a parent for spawned EnemySpawners")] [SerializeField]
         private GameObject SpawnerContainer;
@@ -137,6 +141,8 @@ namespace TDPG.Templates.Grid
             SetStartPlayerPosition();
             SetDestination();
             SetSpawners();
+
+            MapLoaded.Invoke();
 
             //Set Camera
         }
@@ -384,6 +390,11 @@ namespace TDPG.Templates.Grid
             return height;
         }
 
+        public float GetCellSize()
+        {
+            return cellSize;
+        }
+
         public Vector3 GetCenterGrid()
         {
             return new Vector3(width * cellSize / 2, width * cellSize / 2, -10f);
@@ -469,6 +480,11 @@ namespace TDPG.Templates.Grid
         public GameObject GetDestinationObject()
         {
             return  destinationObject;
+        }
+        
+        public void SubscribeToEvent(UnityAction listener)
+        {
+            MapLoaded.AddListener(listener);
         }
 
     public void PrintGridCell(Vector3 worldPosition)
@@ -585,5 +601,6 @@ namespace TDPG.Templates.Grid
                 }
             }
         }
+        
     }
 }

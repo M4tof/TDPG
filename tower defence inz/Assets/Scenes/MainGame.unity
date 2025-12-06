@@ -813,7 +813,6 @@ GameObject:
   m_Component:
   - component: {fileID: 577938919}
   - component: {fileID: 577938921}
-  - component: {fileID: 577938920}
   m_Layer: 5
   m_Name: Minimap
   m_TagString: Untagged
@@ -842,33 +841,6 @@ RectTransform:
   m_AnchoredPosition: {x: -115, y: -115}
   m_SizeDelta: {x: 200, y: 200}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &577938920
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 577938918}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1344c3c82d62a2a41a3576d8abb8e3ea, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
-  m_Color: {r: 0.2811287, g: 0.28070483, b: 0.3132075, a: 1}
-  m_RaycastTarget: 1
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-  m_Maskable: 1
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  m_Texture: {fileID: 8400000, guid: b4b8693abacd8494185023921ee59257, type: 2}
-  m_UVRect:
-    serializedVersion: 2
-    x: 0
-    y: 0
-    width: 1
-    height: 1
 --- !u!222 &577938921
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1444,7 +1416,7 @@ GameObject:
   - component: {fileID: 781605615}
   - component: {fileID: 781605613}
   - component: {fileID: 781605614}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Tilemap
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1920,6 +1892,7 @@ GameObject:
   - component: {fileID: 958166500}
   - component: {fileID: 958166499}
   - component: {fileID: 958166498}
+  - component: {fileID: 958166502}
   m_Layer: 0
   m_Name: MinimapCamera
   m_TagString: Untagged
@@ -2018,7 +1991,7 @@ Camera:
   m_Depth: 0
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 128
+    m_Bits: 384
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 8400000, guid: b4b8693abacd8494185023921ee59257, type: 2}
   m_TargetDisplay: 0
@@ -2045,6 +2018,19 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &958166502
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 958166497}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbe01438385b6b24bbf4da49aaaaaf6d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minimapTileSize: 0.5
 --- !u!1 &1066024756
 GameObject:
   m_ObjectHideFlags: 0
@@ -2600,6 +2586,21 @@ MonoBehaviour:
   Player: {fileID: 2044208077}
   EnemySpawnerPrefab: {fileID: 2678492726334369885, guid: 8172fa5e9ed9e4748ae399e9923d2284, type: 3}
   DestinationPrefab: {fileID: 376578793457453823, guid: f3a8bfe13a6f2149e9cc98aeda3e409e, type: 3}
+  MapLoaded:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 958166497}
+        m_TargetAssemblyTypeName: 
+        m_MethodName: 
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: 
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   SpawnerContainer: {fileID: 1314182201}
   debugFiller: {fileID: 0}
 --- !u!156049354 &1339975576
@@ -2995,7 +2996,7 @@ Camera:
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 127
+    m_Bits: 383
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0
