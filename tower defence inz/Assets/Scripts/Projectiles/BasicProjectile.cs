@@ -11,7 +11,7 @@ public class BasicProjectile : MonoBehaviour
     private Rigidbody2D rb;
     private float timeRemaining = 0f;
 
-    void Start()
+    public void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         timeRemaining = lifeTime; 
@@ -50,5 +50,10 @@ public class BasicProjectile : MonoBehaviour
     public void SetDamage(int damage)
     {
         this.damage = damage;
+    }
+    
+    public int GetDamage()
+    {
+        return damage;
     }
 }

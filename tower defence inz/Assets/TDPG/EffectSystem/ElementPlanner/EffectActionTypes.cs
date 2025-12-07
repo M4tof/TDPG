@@ -32,6 +32,7 @@ namespace TDPG.EffectSystem.ElementPlanner
 
             if (context.Target.TryGetComponent<EnemyBaseBehaviour>(out var behaviour))
             {
+                Debug.Log($"BEHAVIOUR {behaviour},LOGIC {behaviour.Logic}, FACTOR {factor}");
                 behaviour.Logic.CurrentSpeed *= (1f - factor);
             }
             else
@@ -61,22 +62,19 @@ namespace TDPG.EffectSystem.ElementPlanner
 
             if (context.Target.TryGetComponent<EnemyBaseBehaviour>(out var behaviour))
             {
-                behaviour.Logic.CurrentSpeed *= (1f - factor);
-                behaviour.ApplyWait(duration);
-                behaviour.Logic.CurrentSpeed /= (1f - factor);
+                float newSpeed = behaviour.Logic.Data.Speed * (1f - factor);
+
+                if (newSpeed < behaviour.Logic.CurrentSpeed)
+                {
+                    behaviour.SetCurrentSpeed(newSpeed);
+                }
+                behaviour.ApplyOrExtendEffect("slow", () => behaviour.SetCurrentSpeed(behaviour.Logic.Data.Speed), 1f);
             }
             else
             {
                 Debug.LogWarning("TempSlowDownAction: Target has no CurrentSpeed.");
             }
         }
-
-        /*private IEnumerator ApplyRoutine(EnemyBase logic)
-        {
-            logic.CurrentSpeed *= (1f - factor);
-            yield return new WaitForSeconds(duration);
-            logic.CurrentSpeed /= (1f - factor);
-        }*/
     }
 
     public class HealthDrainAction : IEffectAction
@@ -205,7 +203,9 @@ namespace TDPG.EffectSystem.ElementPlanner
 
             if (context.Target.TryGetComponent<EnemyBaseBehaviour>(out var behaviour))
             {
-                behaviour.Logic.CurrentHealth += amount; // amount < 0
+                //behaviour.Logic.CurrentHealth += amount; // amount < 0
+                behaviour.DealDamage((int) -amount);
+                Debug.Log(behaviour.Logic.CurrentHealth);
             }
             else
             {
