@@ -258,7 +258,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6f41e9a0564e4e5ab286802ce94ef66a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  initVal: 4
+  initVal: 999
 --- !u!4 &538746520
 Transform:
   m_ObjectHideFlags: 0
@@ -322,11 +322,11 @@ MonoBehaviour:
   width: 20
   height: 20
   waterLevel: -0.2
-  wallLevel: 0.001
+  wallLevel: 0.3
   emptyCellsAroundPoints: 1
-  numOfEnemySpawners: 5
-  minimalDistance: 12
-  assumeCanSwim: 1
+  numOfEnemySpawners: 6
+  minimalDistance: 8
+  assumeCanSwim: 0
   providedSeed: {fileID: 538746519}
 --- !u!1 &1231574636
 GameObject:
@@ -764,7 +764,7 @@ MonoBehaviour:
   emptyTile: {fileID: 11400000, guid: d259be43a49468bb68392f5c12133c9f, type: 2}
   wallTile: {fileID: 11400000, guid: f46228e9649d55d45aec48fab5bea00c, type: 2}
   waterTile: {fileID: 11400000, guid: aeaa97e4579d6d14fbb7c57b1cd3184a, type: 2}
-  nullTile: {fileID: 11400000, guid: d8cf39669b147634780ad63fd6ff9a21, type: 2}
+  nullTile: {fileID: 11400000, guid: 061d48ef3fdaf923685578a4af7964f8, type: 2}
   Player: {fileID: 255138348}
   EnemySpawnerPrefab: {fileID: 0}
   DestinationPrefab: {fileID: 0}

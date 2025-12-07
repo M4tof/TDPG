@@ -107,47 +107,34 @@ namespace TDPG.Templates.Grid.MapGen
             noise.SetSeed((int)seedVal);
             
             // Seed-derived values
-            // Frequency: map digit to [0.009, 0.05]
             float freq = 0.009f + (d0 / 9f) * (0.05f - 0.009f);
-            // Octaves: 2 + digit, clamp to 6
             int octaves = Mathf.Clamp(2 + d1, 2, 6);
-            // Lacunarity: [1.5, 2.5]
             float lacunarity = 1.5f + (d2 / 9f) * (2.5f - 1.5f);
-            // Gain: [0.3, 0.7]
             float gain = 0.3f + (d3 / 9f) * (0.7f - 0.3f);
-            // Weighted strength: [0.0, 1.0]
             float weightedStrength = d4 / 9f;
             
             Debug.Log($"Seed = {seedVal}");
-            Debug.Log($"Raw: ({mapType}): freq={freq}, oct={octaves}, gain={gain}");
             
             // Configure per map type
             switch (mapType)
             {
                 case MapTypes.Smooth:
-                    // Clamp to smoother ranges
                     freq = Mathf.Clamp(freq, 0.009f, 0.02f);
                     octaves = Mathf.Clamp(octaves, 2, 3);
                     gain = Mathf.Clamp(gain, 0.5f, 0.7f);
                     break;
-
-
                 case MapTypes.Mountainous:
-                    // Clamp to more chaotic ranges
                     freq = Mathf.Clamp(freq, 0.02f, 0.05f);
                     octaves = Mathf.Clamp(octaves, 4, 6);
                     gain = Mathf.Clamp(gain, 0.3f, 0.5f);
                     noise.SetFractalType(FastNoiseLite.FractalType.Ridged);
                     break;
-
                 case MapTypes.Chaotic:
-                    // Clamp to higher frequency, more water
                     freq = Mathf.Clamp(freq, 0.04f, 0.05f);
                     octaves = Mathf.Clamp(octaves, 4, 5);
                     gain = Mathf.Clamp(gain, 0.6f, 0.8f);
                     noise.SetFractalType(FastNoiseLite.FractalType.PingPong);
                     break;
-
                 case MapTypes.Static:
                     _mapInit = DeterministicMapRetrieve(d5);
                     skipGeneration = true;
@@ -161,44 +148,168 @@ namespace TDPG.Templates.Grid.MapGen
             noise.SetFractalOctaves(octaves);
             noise.SetFrequency(freq);
             Debug.Log($"Clamped ({mapType}): freq={freq}, oct={octaves}, gain={gain}");
+
+            // --- REGENERATION LOOP VARIABLES ---
+            // We use local variables so we don't permanently modify the serialized fields
+            float currentWaterLevel = waterLevel;
+            float currentWallLevel = wallLevel;
             
-            // Generate map
-            if (!skipGeneration)
+            int attempts = 0;
+            const int maxAttempts = 5;
+            bool mapAccepted = false;
+
+            while (!mapAccepted && attempts < maxAttempts)
             {
-                for (int x = 0; x < width; x++)
+                if (attempts > 0)
                 {
-                    for (int y = 0; y < height; y++)
+                    Debug.Log($"[MapGen] Regeneration Attempt #{attempts}. Adjusting thresholds to expand land.");
+                    // Make water lower (further negative) and walls higher (further positive)
+                    currentWaterLevel -= 0.1f; 
+                    currentWallLevel  += 0.1f;
+                }
+
+                // Generate map data
+                if (!skipGeneration)
+                {
+                    for (int x = 0; x < width; x++)
                     {
-                        // Outside Playable Area
-                        if (x < _boundsW0 || x >= _boundsWX ||
-                            y < _boundsH0 || y >= _boundsHY)
+                        for (int y = 0; y < height; y++)
                         {
-                            _mapInit[x, y] = TileType.DONT_EXISTS;
-                            continue;
+                            // Outside Playable Area
+                            if (x < _boundsW0 || x >= _boundsWX ||
+                                y < _boundsH0 || y >= _boundsHY)
+                            {
+                                _mapInit[x, y] = TileType.DONT_EXISTS;
+                                continue;
+                            }
+                            
+                            float n = noise.GetNoise(x, y);
+
+                            TileType tile;
+                            // Use local currentWaterLevel/currentWallLevel
+                            if (n < currentWaterLevel) 
+                                tile = TileType.WATER;
+                            else if (n > currentWallLevel) 
+                                tile = TileType.WALL;
+                            else 
+                                tile = TileType.EMPTY;
+
+                            _mapInit[x, y] = tile;
                         }
-                        
-                        float n = noise.GetNoise(x, y);
+                    }
+                }
 
-                        TileType tile;
-                        if (n < waterLevel) // bellow sea level water
-                            tile = TileType.WATER;
-                        else if (n > wallLevel) // mountains
-                            tile = TileType.WALL;
-                        else // land
-                            tile = TileType.EMPTY;
+                // Place Destination
+                // Note: We must re-run this because changing thresholds might make the previous destination invalid
+                Vector3Int dst = DecideDestination(d5);
+                _destinationPos = dst;
+                CleanUpDestination(dst.x, dst.y);
 
-                        _mapInit[x, y] = tile;
+                // --- USABILITY CHECK ---
+                if (skipGeneration)
+                {
+                    // Static maps are assumed valid
+                    mapAccepted = true; 
+                }
+                else
+                {
+                    float usability = CalculateUsableMapPercentage();
+
+                    if (usability < 0.30f)
+                    {
+                        // < 30%: Reject and Regenerate
+                        Debug.LogWarning($"Map Usability too low ({usability:P}). Regenerating...");
+                        attempts++;
+                    }
+                    else
+                    {
+                        // >= 30%: Accept
+                        if (usability < 0.50f)
+                        {
+                            // 40% - 60%: Warning but accept
+                            Debug.LogWarning($"Map Usability is suboptimal ({usability:P} < 50%). Accepting anyway.");
+                        }
+                        else
+                        {
+                            Debug.Log($"Map Usability Good ({usability:P}).");
+                        }
+                        mapAccepted = true;
                     }
                 }
             }
 
-            Vector3Int dst = DecideDestination(d5);
-            _destinationPos = dst;
-                
-            CleanUpDestination(dst.x, dst.y);
+            if (!mapAccepted)
+            {
+                Debug.LogError("Failed to generate a usable map after max attempts. Returning last result.");
+            }
+
             Debug.Log($"Destination prepared at position {_destinationPos}");
             
             return _mapInit;
+        }
+        
+        public float CalculateUsableMapPercentage()
+        {
+            int playableW = _boundsWX - _boundsW0;
+            int playableH = _boundsHY - _boundsH0;
+            int totalCells = playableW * playableH;
+
+            if (totalCells == 0) return 0f;
+
+            // BFS structures
+            bool[,] visited = new bool[width, height];
+            Queue<Vector2Int> queue = new Queue<Vector2Int>();
+            
+            Vector2Int start = new Vector2Int(_destinationPos.x, _destinationPos.y);
+            
+            // If destination is somehow OOB (shouldn't happen), return 0
+            if (start.x < _boundsW0 || start.x >= _boundsWX || 
+                start.y < _boundsH0 || start.y >= _boundsHY) return 0f;
+
+            queue.Enqueue(start);
+            visited[start.x, start.y] = true;
+
+            int reachableLandCount = 0;
+            if (_mapInit[start.x, start.y] == TileType.EMPTY) reachableLandCount++;
+
+            int[] dx = { 0, 0, 1, -1 };
+            int[] dy = { 1, -1, 0, 0 };
+
+            while (queue.Count > 0)
+            {
+                Vector2Int curr = queue.Dequeue();
+
+                for (int i = 0; i < 4; i++)
+                {
+                    int nx = curr.x + dx[i];
+                    int ny = curr.y + dy[i];
+
+                    // Bounds check
+                    if (nx < _boundsW0 || nx >= _boundsWX || 
+                        ny < _boundsH0 || ny >= _boundsHY) continue;
+
+                    if (visited[nx, ny]) continue;
+
+                    TileType t = _mapInit[nx, ny];
+                    bool traversable = false;
+
+                    if (t == TileType.EMPTY) traversable = true;
+                    else if (t == TileType.WATER && assumeCanSwim) traversable = true;
+                    
+                    if (traversable)
+                    {
+                        visited[nx, ny] = true;
+                        queue.Enqueue(new Vector2Int(nx, ny));
+
+                        // We count "Usable Map" as actual land we can stand on.
+                        // If we swam here, the water tile itself isn't "land", but it allows us to reach more land.
+                        if (t == TileType.EMPTY) 
+                            reachableLandCount++;
+                    }
+                }
+            }
+
+            return (float)reachableLandCount / totalCells;
         }
         
         public int Width => width;
@@ -576,7 +687,7 @@ namespace TDPG.Templates.Grid.MapGen
             col.isTrigger = false;
         }
 
-        public void SpawnersFallback(int reach)
+        public void SpawnersFallback(int reach) //otherwise known as fallback methode 2.
         {
             Vector3Int dest = GetDestinationPosition();
 
