@@ -318,14 +318,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 70c5e98b4e4f42a18888d92b66fc4ba3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mapType: 1
-  width: 20
-  height: 20
+  mapType: 0
+  width: 50
+  height: 50
   waterLevel: -0.2
-  wallLevel: 0.3
-  emptyCellsAroundPoints: 1
-  numOfEnemySpawners: 6
-  minimalDistance: 8
+  wallLevel: 0.2
+  emptyCellsAroundPoints: 3
+  numOfEnemySpawners: 250000
+  minimalDistance: 2
   assumeCanSwim: 0
   providedSeed: {fileID: 538746519}
 --- !u!1 &1231574636

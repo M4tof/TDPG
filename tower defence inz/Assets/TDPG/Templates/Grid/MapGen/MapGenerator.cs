@@ -45,6 +45,9 @@ namespace TDPG.Templates.Grid.MapGen
 
         public void Awake()
         {
+            int maxDistance = (width + height)/2;
+            minimalDistance = Mathf.Min(maxDistance, minimalDistance);
+            
             int playableWidth  = width;
             int playableHeight = height;
 
@@ -113,7 +116,7 @@ namespace TDPG.Templates.Grid.MapGen
             float gain = 0.3f + (d3 / 9f) * (0.7f - 0.3f);
             float weightedStrength = d4 / 9f;
             
-            Debug.Log($"Seed = {seedVal}");
+            Debug.Log($"[Map Generator]: Seed = {seedVal}");
             
             // Configure per map type
             switch (mapType)
@@ -147,7 +150,7 @@ namespace TDPG.Templates.Grid.MapGen
             noise.SetFractalLacunarity(lacunarity);
             noise.SetFractalOctaves(octaves);
             noise.SetFrequency(freq);
-            Debug.Log($"Clamped ({mapType}): freq={freq}, oct={octaves}, gain={gain}");
+            Debug.Log($"[Map Generator]: Clamped ({mapType}): freq={freq}, oct={octaves}, gain={gain}");
 
             // --- REGENERATION LOOP VARIABLES ---
             // We use local variables so we don't permanently modify the serialized fields
@@ -162,7 +165,7 @@ namespace TDPG.Templates.Grid.MapGen
             {
                 if (attempts > 0)
                 {
-                    Debug.Log($"[MapGen] Regeneration Attempt #{attempts}. Adjusting thresholds to expand land.");
+                    Debug.Log($"[Map Generator]: Regeneration Attempt #{attempts}. Adjusting thresholds to expand land.");
                     // Make water lower (further negative) and walls higher (further positive)
                     currentWaterLevel -= 0.1f; 
                     currentWallLevel  += 0.1f;
@@ -218,7 +221,7 @@ namespace TDPG.Templates.Grid.MapGen
                     if (usability < 0.30f)
                     {
                         // < 30%: Reject and Regenerate
-                        Debug.LogWarning($"Map Usability too low ({usability:P}). Regenerating...");
+                        Debug.LogWarning($"[Map Generator]: Map Usability too low ({usability:P}). Regenerating...");
                         attempts++;
                     }
                     else
@@ -227,11 +230,11 @@ namespace TDPG.Templates.Grid.MapGen
                         if (usability < 0.50f)
                         {
                             // 40% - 60%: Warning but accept
-                            Debug.LogWarning($"Map Usability is suboptimal ({usability:P} < 50%). Accepting anyway.");
+                            Debug.LogWarning($"[Map Generator]: Map Usability is suboptimal ({usability:P} < 50%). Accepting anyway.");
                         }
                         else
                         {
-                            Debug.Log($"Map Usability Good ({usability:P}).");
+                            Debug.Log($"[Map Generator]: Map Usability Good ({usability:P}).");
                         }
                         mapAccepted = true;
                     }
@@ -240,10 +243,10 @@ namespace TDPG.Templates.Grid.MapGen
 
             if (!mapAccepted)
             {
-                Debug.LogError("Failed to generate a usable map after max attempts. Returning last result.");
+                Debug.LogError("[Map Generator]: Failed to generate a usable map after max attempts. Returning last result.");
             }
 
-            Debug.Log($"Destination prepared at position {_destinationPos}");
+            Debug.Log($"[Map Generator]: Destination prepared at position {_destinationPos}");
             
             return _mapInit;
         }
@@ -351,7 +354,7 @@ namespace TDPG.Templates.Grid.MapGen
                     _mapInit[x, y] = tile;
                 }
             }
-            Debug.Log($"[DETERMINISTIC] Destination set to {_destinationPos}");
+            Debug.Log($"[Map Generator]: [DETERMINISTIC] Destination set to {_destinationPos}");
 
             return _mapInit;
         }
@@ -450,7 +453,7 @@ namespace TDPG.Templates.Grid.MapGen
                 steps++;
             }
 
-            Debug.LogWarning("No EMPTY destination found.");
+            Debug.LogWarning("[Map Generator]: No EMPTY destination found.");
             return new Vector3Int(cx, cy,0);
         }
         
@@ -491,7 +494,7 @@ namespace TDPG.Templates.Grid.MapGen
                 y += dy;
             }
 
-            Debug.LogWarning("No EMPTY destination found.");
+            Debug.LogWarning("[Map Generator]: No EMPTY destination found.");
             return new Vector3Int(startX + dx, startY + dy, 0);
         }
         
@@ -557,7 +560,7 @@ namespace TDPG.Templates.Grid.MapGen
 
             if (_pathUtils == null)
             {
-                Debug.LogError("MapGenerator: PathFindingUtils not set! Did you call setGrid() first?");
+                Debug.LogError("[Map Generator]: PathFindingUtils not set! Did you call setGrid() first?");
                 return;
             }
             
@@ -586,7 +589,7 @@ namespace TDPG.Templates.Grid.MapGen
                     ));
                 }
             }
-            Debug.Log($"Spawner candidate tiles found: {_reachableCandidates.Count}");
+            Debug.Log($"[Map Generator]: Spawner candidate tiles found: {_reachableCandidates.Count}");
         }
 
         private void SortCandidatesByDistance()
