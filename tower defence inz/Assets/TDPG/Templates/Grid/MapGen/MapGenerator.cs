@@ -9,9 +9,10 @@ namespace TDPG.Templates.Grid.MapGen
 {
     public class MapGenerator : MonoBehaviour
     {
-        [Header("Map Type")] [SerializeField] private MapTypes mapType = MapTypes.Smooth;
+        [Header("Map Type")][SerializeField] private MapTypes mapType = MapTypes.Smooth;
 
-        [Header("Map Settings")] [SerializeField, Min(Minsize)]
+        [Header("Map Settings")]
+        [SerializeField, Min(Minsize)]
         private int width = 60;
 
         [SerializeField, Min(Minsize)] private int height = 60;
@@ -19,14 +20,16 @@ namespace TDPG.Templates.Grid.MapGen
         [SerializeField] private float wallLevel = 0.5f;
 
 
-        [Header("Points of Interest Settings")] [SerializeField, Range(1, 3)]
+        [Header("Points of Interest Settings")]
+        [SerializeField, Range(1, 3)]
         private int emptyCellsAroundPoints = 1;
 
         [SerializeField, Min(1)] private int numOfEnemySpawners = 1;
         [SerializeField, Min(1)] private int minimalDistance = 1;
-        [SerializeField] private bool assumeCanSwim; 
+        [SerializeField] private bool assumeCanSwim;
 
-        [Header("Debug Seed")] [SerializeField]
+        [Header("Debug Seed")]
+        [SerializeField]
         private GlobalSeedGameObject providedSeed;
 
         private TileType[,] _mapInit;
@@ -42,21 +45,31 @@ namespace TDPG.Templates.Grid.MapGen
         private int _boundsH0; // playable start Y
         private int _boundsWX; // playable end X
         private int _boundsHY; // playable end Y;
+        public float WaterLevel { get => waterLevel; set => waterLevel = value; }
+        public float WallLevel { get => wallLevel; set => wallLevel = value; }
+        public int MinimalDistance { get => minimalDistance; set => minimalDistance = value; }
+        public bool AssumeCanSwim { get => assumeCanSwim; set => assumeCanSwim = value; }
+        public int EmptyCellsAroundPoints { get => emptyCellsAroundPoints; set => emptyCellsAroundPoints = value; }
+
+        public int Width { get => width; set => width = value; }
+        public int Height { get => height; set => height = value; }
+        public int NumOfEnemySpawners { get => numOfEnemySpawners; set => numOfEnemySpawners = value; }
+        public MapTypes Type { get => mapType; set => mapType = value; }
 
         public void Awake()
         {
-            int maxDistance = (width + height)/2;
+            int maxDistance = (width + height) / 2;
             minimalDistance = Mathf.Min(maxDistance, minimalDistance);
-            
-            int playableWidth  = width;
+
+            int playableWidth = width;
             int playableHeight = height;
 
             // padding is at max FOGLAND, or 20% of size
-            int padX = Mathf.Max((int)(playableWidth  * 0.20f), Fogland);
+            int padX = Mathf.Max((int)(playableWidth * 0.20f), Fogland);
             int padY = Mathf.Max((int)(playableHeight * 0.20f), Fogland);
 
             // Expand total map by padding on BOTH sides
-            width  = playableWidth  + padX * 2;
+            width = playableWidth + padX * 2;
             height = playableHeight + padY * 2;
 
             // playable bounds inside the expanded map
@@ -68,7 +81,7 @@ namespace TDPG.Templates.Grid.MapGen
             Debug.Log($"[Map Generator]: Actual size = 0-{width} x 0-{height}, " +
                       $"Playable area = {_boundsW0}-{_boundsWX} x {_boundsH0}-{_boundsHY}");
         }
-        
+
         public TileType[,] GenerateMap(Seed seed)
         {
             _mapInit = new TileType[width, height];
@@ -78,25 +91,25 @@ namespace TDPG.Templates.Grid.MapGen
             {
                 seed = providedSeed.GetNextSeed();
             }
-            
+
             seed ??= new Seed(240_11_8, -1, "missingSeedInMapGen", false);
-            
-            seed.IsBitBased =  false;
+
+            seed.IsBitBased = false;
             seed.NormalizeSeedValue();
             ulong seedVal = seed.GetBaseValue();
             string seedStr = seedVal.ToString();
-            
+
             // Use first 5 digits of seed for noise parameters
             int d0 = int.Parse(seedStr[0].ToString());
             int d1 = int.Parse(seedStr[1].ToString());
             int d2 = int.Parse(seedStr[2].ToString());
-            
+
             int d3 = int.Parse(seedStr[3].ToString());
             int d4 = int.Parse(seedStr[4].ToString());
-            
+
             //used in deciding destination point
             int d5 = int.Parse(seedStr[5].ToString());
-            
+
             // Initialize FastNoise
             var noise = new FastNoiseLite();
             noise.SetNoiseType(FastNoiseLite.NoiseType.OpenSimplex2);
@@ -108,16 +121,16 @@ namespace TDPG.Templates.Grid.MapGen
             noise.SetDomainWarpType(FastNoiseLite.DomainWarpType.OpenSimplex2);
             noise.SetDomainWarpAmp(3.0f);
             noise.SetSeed((int)seedVal);
-            
+
             // Seed-derived values
             float freq = 0.009f + (d0 / 9f) * (0.05f - 0.009f);
             int octaves = Mathf.Clamp(2 + d1, 2, 6);
             float lacunarity = 1.5f + (d2 / 9f) * (2.5f - 1.5f);
             float gain = 0.3f + (d3 / 9f) * (0.7f - 0.3f);
             float weightedStrength = d4 / 9f;
-            
+
             Debug.Log($"[Map Generator]: Seed = {seedVal}");
-            
+
             // Configure per map type
             switch (mapType)
             {
@@ -143,7 +156,7 @@ namespace TDPG.Templates.Grid.MapGen
                     skipGeneration = true;
                     break;
             }
-            
+
             // Apply noise settings
             noise.SetFractalGain(gain);
             noise.SetFractalWeightedStrength(weightedStrength);
@@ -156,7 +169,7 @@ namespace TDPG.Templates.Grid.MapGen
             // We use local variables so we don't permanently modify the serialized fields
             float currentWaterLevel = waterLevel;
             float currentWallLevel = wallLevel;
-            
+
             int attempts = 0;
             const int maxAttempts = 5;
             bool mapAccepted = false;
@@ -167,8 +180,8 @@ namespace TDPG.Templates.Grid.MapGen
                 {
                     Debug.Log($"[Map Generator]: Regeneration Attempt #{attempts}. Adjusting thresholds to expand land.");
                     // Make water lower (further negative) and walls higher (further positive)
-                    currentWaterLevel -= 0.1f; 
-                    currentWallLevel  += 0.1f;
+                    currentWaterLevel -= 0.1f;
+                    currentWallLevel += 0.1f;
                 }
 
                 // Generate map data
@@ -185,16 +198,16 @@ namespace TDPG.Templates.Grid.MapGen
                                 _mapInit[x, y] = TileType.DONT_EXISTS;
                                 continue;
                             }
-                            
+
                             float n = noise.GetNoise(x, y);
 
                             TileType tile;
                             // Use local currentWaterLevel/currentWallLevel
-                            if (n < currentWaterLevel) 
+                            if (n < currentWaterLevel)
                                 tile = TileType.WATER;
-                            else if (n > currentWallLevel) 
+                            else if (n > currentWallLevel)
                                 tile = TileType.WALL;
-                            else 
+                            else
                                 tile = TileType.EMPTY;
 
                             _mapInit[x, y] = tile;
@@ -212,7 +225,7 @@ namespace TDPG.Templates.Grid.MapGen
                 if (skipGeneration)
                 {
                     // Static maps are assumed valid
-                    mapAccepted = true; 
+                    mapAccepted = true;
                 }
                 else
                 {
@@ -247,10 +260,10 @@ namespace TDPG.Templates.Grid.MapGen
             }
 
             Debug.Log($"[Map Generator]: Destination prepared at position {_destinationPos}");
-            
+
             return _mapInit;
         }
-        
+
         public float CalculateUsableMapPercentage()
         {
             int playableW = _boundsWX - _boundsW0;
@@ -262,11 +275,11 @@ namespace TDPG.Templates.Grid.MapGen
             // BFS structures
             bool[,] visited = new bool[width, height];
             Queue<Vector2Int> queue = new Queue<Vector2Int>();
-            
+
             Vector2Int start = new Vector2Int(_destinationPos.x, _destinationPos.y);
-            
+
             // If destination is somehow OOB (shouldn't happen), return 0
-            if (start.x < _boundsW0 || start.x >= _boundsWX || 
+            if (start.x < _boundsW0 || start.x >= _boundsWX ||
                 start.y < _boundsH0 || start.y >= _boundsHY) return 0f;
 
             queue.Enqueue(start);
@@ -288,7 +301,7 @@ namespace TDPG.Templates.Grid.MapGen
                     int ny = curr.y + dy[i];
 
                     // Bounds check
-                    if (nx < _boundsW0 || nx >= _boundsWX || 
+                    if (nx < _boundsW0 || nx >= _boundsWX ||
                         ny < _boundsH0 || ny >= _boundsHY) continue;
 
                     if (visited[nx, ny]) continue;
@@ -298,7 +311,7 @@ namespace TDPG.Templates.Grid.MapGen
 
                     if (t == TileType.EMPTY) traversable = true;
                     else if (t == TileType.WATER && assumeCanSwim) traversable = true;
-                    
+
                     if (traversable)
                     {
                         visited[nx, ny] = true;
@@ -306,7 +319,7 @@ namespace TDPG.Templates.Grid.MapGen
 
                         // We count "Usable Map" as actual land we can stand on.
                         // If we swam here, the water tile itself isn't "land", but it allows us to reach more land.
-                        if (t == TileType.EMPTY) 
+                        if (t == TileType.EMPTY)
                             reachableLandCount++;
                     }
                 }
@@ -314,11 +327,8 @@ namespace TDPG.Templates.Grid.MapGen
 
             return (float)reachableLandCount / totalCells;
         }
-        
-        public int Width => width;
-        public int Height => height;
-        public int NumOfEnemySpawners => numOfEnemySpawners;
-        public MapTypes Type => mapType;
+
+
 
         private TileType[,] DeterministicMapRetrieve(int d5)
         {
@@ -326,7 +336,7 @@ namespace TDPG.Templates.Grid.MapGen
             float[,] mapHere = DeterministicMap.noiseMatrix;
 
             int noiseSize = mapHere.GetLength(0);
-            
+
             for (int x = 0; x < width; x++)
             {
                 for (int y = 0; y < height; y++)
@@ -337,7 +347,7 @@ namespace TDPG.Templates.Grid.MapGen
                         _mapInit[x, y] = TileType.DONT_EXISTS;
                         continue;
                     }
-                    
+
                     int nx = x % noiseSize;
                     int ny = (height - 1 - y) % noiseSize;
 
@@ -361,10 +371,10 @@ namespace TDPG.Templates.Grid.MapGen
 
         private void CleanUpDestination(int posX, int posY)
         {
-            int x0Bound = Mathf.Clamp(posX - emptyCellsAroundPoints, _boundsW0, _boundsWX-1);
-            int x1Bound = Mathf.Clamp(posX + emptyCellsAroundPoints, _boundsW0, _boundsWX-1);
-            int y0Bound = Mathf.Clamp(posY - emptyCellsAroundPoints, _boundsH0, _boundsHY-1);
-            int y1Bound = Mathf.Clamp(posY + emptyCellsAroundPoints, _boundsH0, _boundsHY-1);
+            int x0Bound = Mathf.Clamp(posX - emptyCellsAroundPoints, _boundsW0, _boundsWX - 1);
+            int x1Bound = Mathf.Clamp(posX + emptyCellsAroundPoints, _boundsW0, _boundsWX - 1);
+            int y0Bound = Mathf.Clamp(posY - emptyCellsAroundPoints, _boundsH0, _boundsHY - 1);
+            int y1Bound = Mathf.Clamp(posY + emptyCellsAroundPoints, _boundsH0, _boundsHY - 1);
 
             for (int x = x0Bound; x <= x1Bound; x++)
             {
@@ -403,7 +413,7 @@ namespace TDPG.Templates.Grid.MapGen
                     return FindCornerDestination(_boundsWX - 2, _boundsH0 + 1, -1, 1);
             }
         }
-        
+
         private Vector3Int FindCentralDestination()
         {
             int cx = _boundsWX;
@@ -423,7 +433,7 @@ namespace TDPG.Templates.Grid.MapGen
             if (IsValidAndEmpty(x, y))
             {
                 CleanUpDestination(x, y);
-                return new Vector3Int(x, y,0);
+                return new Vector3Int(x, y, 0);
             }
 
             int steps = 1;
@@ -443,7 +453,7 @@ namespace TDPG.Templates.Grid.MapGen
                         if (IsValidAndEmpty(x, y))
                         {
                             CleanUpDestination(x, y);
-                            return new Vector3Int(x, y,0);
+                            return new Vector3Int(x, y, 0);
                         }
                     }
 
@@ -454,9 +464,9 @@ namespace TDPG.Templates.Grid.MapGen
             }
 
             Debug.LogWarning("[Map Generator]: No EMPTY destination found.");
-            return new Vector3Int(cx, cy,0);
+            return new Vector3Int(cx, cy, 0);
         }
-        
+
         private Vector3Int FindCornerDestination(int startX, int startY, int dx, int dy)
         {
             int x = startX;
@@ -497,7 +507,7 @@ namespace TDPG.Templates.Grid.MapGen
             Debug.LogWarning("[Map Generator]: No EMPTY destination found.");
             return new Vector3Int(startX + dx, startY + dy, 0);
         }
-        
+
         private bool IsValidAndEmpty(int x, int y)
         {
             if (x < _boundsW0 || y < _boundsH0 || x >= _boundsWX || y >= _boundsHY)
@@ -505,7 +515,7 @@ namespace TDPG.Templates.Grid.MapGen
 
             if (_destinationPos.x == x && _destinationPos.y == y)
                 return false;
-            
+
             return _mapInit[x, y] == TileType.EMPTY;
         }
 
@@ -516,7 +526,7 @@ namespace TDPG.Templates.Grid.MapGen
 
             if (_destinationPos.x == x && _destinationPos.y == y)
                 return false;
-            
+
             return (_mapInit[x, y] == TileType.WALL) || (_mapInit[x, y] == TileType.WATER);
         }
 
@@ -524,7 +534,7 @@ namespace TDPG.Templates.Grid.MapGen
         {
             return this._destinationPos;
         }
-        
+
         public Vector3 GetDestinationWorldPosition()
         {
             Vector3 destinationWorldPosition = new Vector3(_destinationPos.x * _grid.GetCellSize(), _destinationPos.y * _grid.GetCellSize(), 0);
@@ -553,7 +563,7 @@ namespace TDPG.Templates.Grid.MapGen
 
             return true;
         }
-        
+
         public void BuildValidSpawnerCandidates()
         {
             _reachableCandidates.Clear();
@@ -563,7 +573,7 @@ namespace TDPG.Templates.Grid.MapGen
                 Debug.LogError("[Map Generator]: PathFindingUtils not set! Did you call setGrid() first?");
                 return;
             }
-            
+
             Vector3 dstWorld = GetDestinationWorldPosition();
             for (int x = _boundsW0; x < _boundsWX; x++)
             {
@@ -571,17 +581,17 @@ namespace TDPG.Templates.Grid.MapGen
                 {
                     if (!IsCandidateSpawnerTile(x, y))
                         continue;
-                    
+
                     float cellSize = _grid.GetCellSize();
                     Vector3 startWorld = new Vector3(x * cellSize, y * cellSize, 0);
                     List<Vector3> path;
                     path = _pathUtils.FindPath(startWorld, dstWorld, assumeCanSwim, false, false);
 
-                    
+
                     if (path == null || path.Count < 2)
                         continue;
 
-                    int pathLength = path.Count; 
+                    int pathLength = path.Count;
 
                     _reachableCandidates.Add(new SpawnerCandidate(
                         new Vector3Int(x, y, 0),
@@ -596,7 +606,7 @@ namespace TDPG.Templates.Grid.MapGen
         {
             _reachableCandidates.Sort((a, b) => b.distanceFromDestination.CompareTo(a.distanceFromDestination));
         }
-        
+
         public Vector3Int[] SelectSpawnerPositions(int count)
         {
             SortCandidatesByDistance();
@@ -634,21 +644,21 @@ namespace TDPG.Templates.Grid.MapGen
             float cellSize = _grid.GetCellSize();
 
             // Convert grid bounds to world-space coordinates
-            float left   = _boundsW0 * cellSize;
-            float right  = _boundsWX * cellSize;
+            float left = _boundsW0 * cellSize;
+            float right = _boundsWX * cellSize;
             float bottom = _boundsH0 * cellSize;
-            float top    = _boundsHY * cellSize;
-            
+            float top = _boundsHY * cellSize;
+
             float thickness = cellSize * 2f;   // wall thickness
-            float overlap   = thickness;  // extension to avoid all gaps
-            
+            float overlap = thickness;  // extension to avoid all gaps
+
             // Create parent object for organization
             GameObject wallsParent = new GameObject("MapBounds2D");
             wallsParent.transform.SetParent(transform);
-            
+
             float heightExtended = (top - bottom) + overlap * 2f;
-            float widthExtended  = (right - left) + overlap * 2f;
-            
+            float widthExtended = (right - left) + overlap * 2f;
+
             // LEFT
             CreateWall2D(
                 new Vector2(left - thickness / 2f, (top + bottom) / 2f),
@@ -676,9 +686,9 @@ namespace TDPG.Templates.Grid.MapGen
                 new Vector2(widthExtended, thickness),
                 wallsParent.transform
             );
-            
+
         }
-        
+
         private void CreateWall2D(Vector2 center, Vector2 size, Transform parent)
         {
             GameObject wall = new GameObject("Wall2D");
@@ -704,7 +714,7 @@ namespace TDPG.Templates.Grid.MapGen
                     {
                         int x = dest.x + dx;
                         int y = dest.y + dy;
-                        
+
                         if (IsValidForFallback(x, y))
                         {
                             _mapInit[x, y] = TileType.EMPTY;
@@ -712,7 +722,7 @@ namespace TDPG.Templates.Grid.MapGen
                     }
                 }
             }
-            
+
         }
 
         public int ReachableCandidatesCount()
