@@ -17,7 +17,7 @@ MonoBehaviour:
   CrystalSprite: {fileID: -690352682, guid: 71acbc7519fc62b4192c07d648f52b4b, type: 3}
   Cost: 25
   TileSize: {x: 1, y: 1}
-  Multiplayer: 0
+  Multiplayer: 1
   CanShoot: 1
   Range: 0
   Damage: 0
