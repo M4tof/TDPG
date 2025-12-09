@@ -1,4 +1,4 @@
-Shader "TDPG/MultiColorSwap_Instanced"
+Shader "TDPG/MultiColorSwap_Instanced_16"
 {
     Properties
     {
@@ -7,15 +7,23 @@ Shader "TDPG/MultiColorSwap_Instanced"
         
         [HideInInspector] _Count("Count", Int) = 0
         
-        // Slots 0-7 (Total 8)
-        [HideInInspector] [Gamma] _Orig0("O0", Color) = (0,0,0,0) [HideInInspector] [Gamma] _Targ0("T0", Color) = (0,0,0,0)
-        [HideInInspector] [Gamma] _Orig1("O1", Color) = (0,0,0,0) [HideInInspector] [Gamma] _Targ1("T1", Color) = (0,0,0,0)
-        [HideInInspector] [Gamma] _Orig2("O2", Color) = (0,0,0,0) [HideInInspector] [Gamma] _Targ2("T2", Color) = (0,0,0,0)
-        [HideInInspector] [Gamma] _Orig3("O3", Color) = (0,0,0,0) [HideInInspector] [Gamma] _Targ3("T3", Color) = (0,0,0,0)
-        [HideInInspector] [Gamma] _Orig4("O4", Color) = (0,0,0,0) [HideInInspector] [Gamma] _Targ4("T4", Color) = (0,0,0,0)
-        [HideInInspector] [Gamma] _Orig5("O5", Color) = (0,0,0,0) [HideInInspector] [Gamma] _Targ5("T5", Color) = (0,0,0,0)
-        [HideInInspector] [Gamma] _Orig6("O6", Color) = (0,0,0,0) [HideInInspector] [Gamma] _Targ6("T6", Color) = (0,0,0,0)
-        [HideInInspector] [Gamma] _Orig7("O7", Color) = (0,0,0,0) [HideInInspector] [Gamma] _Targ7("T7", Color) = (0,0,0,0)
+        // Define 16 slots. Using [Gamma] for correct color picking.
+        [HideInInspector][Gamma] _Orig0("O0", Color)=(0,0,0,0) [HideInInspector][Gamma] _Targ0("T0", Color)=(0,0,0,0)
+        [HideInInspector][Gamma] _Orig1("O1", Color)=(0,0,0,0) [HideInInspector][Gamma] _Targ1("T1", Color)=(0,0,0,0)
+        [HideInInspector][Gamma] _Orig2("O2", Color)=(0,0,0,0) [HideInInspector][Gamma] _Targ2("T2", Color)=(0,0,0,0)
+        [HideInInspector][Gamma] _Orig3("O3", Color)=(0,0,0,0) [HideInInspector][Gamma] _Targ3("T3", Color)=(0,0,0,0)
+        [HideInInspector][Gamma] _Orig4("O4", Color)=(0,0,0,0) [HideInInspector][Gamma] _Targ4("T4", Color)=(0,0,0,0)
+        [HideInInspector][Gamma] _Orig5("O5", Color)=(0,0,0,0) [HideInInspector][Gamma] _Targ5("T5", Color)=(0,0,0,0)
+        [HideInInspector][Gamma] _Orig6("O6", Color)=(0,0,0,0) [HideInInspector][Gamma] _Targ6("T6", Color)=(0,0,0,0)
+        [HideInInspector][Gamma] _Orig7("O7", Color)=(0,0,0,0) [HideInInspector][Gamma] _Targ7("T7", Color)=(0,0,0,0)
+        [HideInInspector][Gamma] _Orig8("O8", Color)=(0,0,0,0) [HideInInspector][Gamma] _Targ8("T8", Color)=(0,0,0,0)
+        [HideInInspector][Gamma] _Orig9("O9", Color)=(0,0,0,0) [HideInInspector][Gamma] _Targ9("T9", Color)=(0,0,0,0)
+        [HideInInspector][Gamma] _Orig10("OA", Color)=(0,0,0,0) [HideInInspector][Gamma] _Targ10("TA", Color)=(0,0,0,0)
+        [HideInInspector][Gamma] _Orig11("OB", Color)=(0,0,0,0) [HideInInspector][Gamma] _Targ11("TB", Color)=(0,0,0,0)
+        [HideInInspector][Gamma] _Orig12("OC", Color)=(0,0,0,0) [HideInInspector][Gamma] _Targ12("TC", Color)=(0,0,0,0)
+        [HideInInspector][Gamma] _Orig13("OD", Color)=(0,0,0,0) [HideInInspector][Gamma] _Targ13("TD", Color)=(0,0,0,0)
+        [HideInInspector][Gamma] _Orig14("OE", Color)=(0,0,0,0) [HideInInspector][Gamma] _Targ14("TE", Color)=(0,0,0,0)
+        [HideInInspector][Gamma] _Orig15("OF", Color)=(0,0,0,0) [HideInInspector][Gamma] _Targ15("TF", Color)=(0,0,0,0)
     }
  
     SubShader
@@ -52,7 +60,7 @@ Shader "TDPG/MultiColorSwap_Instanced"
             UNITY_INSTANCING_BUFFER_START(Props)
                 UNITY_DEFINE_INSTANCED_PROP(float, _Tolerance)
                 UNITY_DEFINE_INSTANCED_PROP(int, _Count)
-                
+                // Define 16 pairs
                 UNITY_DEFINE_INSTANCED_PROP(float4, _Orig0) UNITY_DEFINE_INSTANCED_PROP(float4, _Targ0)
                 UNITY_DEFINE_INSTANCED_PROP(float4, _Orig1) UNITY_DEFINE_INSTANCED_PROP(float4, _Targ1)
                 UNITY_DEFINE_INSTANCED_PROP(float4, _Orig2) UNITY_DEFINE_INSTANCED_PROP(float4, _Targ2)
@@ -61,6 +69,14 @@ Shader "TDPG/MultiColorSwap_Instanced"
                 UNITY_DEFINE_INSTANCED_PROP(float4, _Orig5) UNITY_DEFINE_INSTANCED_PROP(float4, _Targ5)
                 UNITY_DEFINE_INSTANCED_PROP(float4, _Orig6) UNITY_DEFINE_INSTANCED_PROP(float4, _Targ6)
                 UNITY_DEFINE_INSTANCED_PROP(float4, _Orig7) UNITY_DEFINE_INSTANCED_PROP(float4, _Targ7)
+                UNITY_DEFINE_INSTANCED_PROP(float4, _Orig8) UNITY_DEFINE_INSTANCED_PROP(float4, _Targ8)
+                UNITY_DEFINE_INSTANCED_PROP(float4, _Orig9) UNITY_DEFINE_INSTANCED_PROP(float4, _Targ9)
+                UNITY_DEFINE_INSTANCED_PROP(float4, _Orig10) UNITY_DEFINE_INSTANCED_PROP(float4, _Targ10)
+                UNITY_DEFINE_INSTANCED_PROP(float4, _Orig11) UNITY_DEFINE_INSTANCED_PROP(float4, _Targ11)
+                UNITY_DEFINE_INSTANCED_PROP(float4, _Orig12) UNITY_DEFINE_INSTANCED_PROP(float4, _Targ12)
+                UNITY_DEFINE_INSTANCED_PROP(float4, _Orig13) UNITY_DEFINE_INSTANCED_PROP(float4, _Targ13)
+                UNITY_DEFINE_INSTANCED_PROP(float4, _Orig14) UNITY_DEFINE_INSTANCED_PROP(float4, _Targ14)
+                UNITY_DEFINE_INSTANCED_PROP(float4, _Orig15) UNITY_DEFINE_INSTANCED_PROP(float4, _Targ15)
             UNITY_INSTANCING_BUFFER_END(Props)
  
             v2f vert(appdata v)
@@ -72,7 +88,13 @@ Shader "TDPG/MultiColorSwap_Instanced"
                 o.uv = TRANSFORM_TEX(v.uv, _MainTex);
                 return o;
             }
- 
+
+            // --- MACRO to simplify the check logic ---
+            // '##' connects the name to the number (e.g., _Orig + 0 = _Orig0)
+            #define CHECK_COLOR(idx) \
+                if (count > idx && length(col.rgb - UNITY_ACCESS_INSTANCED_PROP(Props, _Orig##idx).rgb) < tol) \
+                    return half4(UNITY_ACCESS_INSTANCED_PROP(Props, _Targ##idx).rgb, col.a);
+
             half4 frag(v2f i) : SV_Target
             {
                 UNITY_SETUP_INSTANCE_ID(i); 
@@ -83,30 +105,23 @@ Shader "TDPG/MultiColorSwap_Instanced"
                 float tol = UNITY_ACCESS_INSTANCED_PROP(Props, _Tolerance);
                 int count = UNITY_ACCESS_INSTANCED_PROP(Props, _Count);
 
-                // Check 0
-                if (count > 0 && length(col.rgb - UNITY_ACCESS_INSTANCED_PROP(Props, _Orig0).rgb) < tol) 
-                    return half4(UNITY_ACCESS_INSTANCED_PROP(Props, _Targ0).rgb, col.a);
-                // Check 1
-                if (count > 1 && length(col.rgb - UNITY_ACCESS_INSTANCED_PROP(Props, _Orig1).rgb) < tol) 
-                    return half4(UNITY_ACCESS_INSTANCED_PROP(Props, _Targ1).rgb, col.a);
-                // Check 2
-                if (count > 2 && length(col.rgb - UNITY_ACCESS_INSTANCED_PROP(Props, _Orig2).rgb) < tol) 
-                    return half4(UNITY_ACCESS_INSTANCED_PROP(Props, _Targ2).rgb, col.a);
-                // Check 3
-                if (count > 3 && length(col.rgb - UNITY_ACCESS_INSTANCED_PROP(Props, _Orig3).rgb) < tol) 
-                    return half4(UNITY_ACCESS_INSTANCED_PROP(Props, _Targ3).rgb, col.a);
-                // Check 4
-                if (count > 4 && length(col.rgb - UNITY_ACCESS_INSTANCED_PROP(Props, _Orig4).rgb) < tol) 
-                    return half4(UNITY_ACCESS_INSTANCED_PROP(Props, _Targ4).rgb, col.a);
-                // Check 5
-                if (count > 5 && length(col.rgb - UNITY_ACCESS_INSTANCED_PROP(Props, _Orig5).rgb) < tol) 
-                    return half4(UNITY_ACCESS_INSTANCED_PROP(Props, _Targ5).rgb, col.a);
-                // Check 6
-                if (count > 6 && length(col.rgb - UNITY_ACCESS_INSTANCED_PROP(Props, _Orig6).rgb) < tol) 
-                    return half4(UNITY_ACCESS_INSTANCED_PROP(Props, _Targ6).rgb, col.a);
-                // Check 7
-                if (count > 7 && length(col.rgb - UNITY_ACCESS_INSTANCED_PROP(Props, _Orig7).rgb) < tol) 
-                    return half4(UNITY_ACCESS_INSTANCED_PROP(Props, _Targ7).rgb, col.a);
+                // Unroll the loop manually using the macro
+                CHECK_COLOR(0)
+                CHECK_COLOR(1)
+                CHECK_COLOR(2)
+                CHECK_COLOR(3)
+                CHECK_COLOR(4)
+                CHECK_COLOR(5)
+                CHECK_COLOR(6)
+                CHECK_COLOR(7)
+                CHECK_COLOR(8)
+                CHECK_COLOR(9)
+                CHECK_COLOR(10)
+                CHECK_COLOR(11)
+                CHECK_COLOR(12)
+                CHECK_COLOR(13)
+                CHECK_COLOR(14)
+                CHECK_COLOR(15)
 
                 return col;
             }

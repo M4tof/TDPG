@@ -1,10 +1,11 @@
+using System.Collections.Generic;
 using UnityEngine;
 using Color = UnityEngine.Color;
 
 namespace TDPG.VideoGeneration
 {
     [ExecuteAlways] // Updates in Edit Mode so you can see changes instantly
-    public class ColorSwapController : MonoBehaviour
+    public class ColorSwapController_1Manual : MonoBehaviour, IColorSwapController
     {
         [Header("Settings")] 
         public Color originalColor = Color.white;
@@ -48,6 +49,36 @@ namespace TDPG.VideoGeneration
 
             // 3. Apply the block back to the renderer
             _renderer.SetPropertyBlock(_propBlock);
+        }
+        
+        // -----------------------------------------------------------------------
+        // INTERFACE IMPLEMENTATION (Hot Swapping)
+        // -----------------------------------------------------------------------
+
+        public void SetTargetColor(Color color)
+        {
+            targetColor = color;
+            UpdateColor();
+        }
+
+        public void SetPalette(List<Color> colors)
+        {
+            if (colors != null && colors.Count > 0)
+            {
+                // This controller only supports 1 color, so we take the first one
+                targetColor = colors[0];
+                UpdateColor();
+            }
+        }
+
+        public void SetPalette(ColorPaletteSO palette)
+        {
+            if (palette != null && palette.colors != null && palette.colors.Count > 0)
+            {
+                // This controller only supports 1 color, so we take the first one
+                targetColor = palette.colors[0];
+                UpdateColor();
+            }
         }
     }
 }

@@ -1,13 +1,11 @@
 using System.Collections.Generic;
-using System.Linq; // Needed for sorting
 using UnityEngine;
-using ColorThief;
 using Color = UnityEngine.Color;
 
 namespace TDPG.VideoGeneration
 {
     [ExecuteAlways]
-    public class ColorSwapController_1Dominant : MonoBehaviour
+    public class ColorSwapController_1Dominant : MonoBehaviour, IColorSwapController
     {
         [Header("Settings")] 
         public Color targetColor = Color.red;
@@ -42,6 +40,7 @@ namespace TDPG.VideoGeneration
 
         void OnEnable()
         {
+            // Only calculate the original color once (expensive)
             RecalculateDominantColor();
             UpdateShaderProperties();
         }
@@ -50,6 +49,40 @@ namespace TDPG.VideoGeneration
         {
             UpdateShaderProperties();
         }
+
+        // -----------------------------------------------------------------------
+        // INTERFACE IMPLEMENTATION (Hot Swapping)
+        // -----------------------------------------------------------------------
+
+        public void SetTargetColor(Color color)
+        {
+            targetColor = color;
+            UpdateShaderProperties();
+        }
+
+        public void SetPalette(List<Color> colors)
+        {
+            if (colors != null && colors.Count > 0)
+            {
+                // This controller only supports 1 color, so we take the first one
+                targetColor = colors[0];
+                UpdateShaderProperties();
+            }
+        }
+
+        public void SetPalette(ColorPaletteSO palette)
+        {
+            if (palette != null && palette.colors != null && palette.colors.Count > 0)
+            {
+                // This controller only supports 1 color, so we take the first one
+                targetColor = palette.colors[0];
+                UpdateShaderProperties();
+            }
+        }
+
+        // -----------------------------------------------------------------------
+        // CORE LOGIC
+        // -----------------------------------------------------------------------
 
         [ContextMenu("Force Recalculate Color")]
         public void RecalculateDominantColor()
@@ -110,18 +143,10 @@ namespace TDPG.VideoGeneration
 
                 if (candidates.Count > 0)
                 {
-                    // Clamp index to prevent out of range errors if palette is small
                     int safeIndex = Mathf.Clamp(colorRankIndex, 0, candidates.Count - 1);
-                    
                     calculatedOriginalColor = candidates[safeIndex].color;
                     
-                    // Log the ranking so you know which Index to pick
-                    Debug.Log($"[ColorSwapDebug] --- Ranking Results ---");
-                    for (int i = 0; i < candidates.Count; i++)
-                    {
-                        string prefix = (i == safeIndex) ? ">>> SELECTED" : $"    Rank {i}";
-                        Debug.Log($"[ColorSwapDebug] {prefix}: {candidates[i].color} (Score: {candidates[i].score:F2})");
-                    }
+                    Debug.Log($"[ColorSwapDebug] Selected Rank {safeIndex}: {calculatedOriginalColor}");
                 }
                 else
                 {
