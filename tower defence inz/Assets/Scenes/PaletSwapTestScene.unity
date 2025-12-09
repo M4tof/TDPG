@@ -869,9 +869,9 @@ MonoBehaviour:
   - name: Black
     original: {r: 0, g: 0, b: 0, a: 0}
     target: {r: 0.15920061, g: 0.5442862, b: 0.42432493, a: 0}
-  - name: ShouldBeOutOfIndex
+  - name: ShouldBeInIndexNow
     original: {r: 0.5921569, g: 0.6901961, b: 0.9372549, a: 0}
-    target: {r: 0, g: 0.41258207, b: 0.99400586, a: 0}
+    target: {r: 0, g: 0.99215686, b: 0.26176968, a: 0}
 --- !u!212 &464005123
 SpriteRenderer:
   m_ObjectHideFlags: 0
