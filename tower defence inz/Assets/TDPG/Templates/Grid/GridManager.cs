@@ -183,6 +183,7 @@ namespace TDPG.Templates.Grid
             if (config == null) return;
 
             Debug.Log("[GridManager] Received External Config.");
+            Debug.Log($"[GridManager: config]: \n{Newtonsoft.Json.JsonConvert.SerializeObject(config, Newtonsoft.Json.Formatting.Indented)}");
 
             // Apply values
             width = config.Width;
@@ -200,6 +201,8 @@ namespace TDPG.Templates.Grid
                 mapGenerator.MinimalDistance = config.MinimalDistance;
                 mapGenerator.AssumeCanSwim = config.AssumeCanSwim;
                 mapGenerator.EmptyCellsAroundPoints = config.EmptyCellsAroundPoints;
+
+                mapGenerator.Precalc();
             }
 
             _hasExternalConfig = true;

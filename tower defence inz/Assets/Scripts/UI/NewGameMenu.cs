@@ -3,6 +3,7 @@ using UnityEngine.UI;
 using TMPro; // Assuming TextMeshPro for inputs
 using TDPG.Templates.Grid.MapGen;
 using System;
+using System.Linq;
 using System.Collections.Generic;
 public class NewGameMenu : MonoBehaviour
 {
@@ -22,11 +23,18 @@ public class NewGameMenu : MonoBehaviour
 
     void Start()
     {
-        // Auto-fill Enum Dropdown
         if (mapTypeDropdown != null)
         {
             mapTypeDropdown.ClearOptions();
-            var options = new List<string>(Enum.GetNames(typeof(MapTypes)));
+
+            // Get all names
+            var allTypes = Enum.GetNames(typeof(MapTypes));
+
+            // Filter out "Static"
+            var options = allTypes
+                .Where(name => name != MapTypes.Static.ToString())
+                .ToList();
+
             mapTypeDropdown.AddOptions(options);
         }
     }
@@ -46,7 +54,11 @@ public class NewGameMenu : MonoBehaviour
         MapTypes type = MapTypes.Mountainous; // Default
         if (mapTypeDropdown != null)
         {
-            type = (MapTypes)mapTypeDropdown.value;
+            // Get the string text currently shown on the dropdown
+            string selectedText = mapTypeDropdown.options[mapTypeDropdown.value].text;
+
+            // Convert string back to Enum
+            type = (MapTypes)Enum.Parse(typeof(MapTypes), selectedText);
         }
         int w = ParseInt(widthInput.text, 50);
         int h = ParseInt(heightInput.text, 50);
@@ -57,13 +69,13 @@ public class NewGameMenu : MonoBehaviour
         bool a = canSwimToggle != null && canSwimToggle.isOn;
         int e = ParseInt(emptyCellsInput.text, 2);
         // Limit constraints to prevent crashes
-        w = Mathf.Clamp(w, 20, 100);
-        h = Mathf.Clamp(h, 20, 100);
-        s = Mathf.Clamp(s, 1, 5);
-        water = Mathf.Clamp(water, -1f, 1f);
-        wall = Mathf.Clamp(wall, -1f, 1f);
-        m = Mathf.Clamp(m, 1, 10);
-        e = Mathf.Clamp(e, 1, 10);
+        w = Mathf.Max(w, 20);
+        h = Mathf.Max(h, 20);
+        s = Mathf.Max(s, 1);
+        water = Mathf.Clamp(water, -1.0f, -0.001f);
+        wall = Mathf.Clamp(wall, 0.001f, 1f);
+        m = Mathf.Max(m, 1);
+        e = Mathf.Max(e, 1);
 
 
         // 2. Build Config
@@ -79,7 +91,7 @@ public class NewGameMenu : MonoBehaviour
             AssumeCanSwim = a,
             EmptyCellsAroundPoints = e
         };
-
+        Debug.Log($"[NewGameMenu]: \n{Newtonsoft.Json.JsonConvert.SerializeObject(config, Newtonsoft.Json.Formatting.Indented)}");
         // 3. Launch
         GameManager.Instance.StartNewGame(selectedSlot, config);
     }

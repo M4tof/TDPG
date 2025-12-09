@@ -77,6 +77,7 @@ public class GameManager : MonoBehaviour
             {
                 if (GridManager.Instance != null)
                 {
+                    Debug.Log($"[GameManager.OnSceneLoaded(): PendingMapConfig]: \n{Newtonsoft.Json.JsonConvert.SerializeObject(PendingMapConfig, Newtonsoft.Json.Formatting.Indented)}");
                     // INJECT THE CONFIG HERE
                     GridManager.Instance.ConfigureMap(PendingMapConfig);
                 }
@@ -260,6 +261,8 @@ public class GameManager : MonoBehaviour
 
     public void StartNewGame(int slotIndex, MapGenConfig config)
     {
+        Debug.Log($"[GameManager.StartNewGame(): config]: \n{Newtonsoft.Json.JsonConvert.SerializeObject(config, Newtonsoft.Json.Formatting.Indented)}");
+        // Debug.Break();
         // 1. Set Active Slot
         SetSlot(slotIndex);
 
@@ -276,7 +279,7 @@ public class GameManager : MonoBehaviour
 
         // 4. Store Config for GridManager
         PendingMapConfig = config;
-
+        Debug.Log($"[GameManager.StartNewGame(): PendingMapConfig]: \n{Newtonsoft.Json.JsonConvert.SerializeObject(PendingMapConfig, Newtonsoft.Json.Formatting.Indented)}");
         // 5. Load the Game Scene
         UnityEngine.SceneManagement.SceneManager.LoadScene("MainGame");
     }

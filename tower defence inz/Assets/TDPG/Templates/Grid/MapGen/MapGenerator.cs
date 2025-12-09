@@ -58,7 +58,12 @@ namespace TDPG.Templates.Grid.MapGen
 
         public void Awake()
         {
-            int maxDistance = (width + height) / 2;
+           
+        }
+
+        public void Precalc()
+        {
+             int maxDistance = (width + height) / 2;
             minimalDistance = Mathf.Min(maxDistance, minimalDistance);
 
             int playableWidth = width;
