@@ -88,8 +88,10 @@ namespace TDPG.Templates.Grid
             SetupTilemapGridAlignment();
 
             bool hasMapGenerator = mapGenerator != null;
+            
             if (!_hasExternalConfig && hasMapGenerator)
             {
+                mapGenerator.Precalc();
                 // Load default values from MapGenerator inspector
                 width = mapGenerator.Width;
                 height = mapGenerator.Height;
@@ -204,7 +206,9 @@ namespace TDPG.Templates.Grid
 
                 mapGenerator.Precalc();
             }
-
+            width = mapGenerator.Width;
+            height = mapGenerator.Height;
+            numOfEnemySpawners = mapGenerator.NumOfEnemySpawners;  
             _hasExternalConfig = true;
         }
 

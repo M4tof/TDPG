@@ -14,7 +14,6 @@ namespace TDPG.Templates.Grid.MapGen
         [Header("Map Settings")]
         [SerializeField, Min(Minsize)]
         private int width = 60;
-
         [SerializeField, Min(Minsize)] private int height = 60;
         [SerializeField] private float waterLevel = -0.5f;
         [SerializeField] private float wallLevel = 0.5f;
