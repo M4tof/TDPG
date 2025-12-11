@@ -1,13 +1,12 @@
-Shader "TDPG/MultiColorSwap_Instanced_16"
+Shader "TDPG/MultiColorSwap_Instanced_16_PerColor"
 {
     Properties
     {
         _MainTex("Texture", 2D) = "white" {}
-        _Tolerance("Tolerance", Range(0, 10)) = 0.05
         
         [HideInInspector] _Count("Count", Int) = 0
         
-        // Define 16 slots. Using [Gamma] for correct color picking.
+        // _Orig now stores (R, G, B, Tolerance)
         [HideInInspector][Gamma] _Orig0("O0", Color)=(0,0,0,0) [HideInInspector][Gamma] _Targ0("T0", Color)=(0,0,0,0)
         [HideInInspector][Gamma] _Orig1("O1", Color)=(0,0,0,0) [HideInInspector][Gamma] _Targ1("T1", Color)=(0,0,0,0)
         [HideInInspector][Gamma] _Orig2("O2", Color)=(0,0,0,0) [HideInInspector][Gamma] _Targ2("T2", Color)=(0,0,0,0)
@@ -58,9 +57,8 @@ Shader "TDPG/MultiColorSwap_Instanced_16"
             float4 _MainTex_ST;
  
             UNITY_INSTANCING_BUFFER_START(Props)
-                UNITY_DEFINE_INSTANCED_PROP(float, _Tolerance)
                 UNITY_DEFINE_INSTANCED_PROP(int, _Count)
-                // Define 16 pairs
+                // Removed Global Tolerance
                 UNITY_DEFINE_INSTANCED_PROP(float4, _Orig0) UNITY_DEFINE_INSTANCED_PROP(float4, _Targ0)
                 UNITY_DEFINE_INSTANCED_PROP(float4, _Orig1) UNITY_DEFINE_INSTANCED_PROP(float4, _Targ1)
                 UNITY_DEFINE_INSTANCED_PROP(float4, _Orig2) UNITY_DEFINE_INSTANCED_PROP(float4, _Targ2)
@@ -89,11 +87,14 @@ Shader "TDPG/MultiColorSwap_Instanced_16"
                 return o;
             }
 
-            // --- MACRO to simplify the check logic ---
-            // '##' connects the name to the number (e.g., _Orig + 0 = _Orig0)
+            // MACRO UPDATE:
+            // 1. Get the Orig property as a float4
+            // 2. Compare col.rgb vs Orig.rgb
+            // 3. Use Orig.a as the tolerance check
             #define CHECK_COLOR(idx) \
-                if (count > idx && length(col.rgb - UNITY_ACCESS_INSTANCED_PROP(Props, _Orig##idx).rgb) < tol) \
-                    return half4(UNITY_ACCESS_INSTANCED_PROP(Props, _Targ##idx).rgb, col.a); //new color, keep alpha same
+                float4 o##idx = UNITY_ACCESS_INSTANCED_PROP(Props, _Orig##idx); \
+                if (count > idx && length(col.rgb - o##idx.rgb) < o##idx.a) \
+                    return half4(UNITY_ACCESS_INSTANCED_PROP(Props, _Targ##idx).rgb, col.a);
 
             half4 frag(v2f i) : SV_Target
             {
@@ -102,10 +103,8 @@ Shader "TDPG/MultiColorSwap_Instanced_16"
                 
                 if (col.a == 0) return half4(0, 0, 0, 0);
  
-                float tol = UNITY_ACCESS_INSTANCED_PROP(Props, _Tolerance);
                 int count = UNITY_ACCESS_INSTANCED_PROP(Props, _Count);
 
-                // Unroll the loop manually using the macro
                 CHECK_COLOR(0)
                 CHECK_COLOR(1)
                 CHECK_COLOR(2)

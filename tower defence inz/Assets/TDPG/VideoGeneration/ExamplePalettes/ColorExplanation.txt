@@ -1,0 +1,21 @@
+0 - wizard robe
+1 - wizard face
+2 - wizard face shadow
+3 - wizard staff
+4 - wizard stars
+
+5 - grass base
+6 - grass details
+
+7 - water base
+8 - water details
+
+9 - mountain base
+10 - mountain mid
+11 - mountain top
+
+12 - simple object inline
+13 - simple object outline
+
+14 - misc 1
+15 - misc 2
