@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using TDPG.EffectSystem.ElementLogic;
+using TDPG.EffectSystem.ElementPlanner;
 using TDPG.EffectSystem.ElementRegistry;
 using TDPG.Generators.Seed;
 using UnityEngine;
@@ -38,7 +39,8 @@ public class RegistryManager : MonoBehaviour
         
         var slow = new TempSlowDown(0.75f,1f);
         var burn = new HealthDown(3f);
-        var effects = new List<Effect> { slow, burn };
+        var dota = new HealthDrain(1, 3, 1);
+        var effects = new List<Effect> { slow, burn, dota };
 
         var element = new Element("Fire", 1, effects);
         
