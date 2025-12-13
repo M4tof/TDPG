@@ -9,13 +9,14 @@ public class TurretSpawner : MonoBehaviour
 
     [Header("References")]
     [Tooltip("The Scene Object used for previewing placement")]
-    [SerializeField] private TurretBase TurretVisualizer;
+    [SerializeField] private TurretPreview TurretVisualizer;
 
     [Tooltip("The Clean Prefab used for spawning real turrets")]
     [SerializeField] private GameObject GenericTurretPrefab;
 
     private string _selectedTurretID;
     private bool _canSpawnTurret;
+    private TurretData data;
 
     // Renamed back to Set... for consistency
     public void SetTurretToSpawn(string turretID)
@@ -25,12 +26,12 @@ public class TurretSpawner : MonoBehaviour
 
         if (string.IsNullOrEmpty(turretID))
         {
-            TurretVisualizer.gameObject.SetActive(false);
+            if (TurretVisualizer != null) TurretVisualizer.gameObject.SetActive(false);
             return;
         }
 
         // Access Registry (Game Side)
-        TurretData data = TurretRegistry.Instance.Get(turretID);
+        data = TurretRegistry.Instance.Get(turretID);
         if (data == null)
         {
             Debug.LogError($"Cannot find turret data: {turretID}");
@@ -46,6 +47,23 @@ public class TurretSpawner : MonoBehaviour
     public string GetTurretToSpawn()
     {
         return _selectedTurretID;
+    }
+
+    private Vector3 CalculateTurretPosition(Vector3 mousePos, TurretData data)
+    {
+        // 1. Get Anchor (Bottom-Left of the tile under mouse)
+        Vector3 gridBottomLeft = GridManager.Instance.GetGridWorldTilePosition(mousePos);
+
+        // 2. Calculate Center Offset based on Data size
+        float cellSize = GridManager.Instance.CellSize;
+        Vector3 centerOffset = new Vector3(
+            data.TileSize.x * cellSize * 0.5f,
+            data.TileSize.y * cellSize * 0.5f,
+            0f
+        );
+
+        // 3. Return Center
+        return gridBottomLeft + centerOffset;
     }
 
     public GameObject SpawnTurret(Vector3 worldPosition)
@@ -65,48 +83,40 @@ public class TurretSpawner : MonoBehaviour
             ResourceSystem.Instance.mana.Claim(data.Cost);
         }
 
-        Vector3 gridBottomLeft = GridManager.Instance.GetGridWorldTilePosition(worldPosition);
-
-        // 2. Calculate Center Offset
-        // (TileDimensions * CellSize) / 2
-        float cellSize = GridManager.Instance.CellSize;
-        Vector3 centerOffset = new Vector3(
-            data.TileSize.x * cellSize * 0.5f,
-            data.TileSize.y * cellSize * 0.5f,
-            0f
-        );
-
-        // 3. Instantiate at CENTER
-        Vector3 spawnPos = gridBottomLeft + centerOffset;
+        Vector3 spawnPos = CalculateTurretPosition(worldPosition, data);
 
         GameObject newTurret = Instantiate(GenericTurretPrefab, spawnPos, Quaternion.identity);
         newTurret.transform.SetParent(TurretBox.transform);
 
         // Initialize the new instance (It will calculate offset from its clean state)
-        var logic = newTurret.GetComponent<TurretBase>();
+        var logic = newTurret.GetComponent<Turret>();
         logic.Initialize(data);
 
         GridManager.Instance.PlaceTurret(worldPosition, newTurret);
+
+        UpdateVisualizerPosition(worldPosition);
         return newTurret;
     }
 
-    public void UpdateVisualizerPosition(Vector3 position)
+    public void UpdateVisualizerPosition(Vector3 mousePosition)
     {
-        if (!string.IsNullOrEmpty(_selectedTurretID) && GridManager.Instance.IsOnGrid(position))
+        if (!string.IsNullOrEmpty(_selectedTurretID) && GridManager.Instance.IsOnGrid(mousePosition))
         {
-            position.z = 0f;
-            TurretVisualizer.transform.position = GridManager.Instance.GetGridWorldTilePosition(position);
+            Vector3 centerPos = CalculateTurretPosition(mousePosition, data);
+            TurretVisualizer.transform.position = centerPos;
             TurretVisualizer.gameObject.SetActive(true);
 
-            if (GridManager.Instance.CanPlaceTurret(position, TurretVisualizer.GetTileSize()))
+            if (GridManager.Instance.CanPlaceTurret(mousePosition, data.TileSize))
             {
                 _canSpawnTurret = true;
+                TurretVisualizer.SetPlacementValid(true);
                 // Visual feedback (requires sprite renderer access)
                 // logic...
             }
             else
             {
                 _canSpawnTurret = false;
+                TurretVisualizer.SetPlacementValid(false);
                 // logic...
             }
             return;
@@ -127,10 +137,10 @@ public class TurretSpawner : MonoBehaviour
         GameObject newTurret = Instantiate(GenericTurretPrefab, worldPosition, Quaternion.identity);
         newTurret.SetActive(true);
         newTurret.transform.SetParent(TurretBox.transform);
-        
+
         // Init Logic
         newTurret.GetComponent<TurretBase>().Initialize(data);
-        
+
         // Register in Grid
         GridManager.Instance.PlaceTurret(worldPosition, newTurret);
     }

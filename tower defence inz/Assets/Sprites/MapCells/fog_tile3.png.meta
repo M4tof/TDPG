@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 8082dd08c3a0a8692956719134dcb5db
+guid: 9eef501e1c2f502d38547418d72f5b66
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 3556595307276645008
-    second: water_tile3_0
+      213: 5463896159242564141
+    second: fog_tile3_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -47,7 +47,7 @@ TextureImporter:
   lightmap: 0
   compressionQuality: 50
   spriteMode: 2
-  spriteExtrude: 0
+  spriteExtrude: 1
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
@@ -100,7 +100,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: water_tile3_0
+      name: fog_tile3_0
       rect:
         serializedVersion: 2
         x: 0
@@ -115,8 +115,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 092bb0c96909b5130800000000000000
-      internalID: 3556595307276645008
+      spriteID: d22364d9b98a3db40800000000000000
+      internalID: 5463896159242564141
       vertices: []
       indices: 
       edges: []
@@ -135,7 +135,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      water_tile3_0: 3556595307276645008
+      fog_tile3_0: 5463896159242564141
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

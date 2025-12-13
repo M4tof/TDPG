@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: c6b02540f6357504d894e64d2c502e9c
+guid: 4fab988aed6c7e55cbaf73eed1bd8d72
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 1143463542349218844
-    second: water_tile2_0
+      213: 1832152710635577864
+    second: water_tile4_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -100,7 +100,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: water_tile2_0
+      name: water_tile4_0
       rect:
         serializedVersion: 2
         x: 0
@@ -115,8 +115,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: c14c55f88066edf00800000000000000
-      internalID: 1143463542349218844
+      spriteID: 802e3b3ee2d1d6910800000000000000
+      internalID: 1832152710635577864
       vertices: []
       indices: 
       edges: []
@@ -135,7 +135,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      water_tile2_0: 1143463542349218844
+      water_tile4_0: 1832152710635577864
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

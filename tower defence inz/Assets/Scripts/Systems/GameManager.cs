@@ -24,6 +24,8 @@ public class GameManager : MonoBehaviour
     public int PendingLoadSlot;
     public string PendingLoadPath;
 
+    public MapGenConfig PendingMapConfig;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -68,16 +70,27 @@ public class GameManager : MonoBehaviour
 
     void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        // if (RSInstance == null) RSInstance = ResourceSystem.Instance;
-        if (scene.name == "MainGame" && !string.IsNullOrEmpty(PendingLoadPath))
+        if (scene.name == "MainGame")
         {
-            // Now that the scene systems (like GridManager) exist, load the data.
-            SetSlot(PendingLoadSlot);
-            LoadGame(PendingLoadPath);
-
-            // Clear pending data
-            PendingLoadPath = null;
-            PendingLoadSlot = 0;
+            // 1. Handle New Game Config (Priority)
+            if (PendingMapConfig != null)
+            {
+                if (GridManager.Instance != null)
+                {
+                    Debug.Log($"[GameManager.OnSceneLoaded(): PendingMapConfig]: \n{Newtonsoft.Json.JsonConvert.SerializeObject(PendingMapConfig, Newtonsoft.Json.Formatting.Indented)}");
+                    // INJECT THE CONFIG HERE
+                    GridManager.Instance.ConfigureMap(PendingMapConfig);
+                }
+                PendingMapConfig = null; // Consume
+            }
+            // 2. Handle Save Load
+            else if (!string.IsNullOrEmpty(PendingLoadPath))
+            {
+                SetSlot(PendingLoadSlot);
+                LoadGame(PendingLoadPath);
+                PendingLoadPath = null;
+                PendingLoadSlot = 0;
+            }
         }
     }
     public void SetSlot(int s)
@@ -244,5 +257,30 @@ public class GameManager : MonoBehaviour
     public void RegenSeed()
     {
         GSeed = new GlobalSeed(InitializerFromDate.QuickGenerate(Slot), "main", "Main global seed for this save slot");
+    }
+
+    public void StartNewGame(int slotIndex, MapGenConfig config)
+    {
+        Debug.Log($"[GameManager.StartNewGame(): config]: \n{Newtonsoft.Json.JsonConvert.SerializeObject(config, Newtonsoft.Json.Formatting.Indented)}");
+        // Debug.Break();
+        // 1. Set Active Slot
+        SetSlot(slotIndex);
+
+        // 2. Wipe Save File
+        string path = System.IO.Path.Combine(Application.persistentDataPath, $"SaveSlot{slotIndex}.json");
+        if (System.IO.File.Exists(path))
+        {
+            System.IO.File.Delete(path);
+            Debug.Log($"[GameManager] Wiped save slot {slotIndex}");
+        }
+
+        // 3. Regenerate Global Seed
+        RegenSeed();
+
+        // 4. Store Config for GridManager
+        PendingMapConfig = config;
+        Debug.Log($"[GameManager.StartNewGame(): PendingMapConfig]: \n{Newtonsoft.Json.JsonConvert.SerializeObject(PendingMapConfig, Newtonsoft.Json.Formatting.Indented)}");
+        // 5. Load the Game Scene
+        UnityEngine.SceneManagement.SceneManager.LoadScene("MainGame");
     }
 }
