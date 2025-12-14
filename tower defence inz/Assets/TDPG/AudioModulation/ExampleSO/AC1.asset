@@ -9,8 +9,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 90077cc774104ae487cc7bebc7cd4d44, type: 3}
-  m_Name: BitGlitch1
+  m_Script: {fileID: 11500000, guid: 557fc856d13d46d5800dd8c2f1570cb1, type: 3}
+  m_Name: AC1
   m_EditorClassIdentifier: 
-  triggerBitIndex: 2
-  glitchIntensity: 2
+  distortionRange: {x: 0.1, y: 0.6}
+  useBitwiseCheck: 0
+  triggerBit: 3

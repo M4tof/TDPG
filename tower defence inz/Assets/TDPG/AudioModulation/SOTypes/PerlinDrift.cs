@@ -6,6 +6,8 @@ namespace TDPG.AudioModulation.SOTypes
     [CreateAssetMenu(menuName = "TDPG/Audio/Perlin Drift")]
     public class PerlinDrift : AudioModifier
     {
+        //creates an "Organic" wandering effect.
+        
         public float driftSpeed = 0.5f;
         public float intensity = 0.2f;
 

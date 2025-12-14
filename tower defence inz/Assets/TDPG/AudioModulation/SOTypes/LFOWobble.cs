@@ -1,22 +1,36 @@
-using TDPG.Audio;
 using UnityEngine;
+using TDPG.Audio;
 
 namespace TDPG.AudioModulation.SOTypes
 {
     [CreateAssetMenu(menuName = "TDPG/Audio/LFO Wobble")]
     public class LFOWobble : AudioModifier
     {
-        public float frequency = 1.0f; // Speed of the wobble
-        public float amplitude = 0.1f; // How extreme the wobble is
+        [Tooltip("Speed of the wobble in Hz")]
+        public float frequency = 1.0f; 
+        
+        [Tooltip("How much the pitch changes (+/-)")]
+        public float amplitude = 0.1f; 
 
-        public override void OnInitialize(AudioContext ctx) { }
+        [Tooltip("If TRUE: Wobble cycle matches audio position (restarts when clip loops).\nIf FALSE: Wobble runs continuously on game time.")]
+        public bool syncToClipLoop = false;
+
+        private float _timeOffset;
+
+        public override void OnInitialize(AudioContext ctx) 
+        {
+            _timeOffset = (float)(ctx.SeedValue % 100);
+        }
 
         public override void OnUpdate(AudioContext ctx, float time, ref float currentPitch, ref float currentVolume)
         {
+            // Option A: 'time' is the continuous time since Play() started (Game Time).
+            // Option B: 'ctx.Source.time' is the playback head position (0s -> Clip Length -> 0s).
+            float timeBase = syncToClipLoop ? ctx.Source.time : time;
+
             // Calculate Sine wave
-            float wave = Mathf.Sin(time * frequency * 2f * Mathf.PI);
-        
-            // Apply to pitch (1.0 +/- amplitude)
+            float wave = Mathf.Sin((timeBase + _timeOffset) * frequency * 2f * Mathf.PI);
+            
             currentPitch += (wave * amplitude);
         }
     }

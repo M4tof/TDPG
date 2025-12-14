@@ -9,10 +9,7 @@ namespace TDPG.AudioModulation
     public class ProceduralAudioController : MonoBehaviour
     {
         [Header("Configuration")]
-        [Tooltip("The raw seed value. Can be set via Inspector for testing.")]
         public ulong seedValue = 123456789;
-
-        [Tooltip("Drag your SO building blocks here")]
         public List<AudioModifier> modifiers = new List<AudioModifier>();
 
         [Header("Debug")]
@@ -21,56 +18,68 @@ namespace TDPG.AudioModulation
         private AudioSource _source;
         private AudioContext _context;
         private bool _isPlaying;
+        private double _dspStartTime;
+        
+        private float _inspectorPitch;
+        private float _inspectorVolume;
 
         void Awake()
         {
             _source = GetComponent<AudioSource>();
+            _source.playOnAwake = false;
+            
+            _inspectorPitch = _source.pitch;
+            _inspectorVolume = _source.volume;
+        }
+
+        void Start()
+        {
             if (playOnStart) Play();
         }
 
-        // --- Overload 1: Use Seed Class ---
-        public void Play(Seed seedObj)
-        {
-            if (seedObj != null)
-                Play(seedObj.GetBaseValue());
-            else
-                Play(12345); // Fallback
-        }
-
-        // --- Overload 2: Use Raw ulong ---
+        public void Play(Seed seedObj) => Play(seedObj != null ? seedObj.GetBaseValue() : 12345);
         public void Play(ulong rawSeed)
         {
             this.seedValue = rawSeed;
             Play();
         }
 
-        // --- Main Play Logic ---
         public void Play()
         {
-            // 1. Create Context
+            _source.pitch = _inspectorPitch;
+            _source.volume = _inspectorVolume;
+
             _context = new AudioContext(_source, seedValue);
 
-            // 2. Initialize Modifiers
             foreach (var mod in modifiers)
             {
                 if (mod != null) mod.OnInitialize(_context);
             }
 
-            // 3. Start Audio
-            _source.Play();
+            _dspStartTime = AudioSettings.dspTime + 0.1;
+            
+            ApplyModulation(0f);
+
+            _source.PlayScheduled(_dspStartTime);
             _isPlaying = true;
         }
 
         void Update()
         {
             if (!_isPlaying || !_source.isPlaying) return;
+            
+            double timeAlive = AudioSettings.dspTime - _dspStartTime;
+            
+            float safeTime = (float)System.Math.Max(0, timeAlive);
+            
+            ApplyModulation(safeTime);
+        }
 
-            // Always start calculation from the base settings
+        private void ApplyModulation(float time)
+        {
             float proposedPitch = _context.BasePitch;
             float proposedVolume = _context.BaseVolume;
-            float time = Time.time;
 
-            // Apply all modifiers
             foreach (var mod in modifiers)
             {
                 if (mod != null) mod.OnUpdate(_context, time, ref proposedPitch, ref proposedVolume);

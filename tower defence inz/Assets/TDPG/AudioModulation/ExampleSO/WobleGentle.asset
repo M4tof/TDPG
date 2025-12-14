@@ -9,8 +9,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 90077cc774104ae487cc7bebc7cd4d44, type: 3}
-  m_Name: BitGlitch1
+  m_Script: {fileID: 11500000, guid: 2cbb581f96384e92ba881c32379a8e7b, type: 3}
+  m_Name: WobleGentle
   m_EditorClassIdentifier: 
-  triggerBitIndex: 2
-  glitchIntensity: 2
+  frequency: 0.75
+  amplitude: 0.5
+  syncToClipLoop: 0

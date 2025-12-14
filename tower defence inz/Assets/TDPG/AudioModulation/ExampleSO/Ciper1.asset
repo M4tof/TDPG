@@ -9,8 +9,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 90077cc774104ae487cc7bebc7cd4d44, type: 3}
-  m_Name: BitGlitch1
+  m_Script: {fileID: 11500000, guid: 1aa9f281ec624125889c3e4b01513bb4, type: 3}
+  m_Name: Ciper1
   m_EditorClassIdentifier: 
-  triggerBitIndex: 2
-  glitchIntensity: 2
+  minDuration: 4
+  maxDuration: 5
