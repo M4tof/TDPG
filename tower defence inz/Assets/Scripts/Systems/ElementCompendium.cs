@@ -22,7 +22,7 @@ public class ElementCompendium : MonoBehaviour
         Instance = this;
     }
 
-    void Start()
+    public void Start()
     {
         registry = RegistryManager.Instance.GetRegistry();
         RefreshCache();

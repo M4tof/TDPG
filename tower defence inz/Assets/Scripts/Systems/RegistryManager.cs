@@ -41,8 +41,10 @@ public class RegistryManager : MonoBehaviour
         var effects = new List<Effect> { slow, burn };
 
         var element = new Element("Fire", 1, effects);
-        
+        var other_element = new Element("Water", 2, effects);
+
         registry.PutPreMadeElement(new List<int> { 0 }, element);
+        registry.PutPreMadeElement(new List<int> { 1 }, other_element);
     }
 
     // Update is called once per frame

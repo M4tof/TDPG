@@ -54,7 +54,7 @@ public class GraphMenu : MonoBehaviour
     private void RedrawGraph()
     {
         ClearGraphVisuals();
-
+        registryHolder.Start();
         if (registryHolder == null)
         {
             Debug.LogError("GraphMenu: registryHolder is NULL");
@@ -98,7 +98,7 @@ public class GraphMenu : MonoBehaviour
         if (tmp) tmp.text = element.Name;
 
         float angle = index * Mathf.PI * 2f / Mathf.Max(total, 1);
-        float radius = Mathf.Min(graphContainer.rect.width, graphContainer.rect.height) * 0.35f;
+        float radius = Mathf.Min(graphContainer.rect.width, graphContainer.rect.height) * 0.15f;
 
         Vector2 pos = new Vector2(Mathf.Cos(angle), Mathf.Sin(angle)) * radius;
 
@@ -147,8 +147,6 @@ public class GraphMenu : MonoBehaviour
             : "None";
 
         text.text =
-            $"<b>{element.Name}</b>\n\n" +
-            $"DNA: {element.GetDna()}\n\n" +
-            $"<b>Effects</b>\n{effectsText}";
+            $"<b>{element.Name}</b>\n{effectsText}";
     }
 }
