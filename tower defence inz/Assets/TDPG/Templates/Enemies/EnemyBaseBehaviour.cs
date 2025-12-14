@@ -69,6 +69,29 @@ namespace TDPG.Templates.Enemies
             action?.Invoke();
             effectCoroutines.Remove(effectId);
         }
+        
+        public void ApplyOrExtendIterableEffect(string effectId, Action<int> action, int iterations, float interval)
+        {
+            // Jeśli efekt już istnieje, zatrzymaj go
+            if (effectCoroutines.ContainsKey(effectId) && effectCoroutines[effectId] != null)
+            {
+                StopCoroutine(effectCoroutines[effectId]);
+            }
+
+            // Uruchom nową korutynę
+            effectCoroutines[effectId] = StartCoroutine(EffectRoutine(effectId, action, iterations, interval));
+        }
+
+        private IEnumerator EffectRoutine(string effectId, Action<int> action, int iterations, float interval)
+        {
+            for (int i = 0; i < iterations; i++)
+            {
+                yield return new WaitForSeconds(interval);
+                action?.Invoke(i); // Przekazujemy numer iteracji (0-based)
+            }
+    
+            effectCoroutines.Remove(effectId);
+        }
 
         
         

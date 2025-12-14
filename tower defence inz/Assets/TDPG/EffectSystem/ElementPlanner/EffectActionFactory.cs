@@ -48,7 +48,7 @@ namespace Assets.TDPG.EffectSystem.ElementPlanner
                 case EffectParameter.SlowdownOverTime:
                     return new TempSlowDownAction(value[0], value[1]);
                 case EffectParameter.HealthDrain:
-                    return new HealthDrainAction(value[0], value[1], value[2]);
+                    return new HealthDrainAction(value[0], (int)value[1], value[2]);
 
                 default:
                     throw new Exception($"No action for parameter {parameter}");

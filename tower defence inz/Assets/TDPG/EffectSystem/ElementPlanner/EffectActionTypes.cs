@@ -80,10 +80,10 @@ namespace TDPG.EffectSystem.ElementPlanner
     public class HealthDrainAction : IEffectAction
     {
         private readonly float healthPerDrain;
-        private readonly float drainCount;
+        private readonly int drainCount;
         private readonly float idleTime;
 
-        public HealthDrainAction(float healthPerDrain, float drainCount, float idleTime)
+        public HealthDrainAction(float healthPerDrain, int drainCount, float idleTime)
         {
             this.healthPerDrain = healthPerDrain;
             this.idleTime = idleTime;
@@ -95,22 +95,22 @@ namespace TDPG.EffectSystem.ElementPlanner
 
         public void Execute(EffectContext context)
         {
+            Debug.Log("DOTA");
             if (context.Target == null) return;
 
             if (drainCount <= 0) return; //meaningful drainCount is positive only
 
             if (context.Target.TryGetComponent<EnemyBaseBehaviour>(out var behaviour))
             {
-                for(int i=0; i < drainCount; i++)
-                {
-                    behaviour.Logic.CurrentHealth -= healthPerDrain;
-                    behaviour.ApplyWait(idleTime);
-                }
-                
+                behaviour.ApplyOrExtendIterableEffect("dota", 
+                    (iteration) => behaviour.DealDamage((int) healthPerDrain), 
+                    drainCount, 
+                    idleTime);
+                Debug.Log("BURN!!");
             }
             else
             {
-                Debug.LogWarning("HealthDrainAction: Target has no CurrentHealth.");
+                Debug.LogWarning("HealthDownAction: Target has no EnemyStats.");
             }
         }
     }
