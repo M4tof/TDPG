@@ -60,5 +60,16 @@ public class RegistryManager : MonoBehaviour
         return registry;
     }
 
+    public void LoadRegistry(Registry newRegistry)
+    {
+        if (newRegistry == null)
+        {
+            Debug.LogError("[RegistryManager] Tried to load null registry!");
+            return;
+        }
+        
+        this.registry = newRegistry;
+        Debug.Log("[RegistryManager] Registry overwritten from Save Data.");
+    }
     
 }

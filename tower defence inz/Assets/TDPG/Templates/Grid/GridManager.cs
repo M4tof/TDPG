@@ -60,6 +60,7 @@ namespace TDPG.Templates.Grid
         private GameObject destinationObject;
 
         private bool _hasExternalConfig = false;
+        private bool _sceneRebuilt = false;
 
         public Grid GetGrid() => grid;
         public float CellSize => cellSize;
@@ -88,7 +89,7 @@ namespace TDPG.Templates.Grid
             SetupTilemapGridAlignment();
 
             bool hasMapGenerator = mapGenerator != null;
-            
+
             if (!_hasExternalConfig && hasMapGenerator)
             {
                 mapGenerator.Precalc();
@@ -172,8 +173,11 @@ namespace TDPG.Templates.Grid
 
             SetStartPlayerPosition();
             SetDestination();
-            SetSpawners();
-            mapGenerator.CreateMapBounds();
+            if (!_sceneRebuilt)
+            {
+                SetSpawners();
+                if (hasMapGenerator) mapGenerator.CreateMapBounds();
+            }
 
             MapLoaded.Invoke();
 
@@ -208,8 +212,21 @@ namespace TDPG.Templates.Grid
             }
             width = mapGenerator.Width;
             height = mapGenerator.Height;
-            numOfEnemySpawners = mapGenerator.NumOfEnemySpawners;  
+            numOfEnemySpawners = mapGenerator.NumOfEnemySpawners;
             _hasExternalConfig = true;
+        }
+
+        public void SetLoadedDestination(int x, int y)
+        {
+            this.destpos = new Vector3Int(x, y, 0);
+        }
+
+        public Vector3Int GetDestinationGridPosition() => destpos;
+
+        public Vector3 GetDestinationWorldPosition()
+        {
+            // Use local conversion, do NOT ask MapGenerator
+            return GridToWorld(destpos.x, destpos.y);
         }
 
         private void SetupTilemapGridAlignment()
@@ -542,13 +559,13 @@ namespace TDPG.Templates.Grid
 
         private void SetStartPlayerPosition()
         {
-            Vector3 newPosition = mapGenerator.GetDestinationWorldPosition();
+            Vector3 newPosition = GetDestinationWorldPosition();
             Player.transform.position = newPosition;
         }
 
         private void SetDestination()
         {
-            destinationObject = Instantiate(DestinationPrefab, mapGenerator.GetDestinationWorldPosition(),
+            destinationObject = Instantiate(DestinationPrefab, GetDestinationWorldPosition(),
                 Quaternion.identity, gameObject.transform);
         }
 
@@ -741,6 +758,47 @@ namespace TDPG.Templates.Grid
                     }
                 }
             }
+
+            if (SpawnerContainer != null)
+            {
+                foreach (Transform child in SpawnerContainer.transform)
+                {
+                    Destroy(child.gameObject);
+                }
+            }
+        }
+
+        public Vector3Int[] GetSpawnerPositions()
+        {
+            return spawnerPositions;
+        }
+
+        public void SetLoadedSpawners(System.Collections.Generic.List<Vector3Int> loadedPositions)
+        {
+            if (loadedPositions != null)
+            {
+                spawnerPositions = loadedPositions.ToArray();
+            }
+        }
+
+        public void ForceRebuildScene()
+        {
+            if (_sceneRebuilt) return;
+
+            // 1. Instantiate Spawners immediately
+            // (Relies on SetLoadedSpawners having been called)
+            SetSpawners();
+
+            // 2. Initialize MapGenerator with the loaded grid
+            // This prevents the NullReference in CreateMapBounds
+            if (mapGenerator != null && grid != null)
+            {
+                mapGenerator.setGrid(grid);
+                mapGenerator.CreateMapBounds();
+            }
+
+            _sceneRebuilt = true;
+            Debug.Log("[GridManager] Scene forcefully rebuilt from Save Data.");
         }
 
     }

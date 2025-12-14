@@ -32,8 +32,14 @@ public class ElementCompendium : MonoBehaviour
     {
         if (registry == null)
         {
-            Debug.LogWarning("Registry is null in ElementCompendium!");
-            return;
+            Debug.LogWarning("Registry is null in ElementCompendium! Trying to update");
+            registry = RegistryManager.Instance.GetRegistry();
+            if (registry == null)
+            {
+                Debug.LogError("No Registry exists!");
+                return;
+            }
+
         }
 
         cachedElements = registry.GetAllElements().ToList();

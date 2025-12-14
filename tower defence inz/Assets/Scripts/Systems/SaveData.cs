@@ -68,20 +68,27 @@ public class GridSaveData
     public int[,] Grid;
     public TDPG.Templates.Grid.Grid.TileType[,] TypeGrid;
     // public int[,] BuildingGrid;
+    public int DestX;
+    public int DestY;
+
+    public System.Collections.Generic.List<Vec3> SpawnerPositions = new System.Collections.Generic.List<Vec3>();
 }
 
 // The master data class that holds all saved data
 [System.Serializable]
 public class GameSaveData
 {
-    public float SaveVersion = 0.2f; // Good practice for backwards compatibility
+    public float SaveVersion = 0.3f; // Good practice for backwards compatibility
     // public int SlotNumber;
     public System.DateTime SavedTime = System.DateTime.Now;
 
     public GlobalSeed GS;
     
     public ResourceSaveData Resources;
-    public ElementSaveData Elements;
+    public ElementSaveData Elements; // legacy, kept for compatibility
+
+    public string SerializedRegistry;
+    public Vec3 PlayerPosition;
     public List<TurretSaveData> Turrets;
     public List<EnemySaveData> Enemies;
     public GridSaveData GData;
