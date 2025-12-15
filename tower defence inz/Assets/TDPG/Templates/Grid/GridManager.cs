@@ -115,6 +115,8 @@ namespace TDPG.Templates.Grid
                 {
                     Debug.Log("Map generation initializing");
 
+                    // TODO: fix this
+
                     GlobalSeed globalSeed = new GlobalSeed(QuickGenerate(1));
 
                     const int MaxFullRegenerations = 5;   // how many reseeded attempts allowed
