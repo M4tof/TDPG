@@ -160,9 +160,9 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingLayerID: -2026463269
+  m_SortingLayer: 5
+  m_SortingOrder: 1
   m_Sprite: {fileID: 169604814995354954, guid: cf921e885303ac6b1b84b9622d703dbf, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -294,6 +294,10 @@ MonoBehaviour:
   mainCamera: {fileID: 0}
   pauseMenu: {fileID: 0}
   buildingMenu: {fileID: 0}
+  waterSpeedMultiplier: 0.4
+  wallSpeedMultiplier: 0.3
+  defaultSpeedMultiplier: 1
+  buildingSpeedMultiplier: 0.8
 --- !u!114 &3755034284902648661
 MonoBehaviour:
   m_ObjectHideFlags: 0

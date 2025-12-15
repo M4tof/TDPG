@@ -150,8 +150,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mapType: 1
-  width: 50
-  height: 50
+  width: 20
+  height: 20
   waterLevel: -0.356
   wallLevel: 0.4
   emptyCellsAroundPoints: 2
@@ -373,6 +373,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 517474486473164636, guid: a3fd9e2b77aba7542becd0c031fdec11, type: 3}
+      propertyPath: m_SortingLayer
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 517474486473164636, guid: a3fd9e2b77aba7542becd0c031fdec11, type: 3}
+      propertyPath: m_SortingLayerID
+      value: -2026463269
+      objectReference: {fileID: 0}
     - target: {fileID: 805409439817878569, guid: a3fd9e2b77aba7542becd0c031fdec11, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -2281,7 +2289,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bbe01438385b6b24bbf4da49aaaaaf6d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  minimapTileSize: 0.5
+  minimapTileSize: 0.35
 --- !u!1 &986165802
 GameObject:
   m_ObjectHideFlags: 0
