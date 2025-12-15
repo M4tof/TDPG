@@ -35,6 +35,7 @@ public class EnemyBehavior : EnemyBaseBehaviour
         Vector3 target = _enemyPathFollower.GetTargetPosition();
         direction = Vector2.MoveTowards(transform.position, target, Logic.GetCurrentSpeed() * Time.deltaTime);
         transform.position = direction;
+        Logic.Position = transform.position;
         MoveDirection();
     }
 
