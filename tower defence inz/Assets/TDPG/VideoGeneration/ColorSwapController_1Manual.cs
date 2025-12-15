@@ -8,10 +8,14 @@ namespace TDPG.VideoGeneration
     public class ColorSwapController_1Manual : MonoBehaviour, IColorSwapController
     {
         [Header("Settings")] 
-        public Color originalColor = Color.white;
-        public Color targetColor = Color.red;
+        [SerializeField] private Color originalColor = Color.white;
+        [SerializeField] private Color targetColor = Color.red;
         [Range(0, 10)] public float tolerance = 0.01f;
 
+        [Header("Effects")]
+        [SerializeField] private float blinkDuration = 0.1f;
+        private Coroutine _blinkCoroutine;
+        
         // Cache the Renderer and PropertyBlock to avoid garbage collection
         private Renderer _renderer;
         private MaterialPropertyBlock _propBlock;
@@ -79,6 +83,40 @@ namespace TDPG.VideoGeneration
                 targetColor = palette.colors[0];
                 UpdateColor();
             }
+        }
+        
+        public void BlinkWhite()
+        {
+            // If we are already blinking, stop the previous one so we can restart (spam-click friendly)
+            if (_blinkCoroutine != null) StopCoroutine(_blinkCoroutine);
+    
+            if (gameObject.activeInHierarchy)
+            {
+                _blinkCoroutine = StartCoroutine(BlinkRoutine());
+            }
+        }
+        
+        private System.Collections.IEnumerator BlinkRoutine()
+        {
+            // --- STEP 1: Turn White ---
+            if (_renderer == null) _renderer = GetComponent<Renderer>();
+            if (_propBlock == null) _propBlock = new MaterialPropertyBlock();
+    
+            _renderer.GetPropertyBlock(_propBlock);
+
+            // Keep the original selection logic, but force the output to White
+            _propBlock.SetColor(OriginalColorID, originalColor);
+            _propBlock.SetColor(TargetColorID, Color.white); // <--- Override to White
+            _propBlock.SetFloat(ToleranceID, tolerance);
+            _renderer.SetPropertyBlock(_propBlock);
+
+            // --- STEP 2: Wait ---
+            yield return new WaitForSeconds(blinkDuration); 
+
+            // --- STEP 3: Revert ---
+            UpdateColor();
+    
+            _blinkCoroutine = null;
         }
     }
 }

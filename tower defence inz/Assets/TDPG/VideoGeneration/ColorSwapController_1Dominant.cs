@@ -11,6 +11,10 @@ namespace TDPG.VideoGeneration
         public Color targetColor = Color.red;
         [Range(0, 10)] public float tolerance = 0.01f;
         
+        [Header("Effects")]
+        [SerializeField] private float blinkDuration = 0.1f;
+        private Coroutine _blinkCoroutine;
+        
         [Header("Selection Logic")]
         [Tooltip("0 = Best Match, 1 = Second Best (useful if outline is picked), etc.")]
         [Min(0)] public int colorRankIndex = 0;
@@ -19,7 +23,8 @@ namespace TDPG.VideoGeneration
         public bool prioritizeSaturated = true;
         [Tooltip("If true, ignores colors that are very close to black or white.")]
         public bool ignoreBlackAndWhite = true;
-
+        
+        
         [Header("Debug Info")]
         [SerializeField] private Color calculatedOriginalColor = Color.white;
 
@@ -196,6 +201,41 @@ namespace TDPG.VideoGeneration
             _propBlock.SetColor(TargetColorID, targetColor);
             _propBlock.SetFloat(ToleranceID, tolerance);
             _renderer.SetPropertyBlock(_propBlock);
+        }
+
+        public void BlinkWhite()
+        {
+            // If we are already blinking, stop the previous one so we can restart (spam-click friendly)
+            if (_blinkCoroutine != null) StopCoroutine(_blinkCoroutine);
+    
+            if (gameObject.activeInHierarchy)
+            {
+                _blinkCoroutine = StartCoroutine(BlinkRoutine());
+            }
+        }
+        
+        private System.Collections.IEnumerator BlinkRoutine()
+        {
+            // --- STEP 1: Turn White ---
+            if (_renderer == null) _renderer = GetComponent<Renderer>();
+            if (_propBlock == null) _propBlock = new MaterialPropertyBlock();
+    
+            _renderer.GetPropertyBlock(_propBlock);
+
+            // Keep the original selection logic, but force the output to White
+            _propBlock.SetColor(OriginalColorID, calculatedOriginalColor);
+            _propBlock.SetColor(TargetColorID, Color.white); // <--- Override to White
+            _propBlock.SetFloat(ToleranceID, tolerance);
+    
+            _renderer.SetPropertyBlock(_propBlock);
+
+            // --- STEP 2: Wait ---
+            yield return new WaitForSeconds(blinkDuration); 
+
+            // --- STEP 3: Revert ---
+            UpdateShaderProperties();
+    
+            _blinkCoroutine = null;
         }
     }
 }

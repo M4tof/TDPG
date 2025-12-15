@@ -20,5 +20,10 @@ namespace TDPG.VideoGeneration
         /// Sets the targets from a ScriptableObject palette.
         /// </summary>
         void SetPalette(ColorPaletteSO palette);
+
+        /// <summary>
+        /// Blinks quickly as white
+        /// </summary>
+        void BlinkWhite();
     }
 }

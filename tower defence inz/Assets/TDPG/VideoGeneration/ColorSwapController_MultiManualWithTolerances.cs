@@ -21,8 +21,10 @@ namespace TDPG.VideoGeneration
             
             public Color target = Color.red;
         }
-
-        // Removed Global Tolerance setting
+        
+        [Header("Effects")]
+        [SerializeField] private float blinkDuration = 0.1f;
+        private Coroutine _blinkCoroutine;
         
         [Header("Swaps (Max 16)")]
         public List<ColorSwapEntry> swaps = new List<ColorSwapEntry>();
@@ -87,7 +89,58 @@ namespace TDPG.VideoGeneration
                 UpdateShaderProperties();
             }
         }
+        
+        public void BlinkWhite()
+        {
+            // Coroutines only work in Play Mode usually, so we check Application.isPlaying
+            if (!Application.isPlaying) return;
 
+            if (_blinkCoroutine != null) StopCoroutine(_blinkCoroutine);
+
+            if (gameObject.activeInHierarchy)
+            {
+                _blinkCoroutine = StartCoroutine(BlinkRoutine());
+            }
+        }
+
+        private System.Collections.IEnumerator BlinkRoutine()
+        {
+            // --- STEP 1: Setup ---
+            if (_renderer == null) _renderer = GetComponent<Renderer>();
+            if (_renderer == null) yield break;
+            if (_propBlock == null) _propBlock = new MaterialPropertyBlock();
+            _renderer.GetPropertyBlock(_propBlock);
+
+            int count = Mathf.Min(swaps.Count, 16);
+            _propBlock.SetInt(CountID, count);
+
+            // --- STEP 2: Loop through swaps and set Targets to WHITE ---
+            for (int i = 0; i < count; i++)
+            {
+                ColorSwapEntry entry = swaps[i];
+                if (entry != null)
+                {
+                    // CRITICAL FIX: Pack the tolerance into the alpha channel
+                    Color packedOrig = entry.original;
+                    packedOrig.a = entry.tolerance; 
+
+                    _propBlock.SetColor(OrigIDs[i], packedOrig);
+                    
+                    // Force Target to White
+                    _propBlock.SetColor(TargIDs[i], Color.white);
+                }
+            }
+
+            _renderer.SetPropertyBlock(_propBlock);
+
+            // --- STEP 3: Wait ---
+            yield return new WaitForSeconds(blinkDuration);
+
+            // --- STEP 4: Revert ---
+            UpdateShaderProperties();
+            _blinkCoroutine = null;
+        }
+        
         // -----------------------------------------------------------------------
         // UPDATE
         // -----------------------------------------------------------------------

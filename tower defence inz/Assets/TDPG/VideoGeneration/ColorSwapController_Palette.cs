@@ -9,7 +9,11 @@ namespace TDPG.VideoGeneration
     {
         [Header("Settings")]
         [Range(0, 10)] public float tolerance = 0.05f;
-
+        
+        [Header("Effects")]
+        [SerializeField] private float blinkDuration = 0.1f;
+        private Coroutine _blinkCoroutine;
+        
         [Header("Original Colors (Max 16)")]
         [Tooltip("Define the specific colors on the sprite you want to replace.")]
         public List<Color> originalColors = new List<Color>();
@@ -72,6 +76,49 @@ namespace TDPG.VideoGeneration
             activePalette = newPalette;
             _runtimePaletteOverrides = null;
             UpdateShaderProperties();
+        }
+        
+        public void BlinkWhite()
+        {
+            if (!Application.isPlaying) return;
+
+            if (_blinkCoroutine != null) StopCoroutine(_blinkCoroutine);
+
+            if (gameObject.activeInHierarchy)
+            {
+                _blinkCoroutine = StartCoroutine(BlinkRoutine());
+            }
+        }
+        
+        private System.Collections.IEnumerator BlinkRoutine()
+        {
+            // --- STEP 1: Setup ---
+            if (_renderer == null) _renderer = GetComponent<Renderer>();
+            if (_renderer == null) yield break;
+            
+            if (_propBlock == null) _propBlock = new MaterialPropertyBlock();
+            _renderer.GetPropertyBlock(_propBlock);
+
+            _propBlock.SetFloat(ToleranceID, tolerance);
+
+            int count = Mathf.Min(originalColors.Count, 16);
+            _propBlock.SetInt(CountID, count);
+
+            // --- STEP 2: Loop through swaps and set Targets to WHITE ---
+            for (int i = 0; i < count; i++)
+            {
+                _propBlock.SetColor(OrigIDs[i], originalColors[i]);
+                _propBlock.SetColor(TargIDs[i], Color.white);
+            }
+
+            _renderer.SetPropertyBlock(_propBlock);
+
+            // --- STEP 3: Wait ---
+            yield return new WaitForSeconds(blinkDuration);
+
+            // --- STEP 4: Revert ---
+            UpdateShaderProperties();
+            _blinkCoroutine = null;
         }
 
         // -----------------------------------------------------------------------
