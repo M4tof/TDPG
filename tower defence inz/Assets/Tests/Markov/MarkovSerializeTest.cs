@@ -27,13 +27,13 @@ namespace Tests.Markov
             string json = JsonConvert.SerializeObject(markov, settings);
             MarkovChain clone = JsonConvert.DeserializeObject<MarkovChain>(json, settings);
             
-            CollectionAssert.AreEquivalent(markov.getPrefixes(), clone.getPrefixes());
-            CollectionAssert.AreEquivalent(markov.getSuffixes(), clone.getSuffixes());
+            CollectionAssert.AreEquivalent(markov.GetPrefixes(), clone.GetPrefixes());
+            CollectionAssert.AreEquivalent(markov.GetSuffixes(), clone.GetSuffixes());
             CollectionAssert.AreEquivalent(markov.GetBlacklist(), clone.GetBlacklist());
-            Assert.That(markov.getOrder(), Is.EqualTo(clone.getOrder()));
+            Assert.That(markov.GetOrder(), Is.EqualTo(clone.GetOrder()));
             
-            var chainA = markov.getProbabilities();
-            var chainB = clone.getProbabilities();
+            var chainA = markov.GetProbabilities();
+            var chainB = clone.GetProbabilities();
             
             Assert.AreEqual(chainA.Count, chainB.Count);
 
