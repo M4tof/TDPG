@@ -339,6 +339,7 @@ GameObject:
   - component: {fileID: 1231574637}
   - component: {fileID: 1231574639}
   - component: {fileID: 1231574638}
+  - component: {fileID: 1231574640}
   m_Layer: 0
   m_Name: Tilemap
   m_TagString: Untagged
@@ -384,7 +385,7 @@ TilemapRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
+  - {fileID: 2100000, guid: 0e810fa873e73cd7191ea1b1a1cf69b5, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
