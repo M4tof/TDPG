@@ -1,14 +1,20 @@
-using TDPG.Audio;
 using UnityEngine;
 
 namespace TDPG.AudioModulation.SOTypes
 {
+    /// <summary>
+    /// Applies a continuous, organic wandering effect to the audio pitch using Perlin Noise.
+    /// <br/>
+    /// Useful for making looping sounds (drones, engines, wind) feel less static without sounding random.
+    /// </summary>
     [CreateAssetMenu(menuName = "TDPG/Audio/Perlin Drift")]
     public class PerlinDrift : AudioModifier
     {
         //creates an "Organic" wandering effect.
         
+        [Tooltip("How fast the pitch wanders. Low values = slow waves, High values = fast jitter.")]
         public float driftSpeed = 0.5f;
+        [Tooltip("The strength of the effect. Defines the maximum range the pitch will deviate from the original.")]
         public float intensity = 0.2f;
 
         public override void OnInitialize(AudioContext ctx) { }

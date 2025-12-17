@@ -1,12 +1,19 @@
 using UnityEngine;
-using TDPG.Audio;
 
 namespace TDPG.AudioModulation.SOTypes
 {
+    /// <summary>
+    /// Restricts playback to a random, deterministically selected segment of the AudioClip.
+    /// <br/>
+    /// Useful for creating variations from a single long recording (e.g., picking a random bird chirp from a 1-minute forest ambience).
+    /// </summary>
     [CreateAssetMenu(menuName = "TDPG/Audio/Clip Segmenter")]
     public class ClipSegmenter : AudioModifier
     {
+        [Tooltip("Minimal allowed duration for the clip. (in seconds)")]
         public float minDuration = 0.5f;
+        
+        [Tooltip("Maximum allowed duration for the clip. (in seconds)")]
         public float maxDuration = 2.0f;
 
         private float _startTime;

@@ -1,14 +1,19 @@
 using UnityEngine;
-using TDPG.Audio;
 
 namespace TDPG.AudioModulation.SOTypes
 {
+    /// <summary>
+    /// Randomly assigns a physical space characteristic to the sound using Unity's <see cref="AudioReverbFilter"/>.
+    /// <br/>
+    /// The specific reverb preset is selected deterministically based on the seed.
+    /// </summary>
     [CreateAssetMenu(menuName = "TDPG/Audio/Reverb Roulette")]
     public class ReverbRoulette : AudioModifier
     {
         //It randomly assigns a physical space characteristic to the sound using Unity's AudioReverbFilter.
-        
+        [Tooltip("If TRUE, Reverb is only applied if the trigger bit is 1. If FALSE, Reverb is always applied.")]
         public bool useBitwiseCheck = true;
+        [Tooltip("Only apply reverb if this bit (0-63) is set in the seed.")]
         public int triggerBit = 2; // Only apply reverb if bit 2 is set
 
         public override void OnInitialize(AudioContext ctx)

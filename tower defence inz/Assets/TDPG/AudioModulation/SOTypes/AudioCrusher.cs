@@ -1,18 +1,24 @@
 using UnityEngine;
-using TDPG.Audio;
 
 namespace TDPG.AudioModulation.SOTypes
 {
+    /// <summary>
+    /// Applies a static distortion effect (AudioDistortionFilter) to the AudioSource.
+    /// <br/>
+    /// The intensity is chosen randomly within a range. Can be conditionally activated using bitwise seed checks (genetic traits).
+    /// </summary>
     [CreateAssetMenu(menuName = "TDPG/Audio/Audio Crusher")]
     public class AudioCrusher : AudioModifier
     {
         [Header("Distortion")]
-        [Tooltip("0 = Clean, 1 = Full Crunch")]
+        [Tooltip("0 = Clean, 1 = Full Crunch. Defines the min (x) and max (y) intensity.")]
         public Vector2 distortionRange = new Vector2(0.1f, 0.6f);
         
         [Header("Triggering")]
         [Tooltip("Only crush the audio if this specific bit is set in the seed (optional).")]
         public bool useBitwiseCheck = false;
+        
+        [Tooltip("Which bit (0-63) should be the trigger to turn on the function.")]
         public int triggerBit = 3;
 
         public override void OnInitialize(AudioContext ctx)
@@ -42,6 +48,8 @@ namespace TDPG.AudioModulation.SOTypes
         {
             // Distortion is usually static, but if you wanted "Dynamic Interference"
             // you could modify dist.distortionLevel here using Perlin noise.
+            // on default the library doesn't do anything onUpdate for the crusher
         }
+        
     }
 }
