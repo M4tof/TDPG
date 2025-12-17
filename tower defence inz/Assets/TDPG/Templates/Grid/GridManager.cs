@@ -23,10 +23,12 @@ namespace TDPG.Templates.Grid
         private MapGenerator mapGenerator;
 
         [Header("Tilemap")] [SerializeField] private Tilemap tilemap;
+        [SerializeField] private Tilemap fogTilemap;
         [SerializeField] private UnityEngine.Grid gridComponent;
         [SerializeField] private TileBase emptyTile;
         [SerializeField] private TileBase wallTile;
         [SerializeField] private TileBase waterTile;
+        [SerializeField] private TileBase nullTile;
 
         [Header("Spawns")] [SerializeField] private GameObject Player;
         [SerializeField] private GameObject EnemySpawnerPrefab;
@@ -96,11 +98,33 @@ namespace TDPG.Templates.Grid
                 if (hasMapGenerator && !mapGenerated)
                 {
                     Debug.Log("Map generation initializing");
+
                     GlobalSeed globalSeed = new GlobalSeed(QuickGenerate(1));
-                    Grid.TileType[,] mapData = mapGenerator.GenerateMap(globalSeed.NextSubSeed("TMPHERE"));
-                    ApplyMapToGridWithTilemap(mapData);
-                    mapGenerator.setGrid(grid);
-                    mapGenerator.BuildValidSpawnerCandidates();
+
+                    const int MaxFullRegenerations = 5;   // how many reseeded attempts allowed
+                    bool success = false;
+
+                    for (int attempt = 0; attempt < MaxFullRegenerations; attempt++)
+                    {
+                        Debug.Log($"--- Map Generation Attempt {attempt + 1}/{MaxFullRegenerations} ---");
+
+                        if (TryGenerateMapWithFallback(globalSeed))
+                        {
+                            success = true;
+                            break;
+                        }
+
+                        // fallback failed → try full regeneration with new subseed
+                        Debug.LogWarning("Regenerating with new seed...");
+                    }
+
+                    if (!success)
+                    {
+                        Debug.LogError("All map generation attempts failed. Unable to produce valid map, something went catastrophically wrong.");
+                        return;
+                    }
+
+                    // If we reach here, map is valid
                     spawnerPositions = mapGenerator.SelectSpawnerPositions(numOfEnemySpawners);
                     destpos = mapGenerator.GetDestinationPosition();
                     mapGenerated = true;
@@ -134,6 +158,7 @@ namespace TDPG.Templates.Grid
             SetStartPlayerPosition();
             SetDestination();
             SetSpawners();
+            mapGenerator.CreateMapBounds();
 
             //Set Camera
         }
@@ -162,14 +187,14 @@ namespace TDPG.Templates.Grid
             if (tilemap != null)
             {
                 tilemap.transform.position = Vector3.zero;
+                transform.localScale = Vector3.one;
                 Debug.Log("Reset Tilemap position to origin");
             }
-
-            // Set the tilemap's transform scale if needed
-            if (tilemap != null)
+            
+            if (fogTilemap != null)
             {
-                transform.localScale = Vector3.one;
-                //transform.localScale = new Vector3(cellSize, cellSize, 0);
+                fogTilemap.transform.position = Vector3.zero;
+                Debug.Log("Reset Fog Tilemap position to origin");
             }
         }
 
@@ -186,10 +211,21 @@ namespace TDPG.Templates.Grid
 
         private void ApplyMapToGridWithTilemap(Grid.TileType[,] mapData)
         {
+            bool hasFog = false;
             if (tilemap == null)
             {
                 Debug.LogWarning("Tilemap is not assigned in GridManager!");
                 return;
+            }
+            
+            if (fogTilemap == null)
+            {
+                Debug.LogWarning("FogTilemap is not assigned in GridManager!");
+            }
+            else
+            {
+                hasFog = true;
+                fogTilemap.ClearAllTiles();
             }
 
             tilemap.ClearAllTiles();
@@ -205,6 +241,13 @@ namespace TDPG.Templates.Grid
                     if (tileToPlace != null)
                     {
                         Vector3Int tilePos = new Vector3Int(x, y, 0);
+                        
+                        if (hasFog && tileToPlace == nullTile)
+                        {
+                            fogTilemap.SetTile(tilePos, tileToPlace);
+                            continue;
+                        }
+
                         tilemap.SetTile(tilePos, tileToPlace);
 
                         // Debug positioning for first tile
@@ -245,6 +288,7 @@ namespace TDPG.Templates.Grid
                 case Grid.TileType.EMPTY: return emptyTile;
                 case Grid.TileType.WALL: return wallTile;
                 case Grid.TileType.WATER: return waterTile;
+                case Grid.TileType.DONT_EXISTS: return nullTile;
                 default: return emptyTile;
             }
         }
@@ -453,6 +497,55 @@ namespace TDPG.Templates.Grid
             destinationObject = Instantiate(DestinationPrefab, mapGenerator.GetDestinationWorldPosition(),
                 Quaternion.identity, gameObject.transform);
         }
+        
+        private bool TryGenerateMapWithFallback(GlobalSeed globalSeed)
+        {
+            const int MaxFallbackPasses = 4;     // how many times fallback widens
+            const int CarveStep = 2;             // widen radius each pass
+
+            //Generate the initial map
+            Grid.TileType[,] mapData = mapGenerator.GenerateMap(globalSeed.NextSubSeed("MAP_MAIN"));
+            ApplyMapToGridWithTilemap(mapData);
+
+            mapGenerator.setGrid(grid);
+            mapGenerator.BuildValidSpawnerCandidates();
+
+            //If OK, done
+            if (mapGenerator.ReachableCandidatesCount() > 0)
+                return true;
+
+            Debug.LogWarning("No reachable spawner candidates. Starting fallback recovery.");
+
+            //Attempt local fallback recovery
+            int radius = 2;
+            for (int pass = 0; pass < MaxFallbackPasses; pass++)
+            {
+                Debug.Log($"Fallback pass #{pass + 1}, carving radius = {radius}");
+
+                // Carve around destination
+                mapGenerator.SpawnersFallback(radius);
+
+                // Reapply modified map
+                Grid.TileType[,] fallbackMap = mapGenerator.GetCurrentMap();
+                ApplyMapToGridWithTilemap(fallbackMap);
+                mapGenerator.setGrid(grid);
+
+                // Recalculate candidates
+                mapGenerator.BuildValidSpawnerCandidates();
+
+                if (mapGenerator.ReachableCandidatesCount() > 0)
+                {
+                    Debug.Log("Fallback succeeded!");
+                    return true;
+                }
+
+                radius += CarveStep;
+            }
+
+            Debug.LogError("Fallback failed. Map is unsalvageable.");
+            return false; // fallback failed
+        }
+
 
         private void SetSpawners()
         {
@@ -517,6 +610,9 @@ namespace TDPG.Templates.Grid
                         case Grid.TileType.BUILDING:
                             Gizmos.color = new Color(1, 1, 0, 0.2f);
                             break;
+                        case Grid.TileType.DONT_EXISTS:
+                            Gizmos.color = new Color(128/255, 128/255, 128/255, 0.4f);
+                            break;
                         default:
                             Gizmos.color = new Color(0, 1, 0, 0.2f); // EMPTY or unknown
                             break;
@@ -559,6 +655,11 @@ namespace TDPG.Templates.Grid
             if (tilemap != null)
             {
                 tilemap.ClearAllTiles();
+            }
+            
+            if (fogTilemap != null)
+            {
+                fogTilemap.ClearAllTiles();
             }
 
             // FIX: Defensive check (though SetCurrentGrid should have fixed this)
