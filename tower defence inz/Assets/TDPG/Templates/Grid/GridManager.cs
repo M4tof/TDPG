@@ -5,6 +5,7 @@ using TDPG.Templates.Turret;
 using static TDPG.Generators.Scalars.InitializerFromDate;
 using UnityEngine.InputSystem;
 using UnityEngine.Tilemaps;
+using UnityEngine.Events;
 
 namespace TDPG.Templates.Grid
 {
@@ -12,17 +13,19 @@ namespace TDPG.Templates.Grid
     {
         public static GridManager Instance { get; set; }
 
-        [Header("Required elements")] [SerializeField]
+        [Header("Required elements")]
+        [SerializeField]
         private Camera mainCamera;
 
         [Header("Parameters")] private int width = 10;
         private int height = 10;
         [SerializeField] private float cellSize = 1;
 
-        [Header("Map Generation")] [SerializeField]
+        [Header("Map Generation")]
+        [SerializeField]
         private MapGenerator mapGenerator;
 
-        [Header("Tilemap")] [SerializeField] private Tilemap tilemap;
+        [Header("Tilemap")][SerializeField] private Tilemap tilemap;
         [SerializeField] private Tilemap fogTilemap;
         [SerializeField] private UnityEngine.Grid gridComponent;
         [SerializeField] private TileBase emptyTile;
@@ -30,14 +33,18 @@ namespace TDPG.Templates.Grid
         [SerializeField] private TileBase waterTile;
         [SerializeField] private TileBase nullTile;
 
-        [Header("Spawns")] [SerializeField] private GameObject Player;
+        [Header("Spawns")][SerializeField] private GameObject Player;
         [SerializeField] private GameObject EnemySpawnerPrefab;
         [SerializeField] private GameObject DestinationPrefab;
 
-        [Tooltip("Game Object which would be a parent for spawned EnemySpawners")] [SerializeField]
+        [Header("Events")]
+        [SerializeField] private UnityEvent MapLoaded;
+
+        [Tooltip("Game Object which would be a parent for spawned EnemySpawners")]
+        [SerializeField]
         private GameObject SpawnerContainer;
 
-        [Header("Debug")] [SerializeField] private GridDebugFiller debugFiller;
+        [Header("Debug")][SerializeField] private GridDebugFiller debugFiller;
 
         private Grid grid;
         private GameObject[,] buildingsGrid;
@@ -48,6 +55,9 @@ namespace TDPG.Templates.Grid
         private Vector3Int[] spawnerPositions;
 
         private GameObject destinationObject;
+
+        private bool _hasExternalConfig = false;
+        private bool _sceneRebuilt = false;
 
         public Grid GetGrid() => grid;
         public float CellSize => cellSize;
@@ -76,8 +86,11 @@ namespace TDPG.Templates.Grid
             SetupTilemapGridAlignment();
 
             bool hasMapGenerator = mapGenerator != null;
-            if (hasMapGenerator)
+
+            if (!_hasExternalConfig && hasMapGenerator)
             {
+                mapGenerator.Precalc();
+                // Load default values from MapGenerator inspector
                 width = mapGenerator.Width;
                 height = mapGenerator.Height;
                 numOfEnemySpawners = mapGenerator.NumOfEnemySpawners;
@@ -91,13 +104,15 @@ namespace TDPG.Templates.Grid
 
                 // Initialize array to avoid nulls
                 for (int x = 0; x < width; x++)
-                for (int y = 0; y < height; y++)
-                    buildingsGrid[x, y] = null;
+                    for (int y = 0; y < height; y++)
+                        buildingsGrid[x, y] = null;
 
                 // Only run generation logic if we created a new grid
                 if (hasMapGenerator && !mapGenerated)
                 {
                     Debug.Log("Map generation initializing");
+
+                    // TODO: fix this
 
                     GlobalSeed globalSeed = new GlobalSeed(QuickGenerate(1));
 
@@ -157,10 +172,60 @@ namespace TDPG.Templates.Grid
 
             SetStartPlayerPosition();
             SetDestination();
-            SetSpawners();
-            mapGenerator.CreateMapBounds();
+            if (!_sceneRebuilt)
+            {
+                SetSpawners();
+                if (hasMapGenerator) mapGenerator.CreateMapBounds();
+            }
+
+            MapLoaded.Invoke();
 
             //Set Camera
+        }
+
+        public void ConfigureMap(MapGenConfig config)
+        {
+            if (config == null) return;
+
+            Debug.Log("[GridManager] Received External Config.");
+            Debug.Log($"[GridManager: config]: \n{Newtonsoft.Json.JsonConvert.SerializeObject(config, Newtonsoft.Json.Formatting.Indented)}");
+
+            // Apply values
+            width = config.Width;
+            height = config.Height;
+            numOfEnemySpawners = config.SpawnerCount;
+
+            if (mapGenerator != null)
+            {
+                mapGenerator.Type = config.MapType;
+                mapGenerator.Width = width;
+                mapGenerator.Height = height;
+                mapGenerator.NumOfEnemySpawners = numOfEnemySpawners;
+                mapGenerator.WaterLevel = config.WaterLevel;
+                mapGenerator.WallLevel = config.WallLevel;
+                mapGenerator.MinimalDistance = config.MinimalDistance;
+                mapGenerator.AssumeCanSwim = config.AssumeCanSwim;
+                mapGenerator.EmptyCellsAroundPoints = config.EmptyCellsAroundPoints;
+
+                mapGenerator.Precalc();
+            }
+            width = mapGenerator.Width;
+            height = mapGenerator.Height;
+            numOfEnemySpawners = mapGenerator.NumOfEnemySpawners;
+            _hasExternalConfig = true;
+        }
+
+        public void SetLoadedDestination(int x, int y)
+        {
+            this.destpos = new Vector3Int(x, y, 0);
+        }
+
+        public Vector3Int GetDestinationGridPosition() => destpos;
+
+        public Vector3 GetDestinationWorldPosition()
+        {
+            // Use local conversion, do NOT ask MapGenerator
+            return GridToWorld(destpos.x, destpos.y);
         }
 
         private void SetupTilemapGridAlignment()
@@ -190,7 +255,7 @@ namespace TDPG.Templates.Grid
                 transform.localScale = Vector3.one;
                 Debug.Log("Reset Tilemap position to origin");
             }
-            
+
             if (fogTilemap != null)
             {
                 fogTilemap.transform.position = Vector3.zero;
@@ -217,7 +282,7 @@ namespace TDPG.Templates.Grid
                 Debug.LogWarning("Tilemap is not assigned in GridManager!");
                 return;
             }
-            
+
             if (fogTilemap == null)
             {
                 Debug.LogWarning("FogTilemap is not assigned in GridManager!");
@@ -241,7 +306,7 @@ namespace TDPG.Templates.Grid
                     if (tileToPlace != null)
                     {
                         Vector3Int tilePos = new Vector3Int(x, y, 0);
-                        
+
                         if (hasFog && tileToPlace == nullTile)
                         {
                             fogTilemap.SetTile(tilePos, tileToPlace);
@@ -425,6 +490,11 @@ namespace TDPG.Templates.Grid
             return height;
         }
 
+        public float GetCellSize()
+        {
+            return cellSize;
+        }
+
         public Vector3 GetCenterGrid()
         {
             return new Vector3(width * cellSize / 2, width * cellSize / 2, -10f);
@@ -460,8 +530,8 @@ namespace TDPG.Templates.Grid
                 buildingsGrid = new GameObject[width, height];
                 // Wipe it to be safe
                 for (int x = 0; x < width; x++)
-                for (int y = 0; y < height; y++)
-                    buildingsGrid[x, y] = null;
+                    for (int y = 0; y < height; y++)
+                        buildingsGrid[x, y] = null;
             }
         }
 
@@ -488,16 +558,16 @@ namespace TDPG.Templates.Grid
 
         private void SetStartPlayerPosition()
         {
-            Vector3 newPosition = mapGenerator.GetDestinationWorldPosition();
+            Vector3 newPosition = GetDestinationWorldPosition();
             Player.transform.position = newPosition;
         }
 
         private void SetDestination()
         {
-            destinationObject = Instantiate(DestinationPrefab, mapGenerator.GetDestinationWorldPosition(),
+            destinationObject = Instantiate(DestinationPrefab, GetDestinationWorldPosition(),
                 Quaternion.identity, gameObject.transform);
         }
-        
+
         private bool TryGenerateMapWithFallback(GlobalSeed globalSeed)
         {
             const int MaxFallbackPasses = 4;     // how many times fallback widens
@@ -558,10 +628,15 @@ namespace TDPG.Templates.Grid
 
         public GameObject GetDestinationObject()
         {
-            return  destinationObject;
+            return destinationObject;
         }
 
-    public void PrintGridCell(Vector3 worldPosition)
+        public void SubscribeToEvent(UnityAction listener)
+        {
+            MapLoaded.AddListener(listener);
+        }
+
+        public void PrintGridCell(Vector3 worldPosition)
         {
             Vector2Int position = grid.GetXY(worldPosition);
             if (position.x < 0 || position.y < 0 || position.x >= width || position.y >= height)
@@ -611,7 +686,7 @@ namespace TDPG.Templates.Grid
                             Gizmos.color = new Color(1, 1, 0, 0.2f);
                             break;
                         case Grid.TileType.DONT_EXISTS:
-                            Gizmos.color = new Color(128/255, 128/255, 128/255, 0.4f);
+                            Gizmos.color = new Color(128 / 255, 128 / 255, 128 / 255, 0.4f);
                             break;
                         default:
                             Gizmos.color = new Color(0, 1, 0, 0.2f); // EMPTY or unknown
@@ -656,7 +731,7 @@ namespace TDPG.Templates.Grid
             {
                 tilemap.ClearAllTiles();
             }
-            
+
             if (fogTilemap != null)
             {
                 fogTilemap.ClearAllTiles();
@@ -682,6 +757,48 @@ namespace TDPG.Templates.Grid
                     }
                 }
             }
+
+            if (SpawnerContainer != null)
+            {
+                foreach (Transform child in SpawnerContainer.transform)
+                {
+                    Destroy(child.gameObject);
+                }
+            }
         }
+
+        public Vector3Int[] GetSpawnerPositions()
+        {
+            return spawnerPositions;
+        }
+
+        public void SetLoadedSpawners(System.Collections.Generic.List<Vector3Int> loadedPositions)
+        {
+            if (loadedPositions != null)
+            {
+                spawnerPositions = loadedPositions.ToArray();
+            }
+        }
+
+        public void ForceRebuildScene()
+        {
+            if (_sceneRebuilt) return;
+
+            // 1. Instantiate Spawners immediately
+            // (Relies on SetLoadedSpawners having been called)
+            SetSpawners();
+
+            // 2. Initialize MapGenerator with the loaded grid
+            // This prevents the NullReference in CreateMapBounds
+            if (mapGenerator != null && grid != null)
+            {
+                mapGenerator.setGrid(grid);
+                mapGenerator.CreateMapBounds();
+            }
+
+            _sceneRebuilt = true;
+            Debug.Log("[GridManager] Scene forcefully rebuilt from Save Data.");
+        }
+
     }
 }

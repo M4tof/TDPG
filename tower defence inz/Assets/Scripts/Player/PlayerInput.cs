@@ -1,5 +1,7 @@
+using TDPG.Templates.Grid;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using Grid = TDPG.Templates.Grid.Grid;
 
 [RequireComponent(typeof(Rigidbody2D))]
 [RequireComponent(typeof(BasicProjectileSpawner))]
@@ -14,7 +16,13 @@ public class PlayerInput : MonoBehaviour
     [SerializeField] private Camera mainCamera;
     [SerializeField] private PauseMenu pauseMenu;
     [SerializeField] private BuildingMenu buildingMenu;
-    
+
+    [Header("Terrain movement modifiers")]
+    [SerializeField] private float waterSpeedMultiplier = 0.4f;
+    [SerializeField] private float wallSpeedMultiplier = 0.3f;
+    [SerializeField] private float defaultSpeedMultiplier = 1.0f;
+    [SerializeField] private float buildingSpeedMultiplier = 0.8f;
+
     private Rigidbody2D rb;
     private BasicProjectileSpawner projectileSpawner;
     private TurretSpawner turretSpawner;
@@ -40,8 +48,27 @@ public class PlayerInput : MonoBehaviour
     //Updates every frame
     void Update()
     {
+        float speedMultiplier = defaultSpeedMultiplier;
+        if(GridManager.Instance != null)
+        {
+            Grid.TileType tileType = GridManager.Instance.GetCurrentGrid().GetTileType(transform.position);
+            switch (tileType)
+            {
+                case Grid.TileType.WATER:
+                    speedMultiplier = waterSpeedMultiplier;
+                    break;
+                case Grid.TileType.WALL:
+                    speedMultiplier = wallSpeedMultiplier;
+                    break;
+                case Grid.TileType.BUILDING:
+                    speedMultiplier = buildingSpeedMultiplier;
+                    break;
+                default:
+                    break;
+            }
+        }
         //Move player
-        rb.linearVelocity = moveDirection * speed;
+        rb.linearVelocity = moveDirection * speed * speedMultiplier;
         RotateSprite();
         
         //Move building preview
@@ -61,7 +88,7 @@ public class PlayerInput : MonoBehaviour
         {
             mousePosition = Mouse.current.position.ReadValue();
             Vector3 worldMousePosition = mainCamera.ScreenToWorldPoint(mousePosition);
-            TDPG.Templates.Grid.GridManager.Instance.OnMouseClick(context);
+            GridManager.Instance.OnMouseClick(context);
             if (!inMenu)
             {
                 projectileSpawner.Shoot(transform.position, worldMousePosition);

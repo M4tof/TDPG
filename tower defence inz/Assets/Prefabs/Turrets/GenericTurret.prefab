@@ -9,8 +9,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3381932058118404615}
-  - component: {fileID: 3841578229288806862}
   - component: {fileID: 1428157245819822605}
+  - component: {fileID: 6296391910884615458}
   m_Layer: 0
   m_Name: GenericTurret
   m_TagString: Untagged
@@ -35,22 +35,6 @@ Transform:
   - {fileID: 7954519869043288687}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &3841578229288806862
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2733203223708177109}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4506a97c2e68ac196bc92b72984cc08c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Data: {fileID: 11400000, guid: 308ddab85950651a380f55f9824f485f, type: 2}
-  baseRenderer: {fileID: 7497580190081476895}
-  crystalRenderer: {fileID: 2755026248290899470}
-  rotator: {fileID: 0}
 --- !u!61 &1428157245819822605
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -97,6 +81,21 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
+--- !u!114 &6296391910884615458
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2733203223708177109}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c3bcf3f3db0138e4bae993a748d2d360, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Data: {fileID: 0}
+  baseRenderer: {fileID: 7497580190081476895}
+  crystalRenderer: {fileID: 2755026248290899470}
 --- !u!1 &5521256891716293564
 GameObject:
   m_ObjectHideFlags: 0
@@ -170,8 +169,8 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: -1886011877
+  m_SortingLayer: 2
   m_SortingOrder: 0
   m_Sprite: {fileID: -3446471830066921269, guid: ccaa28a09cade8dda8cd7fdb786d0609, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -195,7 +194,7 @@ GameObject:
   - component: {fileID: 3818802283135085865}
   - component: {fileID: 7497580190081476895}
   m_Layer: 0
-  m_Name: BaseSprite
+  m_Name: BaseRenderer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -257,8 +256,8 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: -1886011877
+  m_SortingLayer: 2
   m_SortingOrder: 0
   m_Sprite: {fileID: -1515134823594722529, guid: ccaa28a09cade8dda8cd7fdb786d0609, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}

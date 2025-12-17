@@ -39,6 +39,10 @@ namespace TDPG.Templates.Enemies
             //Debug.Log($"DEAL {damage} DMG {CurrentHealth} HP");
         }
 
+        public void SetCurrentSpeed(float speed)
+        {
+             CurrentSpeed = speed;
+        }
         public float GetCurrentSpeed()
         {
             return CurrentSpeed;
@@ -47,6 +51,11 @@ namespace TDPG.Templates.Enemies
         public float GetCurrentHealth()
         {
             return CurrentHealth;
+        }
+        
+        public void SetCurrentHealth(float health)
+        {
+            CurrentHealth = health;
         }
 
     }

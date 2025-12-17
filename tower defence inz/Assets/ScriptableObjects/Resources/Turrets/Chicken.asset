@@ -12,12 +12,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 48b7f4daa554cd410be8710ad2974482, type: 3}
   m_Name: Chicken
   m_EditorClassIdentifier: 
-  TurretID: 
-  BaseSprite: {fileID: 0}
-  CrystalSprite: {fileID: 0}
-  Cost: 50
-  TileSize: {x: 1, y: 1}
-  Range: 5
+  TurretID: Chicken
+  BaseSprite: {fileID: -1515134823594722529, guid: ccaa28a09cade8dda8cd7fdb786d0609, type: 3}
+  CrystalSprite: {fileID: -1493861469240322331, guid: 8b3353a0a94e47e4dbff64f918723be9, type: 3}
+  Cost: 250
+  TileSize: {x: 2, y: 2}
+  Multiplayer: 2.5
+  CanShoot: 1
+  Range: 10
+  Damage: 10
   FireRate: 1
-  RotationSpeed: 10
-  ProjectilePrefab: {fileID: 0}
+  MaxHP: 20
+  ProjectilePrefab: {fileID: 1195895545647384619, guid: 54f1a2241ea8b704390fa0976c4ece48, type: 3}

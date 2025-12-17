@@ -1,0 +1,71 @@
+using System.Collections.Generic;
+using TDPG.EffectSystem.ElementLogic;
+using TDPG.EffectSystem.ElementPlanner;
+using UnityEngine;
+
+public class EffectProjectile : BasicProjectile
+{
+    [SerializeField] private ElementPlanner planner;
+    private EffectContext effectContext;
+    private bool hasHit = false;
+    
+    void Start()
+    {
+        base.Start();
+        //TODO Zmienić aby nie hard codować elementów :)
+        //elements.Add(RegistryManager.Instance.GetRegistry().GetElement("Fire"));
+        planner = new ElementPlanner(RegistryManager.Instance.GetRegistry());
+        planner.RegisterElement("Fire");
+        planner.BuildPlan();
+    }
+    
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        if (hasHit) return;
+        
+        if (other.GetComponent<EnemyBehavior>() != null)
+        {
+            hasHit = true;
+            
+            Collider2D projectileCollider = GetComponent<Collider2D>();
+            if (projectileCollider != null)
+            {
+                projectileCollider.enabled = false;
+            }
+            
+            effectContext = new EffectContext();
+            effectContext.Target = other.gameObject;
+            planner.ExecutePlan(effectContext);
+        
+            Destroy(gameObject);
+        }
+        /*EnemyBehavior enemyBehavior = other.gameObject.GetComponent<EnemyBehavior>();
+        if (enemyBehavior != null)
+        {
+            //enemyBehavior.DealDamage(GetDamage());
+            
+            //Set Effect
+            if (enemyBehavior.GetCurrentHealth() > 0)
+            {
+                Debug.Log(planner.GetPlannedActions());
+                effectContext = new EffectContext();
+                effectContext.Target = other.gameObject;
+                planner.ExecutePlan(effectContext);
+            }
+             
+        }
+        Destroy(gameObject);*/
+    }
+
+    public void addElement(string ElementName)
+    {
+        planner.RegisterElement(ElementName);
+        planner.BuildPlan();
+    }
+    
+    public void addElement(int id)
+    {
+        //TODO zrobić po ID
+        //planner.RegisterElement(ElementName);
+    }
+}

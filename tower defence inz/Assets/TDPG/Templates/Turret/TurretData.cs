@@ -17,9 +17,12 @@ namespace TDPG.Templates.Turret
         public float Multiplayer;
 
         [Header("Combat")]
+        public bool CanShoot =  true;
         public float Range = 5f;
+
+        public int Damage = 1;
         public float FireRate = 1f; // Shots per second
-        public float RotationSpeed = 10f; // For visual tracking
+        public int MaxHP = 10;
 
         [Header("Projectile")]
         // We reference the GameObject containing BasicProjectile script

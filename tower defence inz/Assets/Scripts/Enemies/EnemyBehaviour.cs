@@ -1,8 +1,9 @@
+using TDPG.Templates.Enemies;
 using TDPG.Templates.Pathfinding;
 using UnityEngine;
 
 [RequireComponent(typeof(EnemyPathFollower))]
-public class EnemyBehavior : MonoBehaviour
+public class EnemyBehavior : EnemyBaseBehaviour
 {
     public Enemy Logic { get; private set; }
     private SpriteRenderer _renderer;
@@ -12,6 +13,8 @@ public class EnemyBehavior : MonoBehaviour
 
     public void Initialize(Enemy logic)
     {
+        base.Initialize(logic);
+        
         Logic = logic;
         _renderer = GetComponent<SpriteRenderer>();
         _enemyPathFollower = GetComponent<EnemyPathFollower>();
@@ -30,9 +33,9 @@ public class EnemyBehavior : MonoBehaviour
     void Update()
     {
         Vector3 target = _enemyPathFollower.GetTargetPosition();
-        //Debug.Log($"NEXT TARGET: {target}");
-        direction = Vector2.MoveTowards(transform.position, target, 10 * Time.deltaTime);
+        direction = Vector2.MoveTowards(transform.position, target, Logic.GetCurrentSpeed() * Time.deltaTime);
         transform.position = direction;
+        Logic.Position = transform.position;
         MoveDirection();
     }
 
@@ -48,22 +51,20 @@ public class EnemyBehavior : MonoBehaviour
         }
     }
 
-    private void Die()
+    public override void Die()
     {
-        Logic.OnDeath();
         EnemyCompendium.Instance.UnregisterEnemy(Logic);
-        Destroy(gameObject); // TODO: Replace with Object Pooling
+        base.Die();
     }
-
-    public void DealDamage(int damage)
+    
+    public override void SetCurrentSpeed(float speed)
     {
-        //Debug.Log($"DEAL {damage} DMG");
-        Logic.DealDamage(damage);
-        Debug.Log($"HP {Logic.GetCurrentHealth()}");
-        if (Logic.GetCurrentHealth() <= 0)
-        {
-            Die();
-        }
+        Logic.SetCurrentSpeed(speed);
+    }
+    
+    public float GetCurrentHealth()
+    {
+        return Logic.GetCurrentHealth();
     }
     
     void OnDrawGizmos()

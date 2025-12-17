@@ -43,7 +43,7 @@ namespace TDPG.EffectSystem.ElementLogic
 
             return new Dictionary<EffectParameter, List<float>>
             {
-                { EffectParameter.SlowdownFactor, new List<float>{factor, duration } },
+                { EffectParameter.SlowdownOverTime, new List<float>{factor, duration } },
             };
         }
 
@@ -127,7 +127,7 @@ namespace TDPG.EffectSystem.ElementLogic
 
             return new Dictionary<EffectParameter, List<float>>
             {
-                { EffectParameter.SlowdownFactor, new List<float>{healthPerDrain, drainCount, idleTime } },
+                { EffectParameter.HealthDrain, new List<float>{healthPerDrain, drainCount, idleTime } },
             };
         }
 

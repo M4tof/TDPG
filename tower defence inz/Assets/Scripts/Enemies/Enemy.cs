@@ -17,10 +17,7 @@ public class Enemy : EnemyBase
     private Vector2? _currentTarget;
 
     public Vector2? CurrentTarget => _currentTarget;
-
-    public float CurrentHealth;
-    public float CurrentSpeed;
-
+    
     public Enemy(EnemyData baseData, EnemyStatsOverride overrides) : base(baseData)
     {
         _baseData = baseData;
@@ -28,9 +25,8 @@ public class Enemy : EnemyBase
         Overrides = overrides;
     
         // Initialize State
-        CurrentHealth = baseData.MaxHealth * overrides.HealthMultiplier;
-        CurrentSpeed = baseData.Speed * overrides.SpeedMultiplier;
-        // Position set by Spawner...
+        SetCurrentHealth(baseData.MaxHealth * overrides.HealthMultiplier);
+        SetCurrentSpeed(baseData.Speed * overrides.SpeedMultiplier);
     }
 
     // Called after loading from JSON to reconnect the SO

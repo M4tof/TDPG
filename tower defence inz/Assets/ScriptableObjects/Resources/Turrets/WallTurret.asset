@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 48b7f4daa554cd410be8710ad2974482, type: 3}
+  m_Name: WallTurret
+  m_EditorClassIdentifier: 
+  TurretID: Wall
+  BaseSprite: {fileID: -1515134823594722529, guid: ccaa28a09cade8dda8cd7fdb786d0609, type: 3}
+  CrystalSprite: {fileID: -690352682, guid: 71acbc7519fc62b4192c07d648f52b4b, type: 3}
+  Cost: 25
+  TileSize: {x: 1, y: 1}
+  Multiplayer: 1
+  CanShoot: 1
+  Range: 0
+  Damage: 0
+  FireRate: 1
+  MaxHP: 30
+  ProjectilePrefab: {fileID: 0}

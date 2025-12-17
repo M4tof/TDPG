@@ -149,12 +149,31 @@ public class EnemysSpawner : MonoBehaviour
         var logic = new Enemy(data, EnemyStatsOverride.Default);
         logic.CurrentHealth = save.Health;
         logic.Position = save.Position;
+        Debug.Log($"[ForceSpawn] Restoring Enemy {save.EnemyID} at {save.Position}");
 
         // Create Visuals
         GameObject go = Instantiate(EnemyPrefab, save.Position, Quaternion.identity);
+
+        go.transform.position = save.Position;
+
+        if (TDPG.Templates.Grid.GridManager.Instance != null && go.TryGetComponent(out BoxCollider2D col))
+        {
+            col.size *= TDPG.Templates.Grid.GridManager.Instance.CellSize;
+        }
+
         if (go.TryGetComponent(out EnemyBehavior behavior))
         {
             behavior.Initialize(logic);
+        }
+
+        if (go.TryGetComponent(out TDPG.Templates.Pathfinding.EnemyPathFollower follower))
+        {
+            if (EndPoint != null && TDPG.Templates.Grid.GridManager.Instance != null)
+            {
+                // Triggers calculation from CURRENT position to EndPoint
+                follower.Initialize(TDPG.Templates.Grid.GridManager.Instance, EndPoint.gameObject);
+                follower.ComputeNewPath(); 
+            }
         }
 
         // Register

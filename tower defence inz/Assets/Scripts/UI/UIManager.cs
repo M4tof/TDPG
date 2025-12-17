@@ -42,7 +42,7 @@ public class UIManager : MonoBehaviour
     public void OnNewGamePress()
     {
         Debug.Log("New Game Pressed");
-        Debug.Break();
+        // Debug.Break();
         SceneManager.LoadScene("InitializeNewGame");
     }
 

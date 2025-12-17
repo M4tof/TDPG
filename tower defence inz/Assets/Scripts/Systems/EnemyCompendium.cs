@@ -59,12 +59,28 @@ public class EnemyCompendium : MonoBehaviour
         ActiveEnemies.Clear();
 
         // 2. Find Spawner
-        var spawner = FindFirstObjectByType<EnemysSpawner>();
+        var spawner = FindFirstObjectByType<EnemysSpawner>(); 
+        
+        if (spawner == null)
+        {
+            Debug.LogError("CRITICAL: EnemySpawner not found in scene! Cannot load enemies.");
+            return;
+        }
 
         // 3. Respawn
-        foreach (var save in data)
+        if (data != null)
         {
-            spawner.ForceSpawnEnemy(save); // Need to implement this in Spawner
+            foreach (var save in data)
+            {
+                try 
+                {
+                    spawner.ForceSpawnEnemy(save);
+                }
+                catch (System.Exception e)
+                {
+                    Debug.LogError($"Failed to spawn saved enemy {save.EnemyID}: {e.Message}");
+                }
+            }
         }
     }
 }

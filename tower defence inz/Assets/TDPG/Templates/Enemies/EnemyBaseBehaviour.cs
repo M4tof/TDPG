@@ -12,6 +12,8 @@ namespace TDPG.Templates.Enemies
     public class EnemyBaseBehaviour : MonoBehaviour
     {
         public EnemyBase Logic { get; private set; }
+        
+        private Dictionary<string, Coroutine> effectCoroutines = new Dictionary<string, Coroutine>();
 
         public void Initialize(EnemyBase logic)
         {
@@ -19,16 +21,89 @@ namespace TDPG.Templates.Enemies
             transform.position = Logic.Position;
             Logic.OnCreation();
         }
-
-        public void ApplyWait(float duration)
+        
+        public virtual void Die()
         {
-            StartCoroutine(WaitRoutine(duration));
+            //EnemyCompendium.Instance.UnregisterEnemy(Logic);
+            Logic.OnDeath();
+            Destroy(gameObject); // TODO: Replace with Object Pooling
         }
 
-        private IEnumerator WaitRoutine(float duration)
+        public void DealDamage(int damage)
+        {
+            //Debug.Log($"DEAL {damage} DMG");
+            Logic.DealDamage(damage);
+            Debug.Log($"HP {Logic.GetCurrentHealth()}");
+            if (Logic.GetCurrentHealth() <= 0)
+            {
+                Die();
+            }
+        }
+
+        public virtual void SetCurrentSpeed(float speed)
+        {
+            Logic.SetCurrentSpeed(speed);
+        }
+
+        public IEnumerator ApplyWait(float duration)
         {
             yield return new WaitForSeconds(duration);
+            // Kod po oczekiwaniu
         }
 
+        public void ApplyOrExtendEffect(string effectId, Action action, float duration)
+        {
+            // Jeśli efekt już istnieje, zatrzymaj go
+            if (effectCoroutines.ContainsKey(effectId) && effectCoroutines[effectId] != null)
+            {
+                StopCoroutine(effectCoroutines[effectId]);
+            }
+    
+            // Uruchom nową korutynę z łącznym czasem
+            effectCoroutines[effectId] = StartCoroutine(EffectRoutine(effectId, action, duration));
+        }
+
+        private IEnumerator EffectRoutine(string effectId, Action action, float duration)
+        {
+            yield return new WaitForSeconds(duration);
+            action?.Invoke();
+            effectCoroutines.Remove(effectId);
+        }
+        
+        public void ApplyOrExtendIterableEffect(string effectId, Action<int> action, int iterations, float interval)
+        {
+            // Jeśli efekt już istnieje, zatrzymaj go
+            if (effectCoroutines.ContainsKey(effectId) && effectCoroutines[effectId] != null)
+            {
+                StopCoroutine(effectCoroutines[effectId]);
+            }
+
+            // Uruchom nową korutynę
+            effectCoroutines[effectId] = StartCoroutine(EffectRoutine(effectId, action, iterations, interval));
+        }
+
+        private IEnumerator EffectRoutine(string effectId, Action<int> action, int iterations, float interval)
+        {
+            for (int i = 0; i < iterations; i++)
+            {
+                yield return new WaitForSeconds(interval);
+                action?.Invoke(i); // Przekazujemy numer iteracji (0-based)
+            }
+    
+            effectCoroutines.Remove(effectId);
+        }
+
+        
+        
+        /*public void ApplyTempEffect(Action action, float duration)
+        {
+            StartCoroutine(DelayedActionRoutine(action, duration));
+        }
+
+        private IEnumerator DelayedActionRoutine(Action action, float duration)
+        {
+            yield return new WaitForSeconds(duration);
+            action?.Invoke();
+        }*/
     }
 }
