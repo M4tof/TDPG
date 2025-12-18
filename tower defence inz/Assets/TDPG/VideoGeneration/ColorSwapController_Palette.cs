@@ -4,13 +4,24 @@ using Color = UnityEngine.Color;
 
 namespace TDPG.VideoGeneration
 {
+    /// <summary>
+    /// Controller used by the TDPG library to provide procedural visual modification via color swapping.
+    /// <br/>
+    /// It must be placed on the same GameObject as an <see cref="UnityEngine.SpriteRenderer"/>.
+    /// <br/>
+    /// This version of the controller works only with <c>TDPG_MultiColor.mat</c> that implements <c>ColorSwapMultiple.shader</c>.
+    /// <br/>
+    /// This variant supports multiple original colors and uses a set palette as target colors. The tolerance setting is global and applies to all defined swaps.
+    /// </summary>
     [ExecuteAlways]
     public class ColorSwapController_Palette : MonoBehaviour, IColorSwapController
     {
         [Header("Settings")]
+        [Tooltip("The threshold for color matching. Higher values will replace a wider range of colors similar to the Original Color. Applied globally to all swaps.")] 
         [Range(0, 10)] public float tolerance = 0.05f;
         
         [Header("Effects")]
+        [Tooltip("The duration (in seconds) of the white flash effect triggered by BlinkWhite.")] 
         [SerializeField] private float blinkDuration = 0.1f;
         private Coroutine _blinkCoroutine;
         
@@ -19,7 +30,7 @@ namespace TDPG.VideoGeneration
         public List<Color> originalColors = new List<Color>();
 
         [Header("Target Palette")]
-        [Tooltip("The ScriptableObject containing the replacement colors.")]
+        [Tooltip("The ScriptableObject containing the replacement target colors.")]
         [SerializeField] private ColorPaletteSO activePalette;
 
         private List<Color> _runtimePaletteOverrides;
@@ -124,6 +135,9 @@ namespace TDPG.VideoGeneration
         // -----------------------------------------------------------------------
         // LOGIC
         // -----------------------------------------------------------------------
+        /// <summary>
+        /// Applies the current values given to the controller, either via code or inspector.
+        /// </summary>
         public void UpdateShaderProperties()
         {
             if (_renderer == null) _renderer = GetComponent<Renderer>();

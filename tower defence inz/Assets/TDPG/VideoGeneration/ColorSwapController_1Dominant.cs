@@ -4,14 +4,27 @@ using Color = UnityEngine.Color;
 
 namespace TDPG.VideoGeneration
 {
+    /// <summary>
+    /// Controller used by the TDPG library to provide procedural visual modification via color swaping.
+    /// <br/>
+    /// It must be placed on the same GameObject as an <see cref="UnityEngine.SpriteRenderer"/>.
+    /// <br/>
+    /// This version of the controller works only with the <c>"TDPG_1DominantMat.mat"</c> that implements the <c>"ColorSwap1.shader"</c>.
+    /// <br/>
+    /// This variant finds the dominant color on its own.
+    /// </summary>
     [ExecuteAlways]
     public class ColorSwapController_1Dominant : MonoBehaviour, IColorSwapController
     {
         [Header("Settings")] 
+        [Tooltip("Color to which the original color will be swaped")]
         public Color targetColor = Color.red;
+        
+        [Tooltip("How close a pixels color needs to be to the original color to be swaped to target")]
         [Range(0, 10)] public float tolerance = 0.01f;
         
         [Header("Effects")]
+        [Tooltip("How long (in seconds) should an blink last in the BlinkWhite function.")]
         [SerializeField] private float blinkDuration = 0.1f;
         private Coroutine _blinkCoroutine;
         
@@ -26,6 +39,7 @@ namespace TDPG.VideoGeneration
         
         
         [Header("Debug Info")]
+        [Tooltip("For developer purpouses, will show the dominant color found by the class")]
         [SerializeField] private Color calculatedOriginalColor = Color.white;
 
         private Renderer _renderer;
@@ -88,7 +102,10 @@ namespace TDPG.VideoGeneration
         // -----------------------------------------------------------------------
         // CORE LOGIC
         // -----------------------------------------------------------------------
-
+        
+        /// <summary>
+        /// Find what the most dominant color is in the curent sprite using ColorThief.
+        /// </summary>
         [ContextMenu("Force Recalculate Color")]
         public void RecalculateDominantColor()
         {
@@ -190,6 +207,9 @@ namespace TDPG.VideoGeneration
             catch (UnityException) { return null; }
         }
 
+        /// <summary>
+        /// Updates original and target colors as well as tolerance.
+        /// </summary>
         public void UpdateShaderProperties()
         {
             if (_renderer == null) _renderer = GetComponent<Renderer>();

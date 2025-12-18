@@ -3,6 +3,16 @@ using UnityEngine;
 
 namespace TDPG.VideoGeneration
 {
+    /// <summary>
+    /// Controller used by the TDPG library to provide procedural visual modification via color swapping.
+    /// <br/>
+    /// It must be placed on the same GameObject as an <see cref="UnityEngine.SpriteRenderer"/>.
+    /// <br/>
+    /// This version of the controller works only with <c>TDPG_MultiColorTolerance.mat</c> that implements <c>ColorSwapMultipleNoAlpha.shader</c>.
+    /// <br/>
+    /// This variant supports multiple original colors and uses a set palette as target colors. <br/>
+    /// The tolerance setting is per each color, they can overlap and the first in order is going to be drawn.
+    /// </summary>
     [ExecuteAlways]
     public class ColorSwapController_PaletteWithTolerances : MonoBehaviour, IColorSwapController
     {

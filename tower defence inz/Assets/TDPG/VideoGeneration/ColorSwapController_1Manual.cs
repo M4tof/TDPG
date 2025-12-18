@@ -4,16 +4,32 @@ using Color = UnityEngine.Color;
 
 namespace TDPG.VideoGeneration
 {
+    /// <summary>
+    /// Controller used by the TDPG library to provide procedural visual modification via color swapping.
+    /// <br/>
+    /// It must be placed on the same GameObject as an <see cref="UnityEngine.SpriteRenderer"/>.
+    /// <br/>
+    /// This version of the controller works only with <c>TDPG_1DominantMat.mat</c> that implements <c>ColorSwap1.shader</c>.
+    /// <br/>
+    /// This variant has one original color and one target color; it is the simplest version of the TDPG palette swapping.
+    /// </summary>
     [ExecuteAlways] // Updates in Edit Mode so you can see changes instantly
     public class ColorSwapController_1Manual : MonoBehaviour, IColorSwapController
     {
         [Header("Settings")] 
+        [Tooltip("The specific color in the source texture to be replaced.")]
         [SerializeField] private Color originalColor = Color.white;
+        
+        [Tooltip("The new color that will replace the Original Color.")] 
         [SerializeField] private Color targetColor = Color.red;
+        
+        [Tooltip("The threshold for color matching. Higher values will replace a wider range of colors similar to the Original Color.")] 
         [Range(0, 10)] public float tolerance = 0.01f;
 
         [Header("Effects")]
+        [Tooltip("The duration (in seconds) of the white flash effect triggered by BlinkWhite.")] 
         [SerializeField] private float blinkDuration = 0.1f;
+        
         private Coroutine _blinkCoroutine;
         
         // Cache the Renderer and PropertyBlock to avoid garbage collection
@@ -36,6 +52,9 @@ namespace TDPG.VideoGeneration
             UpdateColor();
         }
 
+        /// <summary>
+        /// Applies the current Original Color, Target Color, and Tolerance settings to the Renderer's MaterialPropertyBlock.
+        /// </summary>
         public void UpdateColor()
         {
             if (_renderer == null) _renderer = GetComponent<Renderer>();

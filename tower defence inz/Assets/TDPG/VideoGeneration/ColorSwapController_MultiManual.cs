@@ -4,25 +4,37 @@ using Color = UnityEngine.Color;
 
 namespace TDPG.VideoGeneration
 {
+    /// <summary>
+    /// Controller used by the TDPG library to provide procedural visual modification via color swapping.
+    /// <br/>
+    /// It must be placed on the same GameObject as an <see cref="UnityEngine.SpriteRenderer"/>.
+    /// <br/>
+    /// This version of the controller works only with <c>TDPG_MultiColor.mat</c> that implements <c>ColorSwapMultiple.shader</c>.
+    /// <br/>
+    /// This variant supports multiple original colors (one target color per original). The tolerance setting is global and applies to all defined swaps.
+    /// </summary>
     [ExecuteAlways]
     public class ColorSwapController_MultiManual : MonoBehaviour, IColorSwapController
     {
         [System.Serializable]
         public class ColorSwapEntry
         {
-            public string name = "Swap";
-            public Color original = Color.white;
-            public Color target = Color.red;
+            [Tooltip("A descriptive name for this specific color swap (e.g., 'Skin', 'Armor').")] public string name = "Swap";
+            [Tooltip("The specific color in the source texture to be replaced.")] public Color original = Color.white;
+            [Tooltip("The new color that will replace the Original Color.")] public Color target = Color.red;
         }
 
         [Header("Settings")]
+        [Tooltip("The threshold for color matching. Higher values will replace a wider range of colors similar to the Original Color. Applied globally to all swaps.")] 
         [Range(0, 10)] public float tolerance = 0.05f;
         
         [Header("Effects")]
+        [Tooltip("The duration (in seconds) of the white flash effect triggered by BlinkWhite.")] 
         [SerializeField] private float blinkDuration = 0.1f;
         private Coroutine _blinkCoroutine;
         
         [Header("Swaps (Max 16)")]
+        [Tooltip("Swap objects, used to hold the swap from original color to target color.")]
         public List<ColorSwapEntry> swaps = new List<ColorSwapEntry>();
 
         private Renderer _renderer;
@@ -138,6 +150,9 @@ namespace TDPG.VideoGeneration
         // -----------------------------------------------------------------------
         // UPDATE
         // -----------------------------------------------------------------------
+        /// <summary>
+        /// Applies the current values given to the controller, either via code or inspector.
+        /// </summary>
         public void UpdateShaderProperties()
         {
             if (_renderer == null) _renderer = GetComponent<Renderer>();

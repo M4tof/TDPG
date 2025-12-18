@@ -1,5 +1,6 @@
 Shader "TDPG/DominantColorSwap_Instanced"
 {
+    
     Properties
     {
         _MainTex("Texture", 2D) = "white" {}
