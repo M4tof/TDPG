@@ -3,30 +3,46 @@ using UnityEngine;
 
 namespace TDPG.VideoGeneration
 {
+    /// <summary>
+    /// Controller used by the TDPG library to provide procedural visual modification via color swapping.
+    /// <br/>
+    /// It must be placed on the same GameObject as an <see cref="UnityEngine.SpriteRenderer"/>.
+    /// <br/>
+    /// This version of the controller works only with <c>TDPG_MultiColorTolerance.mat</c> that implements <c>ColorSwapMultipleNoAlpha.shader</c>.
+    /// <br/>
+    /// This variant supports multiple original colors (one target color per original).  <br/>
+    /// The tolerance setting is per each color, they can overlap and the first in order is going to be drawn.
+    /// </summary>
     [ExecuteAlways]
     public class ColorSwapController_MultiManualWithTolerances : MonoBehaviour, IColorSwapController
     {
         [System.Serializable]
         public class ColorSwapEntry
         {
+            [Tooltip("A descriptive name for this specific color swap (e.g., 'Skin', 'Armor').")]
             public string name = "Swap";
             
             // 1. Hide Alpha in Inspector because we use that channel for logic, not transparency
+            [Tooltip("The specific color in the source texture to be replaced. NOTE: Alpha is disabled for the sake of transferring tolerance.")]
             [ColorUsage(false, false)] 
             public Color original = Color.white;
             
             // 2. Add per-swap tolerance
             [Range(0f, 1f)] 
+            [Tooltip("The threshold for color matching. Higher values will replace a wider range of colors similar to the Original Color. Applied to this swap.")] 
             public float tolerance = 0.05f; 
             
+            [Tooltip("The new color that will replace the Original Color.")]
             public Color target = Color.red;
         }
         
         [Header("Effects")]
+        [Tooltip("The duration (in seconds) of the white flash effect triggered by BlinkWhite.")] 
         [SerializeField] private float blinkDuration = 0.1f;
         private Coroutine _blinkCoroutine;
         
         [Header("Swaps (Max 16)")]
+        [Tooltip("Swap objects, used to hold the swap from original color to target color.")]
         public List<ColorSwapEntry> swaps = new List<ColorSwapEntry>();
 
         private Renderer _renderer;
@@ -144,6 +160,9 @@ namespace TDPG.VideoGeneration
         // -----------------------------------------------------------------------
         // UPDATE
         // -----------------------------------------------------------------------
+        /// <summary>
+        /// Applies the current values given to the controller, either via code or inspector.
+        /// </summary>
         public void UpdateShaderProperties()
         {
             if (_renderer == null) _renderer = GetComponent<Renderer>();

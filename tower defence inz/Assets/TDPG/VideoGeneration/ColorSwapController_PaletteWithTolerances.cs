@@ -21,13 +21,16 @@ namespace TDPG.VideoGeneration
         public struct ColorSwapEntry
         {
             [ColorUsage(false, false)] // Disable alpha picker in Inspector to avoid confusion
+            [Tooltip("Original color on the sprite, pre shading")]
             public Color color;
             
             [Range(0, 1.0f)] 
+            [Tooltip("The threshold for color matching. Higher values will replace a wider range of colors similar to the Original Color. Applied to this swap.")] 
             public float tolerance;
         }
         
         [Header("Effects")]
+        [Tooltip("The duration (in seconds) of the white flash effect triggered by BlinkWhite.")] 
         [SerializeField] private float blinkDuration = 0.1f;
         private Coroutine _blinkCoroutine;
 
@@ -37,7 +40,7 @@ namespace TDPG.VideoGeneration
         public List<ColorSwapEntry> originalColors = new List<ColorSwapEntry>();
 
         [Header("Target Palette")]
-        [Tooltip("The ScriptableObject containing the replacement colors.")]
+        [Tooltip("The ScriptableObject containing the target colors.")]
         [SerializeField] private ColorPaletteSO activePalette;
 
         private List<Color> _runtimePaletteOverrides;
@@ -145,6 +148,9 @@ namespace TDPG.VideoGeneration
         // -----------------------------------------------------------------------
         // LOGIC
         // -----------------------------------------------------------------------
+        /// <summary>
+        /// Applies the current values given to the controller, either via code or inspector.
+        /// </summary>
         public void UpdateShaderProperties()
         {
             if (_renderer == null) _renderer = GetComponent<Renderer>();
