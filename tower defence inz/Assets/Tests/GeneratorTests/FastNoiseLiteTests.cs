@@ -1,6 +1,6 @@
 using System;
 using NUnit.Framework;
-using TDPG.Generators.FastNoiseLite;
+using TDPG.ExternalPlugins.FastNoiseLite;
 using UnityEngine;
 using static Tests.TestUtils;
 

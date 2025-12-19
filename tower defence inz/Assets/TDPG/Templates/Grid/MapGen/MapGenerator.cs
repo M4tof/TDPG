@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using TDPG.Generators.FastNoiseLite;
+using TDPG.ExternalPlugins.FastNoiseLite;
 using TDPG.Generators.Seed;
 using UnityEngine;
 using TDPG.Templates.Pathfinding;

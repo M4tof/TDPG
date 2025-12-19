@@ -53,7 +53,7 @@ using System.Runtime.CompilerServices;
 using FNLfloat = System.Single;
 //using FNLfloat = System.Double;
 
-namespace TDPG.Generators.FastNoiseLite
+namespace TDPG.ExternalPlugins.FastNoiseLite
 {
     public class FastNoiseLite
     {

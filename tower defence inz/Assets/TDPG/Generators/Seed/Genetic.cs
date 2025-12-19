@@ -3,10 +3,28 @@ using System.Linq;
 
 namespace TDPG.Generators.Seed
 {
+    /// <summary>
+    /// Static utility class handling the low-level bitwise operations for Seed combination (Breeding) and Mutation.
+    /// </summary>
     public static class Genetic
     {
+        /// <summary>
+        /// The minimum number of bits that must differ between a child and its parents 
+        /// to be considered a "Distinct" generation.
+        /// </summary>
         private const int MinimumHammingDistanceThreshold = 2;
 
+        /// <summary>
+        /// Combines two byte arrays into a single 64-bit entropy value.
+        /// <br/>
+        /// Algorithm: 
+        /// 1. XORs the two arrays (overlapping).
+        /// 2. Performs a cyclic bit-shift (Rotation) to scramble patterns.
+        /// 3. Truncates/Converts to ulong.
+        /// </summary>
+        /// <param name="aByte">First byte array (DNA A).</param>
+        /// <param name="bByte">Second byte array (DNA B).</param>
+        /// <returns>A new 64-bit entropy value.</returns>
         public static ulong ByteCrossover(byte[] aByte, byte[] bByte)
         {
             // Perform XOR with automatic length handling
@@ -46,6 +64,12 @@ namespace TDPG.Generators.Seed
             return value;
         }
         
+        /// <summary>
+        /// Creates a new offspring by iteratively combining a list of parent seeds.
+        /// <br/>The resulting seed has ID -1 (Untracked).
+        /// </summary>
+        /// <param name="parents">Array of ancestor seeds.</param>
+        /// <returns>A new Seed representing the combination of all parents.</returns>
         public static Seed CreateChildSeed(ISeed[] parents) //Child seed of many parents, -1 id
         {
             Seed tmpSeed = new Seed(parents[0].GetBaseValue(),-1,parents[0].GetName());
@@ -61,6 +85,12 @@ namespace TDPG.Generators.Seed
             return tmpSeed;
         }
         
+        /// <summary>
+        /// Creates a new offspring from a list of parents and assigns a specific ID.
+        /// </summary>
+        /// <param name="parents">Array of ancestor seeds.</param>
+        /// <param name="id">The explicit ID to assign to the new seed.</param>
+        /// <returns>A new Seed representing the combination of all parents.</returns>
         public static Seed CreateChildSeed(ISeed[] parents, int id) //Child seed of many parents, explicit id
         {
             Seed tmpSeed = new Seed(parents[0].GetBaseValue(),-1,parents[0].GetName());
@@ -78,6 +108,14 @@ namespace TDPG.Generators.Seed
             return tmpSeed;
         }
         
+        /// <summary>
+        /// Alters the entropy of an existing seed based on the specified mutation strategy.
+        /// </summary>
+        /// <param name="original">The source seed.</param>
+        /// <param name="type">The mutation strategy (Deterministic vs Random).</param>
+        /// <param name="flipPercentage">Probability (0-100) of a byte being inverted. Only used in <see cref="MutateTypes.Random"/>.</param>
+        /// <param name="crossOverMap">Optional byte mask for <see cref="MutateTypes.Deterministic"/>. Defaults to an internal constant if null.</param>
+        /// <returns>A new, mutated Seed instance.</returns>
         public static Seed MutateSeed(Seed original,
             MutateTypes type,
             int flipPercentage = 15,
@@ -124,6 +162,10 @@ namespace TDPG.Generators.Seed
             }
         }
         
+        /// <summary>
+        /// Checks if a child is sufficiently different (diverse) from all of its parents.
+        /// </summary>
+        /// <returns>True if the Hamming Distance is >= <see cref="MinimumHammingDistanceThreshold"/> for all parents.</returns>
         private static bool PassesHammingDistance(Seed child, ISeed[] parents)
         {
             // Get the child's base value as bytes for comparison
@@ -169,6 +211,14 @@ namespace TDPG.Generators.Seed
             return distance;
         }
 
+        /// <summary>
+        /// Creates a child seed that is guaranteed to be genetically distinct from its parents.
+        /// <br/>
+        /// If the initial combination results in a clone (or near-clone), it recursively applies 
+        /// deterministic mutation until sufficient diversity (Hamming Distance) is achieved.
+        /// </summary>
+        /// <param name="parents">Array of ancestor seeds.</param>
+        /// <returns>A unique, divergent Seed.</returns>
         public static Seed CreateChildSeedDistinct(ISeed[] parents)
         {
             Seed startSeed = CreateChildSeed(parents);
@@ -179,6 +229,10 @@ namespace TDPG.Generators.Seed
             return startSeed;
         }
         
+        /// <summary>
+        /// Creates a distinct child seed with a specific ID.
+        /// <br/>See <see cref="CreateChildSeedDistinct(ISeed[])"/>.
+        /// </summary>
         public static Seed CreateChildSeedDistinct(ISeed[] parents, int id)
         {
             Seed tmpSeed = CreateChildSeedDistinct(parents);
