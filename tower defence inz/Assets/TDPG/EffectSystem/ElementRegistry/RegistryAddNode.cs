@@ -12,6 +12,20 @@ namespace TDPG.EffectSystem.ElementRegistry
     public partial class Registry
     { 
     //Add elements to registry
+    
+        /// <summary>
+        /// Registers a pre-existing element into the graph under specific parents.
+        /// </summary>
+        /// <remarks>
+        /// <b>Constraints:</b>
+        /// <list type="bullet">
+        /// <item><description>Cannot add duplicate elements (ID collision).</description></item>
+        /// <item><description>Cannot add a new element if another element already exists with the exact same parent set (Genealogical Uniqueness), unless the only parent is Root.</description></item>
+        /// </list>
+        /// </remarks>
+        /// <param name="parentsId">List of existing Element IDs that will be the parents.</param>
+        /// <param name="newElement">The element instance to register.</param>
+        /// <returns>The ID of the successfully added element, or 0/False if failed.</returns>
         public int PutPreMadeElement(List<int> parentsId, Element newElement)
         {
             if (newElement == null)
@@ -90,6 +104,22 @@ namespace TDPG.EffectSystem.ElementRegistry
             return newElement.Id;
         }
         
+        // -------------------------
+        // PROCEDURAL GENERATION
+        // -------------------------
+
+        /// <summary>
+        /// Creates a new child element via <b>Genetic Recombination</b> (XOR).
+        /// <br/>
+        /// <b>Strategy: Quality over Quantity (Specialization).</b>
+        /// <br/>
+        /// The child inherits traits unique to specific parents, discarding shared traits. 
+        /// <br/>
+        /// While the resulting element will have <b>fewer</b> active effects, the system applies a <b>Boost</b> to their intensity.
+        /// Use this to create powerful, specialized variants.
+        /// </summary>
+        /// <param name="parentsId">IDs of the parent elements.</param>
+        /// <returns>A specialized, high-intensity child Element.</returns>
         public Element GenerateChildElementFromParents_Recombine(List<int> parentsId)
         {
             return GenerateChildElementFromParentsCore(parentsId, 
@@ -109,6 +139,18 @@ namespace TDPG.EffectSystem.ElementRegistry
             );
         }
 
+        /// <summary>
+        /// Creates a new child element via <b>Genetic Addition</b> (OR).
+        /// <br/>
+        /// <b>Strategy: Quantity over Quality (Accumulation).</b>
+        /// <br/>
+        /// The child inherits <b>all</b> active traits from every parent, resulting in a dense DNA structure (potentially all bits set to 1).
+        /// <br/>
+        /// The effects are typically averages or direct copies of the parents without additional boosting.
+        /// Use this to gather multiple different traits into a single lineage before specializing.
+        /// </summary>
+        /// <param name="parentsId">IDs of the parent elements.</param>
+        /// <returns>A versatile, multi-effect child Element.</returns>
         public Element GenerateChildElementFromParents_Addition(List<int> parentsId)
         {
             return GenerateChildElementFromParentsCore(parentsId, 
@@ -128,7 +170,14 @@ namespace TDPG.EffectSystem.ElementRegistry
         }
 
         
-        
+        /// <summary>
+        /// The core procedural generation pipeline.
+        /// </summary>
+        /// <param name="parentsId">Parent IDs.</param>
+        /// <param name="combineSeeds">Strategy for mixing Parent DNA (e.g. XOR vs OR).</param>
+        /// <param name="fallbackEffectSelector">Strategy for picking an effect if generation fails.</param>
+        /// <param name="finalEffectSelectorMode">Strategy for resolving effect conflicts (when multiple parents provide the same effect).</param>
+        /// <param name="operationLabel">Debug label.</param>
         private Element GenerateChildElementFromParentsCore(
             List<int> parentsId,
             Func<Seed, Seed, Seed> combineSeeds,
@@ -270,8 +319,9 @@ namespace TDPG.EffectSystem.ElementRegistry
         }
         
         /// <summary>
-        /// Returns true if some element (non-root) already has exactly the same parents,
-        /// except the parent set { root } which is allowed to have duplicates.
+        /// Validates Genealogical Uniqueness.
+        /// <br/>
+        /// Returns true if a non-root element already exists with the exact same parent set.
         /// </summary>
         private bool HasElementWithSameNonRootParents(HashSet<int> parentIds)
         {

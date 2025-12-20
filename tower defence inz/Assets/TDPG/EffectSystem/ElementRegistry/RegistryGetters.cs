@@ -9,6 +9,16 @@ namespace TDPG.EffectSystem.ElementRegistry
     public partial class Registry
     {
         //Access Elements in registry
+        
+        /// <summary>
+        /// Retrieves a registered element by its display name (Case-Insensitive).
+        /// </summary>
+        /// <remarks>
+        /// <b>Warning:</b> Names are not guaranteed to be unique in the registry. 
+        /// If multiple elements share the same name, this method logs an error and returns null.
+        /// </remarks>
+        /// <param name="name">The name to search for.</param>
+        /// <returns>The matching Element, or null if not found/duplicate.</returns>
         public Element GetElement(string name)
         {
             if (string.IsNullOrEmpty(name))
@@ -36,6 +46,14 @@ namespace TDPG.EffectSystem.ElementRegistry
 
             return matches[0];
         }
+        
+        /// <summary>
+        /// Retrieves a registered element by its unique numerical ID.
+        /// <br/>
+        /// This is the most reliable method for lookups during Save/Load operations.
+        /// </summary>
+        /// <param name="id">The unique identifier.</param>
+        /// <returns>The matching Element, or null if not found.</returns>
         public Element GetElement(int id)
         {
             // Find all elements with the given ID
@@ -57,6 +75,18 @@ namespace TDPG.EffectSystem.ElementRegistry
 
             return matches[0];
         }
+        
+        /// <summary>
+        /// Finds a single child element that is the direct descendant of <b>ALL</b> the specified parents.
+        /// <br/>
+        /// Acts as a "Recipe Lookup" (e.g., Find the element created by combining Fire + Water).
+        /// </summary>
+        /// <remarks>
+        /// Logic: Intersection of children. The result must be a child of Parent A <b>AND</b> Parent B.
+        /// <br/>If multiple matches exist (rare, only root), returns the first one.
+        /// </remarks>
+        /// <param name="parents">The list of parent elements required.</param>
+        /// <returns>The common child Element, or null if no such combination exists.</returns>
         public Element GetElement(List<Element> parents) //Single child of multiple parents
         {
             if (parents == null || parents.Count == 0)
@@ -105,6 +135,16 @@ namespace TDPG.EffectSystem.ElementRegistry
 
             return commonChildren.First();
         }
+        
+        /// <summary>
+        /// Finds all elements that are direct descendants of <b>ALL</b> the specified parents.
+        /// </summary>
+        /// <remarks>
+        /// Similar to <see cref="GetElement(List{Element})"/>, but returns the full collection if multiple variants exist 
+        /// for the same parent combination.
+        /// </remarks>
+        /// <param name="parents">The list of parent elements.</param>
+        /// <returns>A collection of matching child elements.</returns>
         public IEnumerable<Element> GetElementsFromParents(List<Element> parents) //All kids of multiple parents
         {
             if (parents == null || parents.Count == 0)
@@ -150,6 +190,17 @@ namespace TDPG.EffectSystem.ElementRegistry
 
             return commonChildren;
         }
+        
+        /// <summary>
+        /// Performs a <b>Breadth-First Search (BFS)</b> to retrieve all downstream descendants of a specific element.
+        /// </summary>
+        /// <param name="root">The starting element.</param>
+        /// <param name="maxDepth">
+        /// How many generations deep to search.
+        /// <br/>1 = Immediate Children.
+        /// <br/>2 = Children and Grandchildren.
+        /// </param>
+        /// <returns>A unique collection of descendant elements.</returns>
         public IEnumerable<Element> GetDescendants(Element root, int maxDepth = 1)
         {
             if (root == null)

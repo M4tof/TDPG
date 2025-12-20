@@ -1,16 +1,31 @@
-﻿using PlasticGui.Help.Actions;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using TDPG.EffectSystem.ElementPlanner;
 using TDPG.EffectSystem.ElementLogic;
 
-namespace Assets.TDPG.EffectSystem.ElementPlanner
+namespace TDPG.EffectSystem.ElementPlanner
 {
+    /// <summary>
+    /// Static factory responsible for translating semantic <see cref="EffectParameter"/> keys into executable <see cref="IEffectAction"/> instances.
+    /// <br/>
+    /// Acts as the bridge between the Data Layer (EffectLogic) and the Execution Layer (ElementPlanner).
+    /// </summary>
     public static class EffectActionFactory
     {
+        /// <summary>
+        /// Instantiates a simple action derived from a single scalar value.
+        /// </summary>
+        /// <remarks>
+        /// <b>Special Logic:</b>
+        /// <br/>For <see cref="EffectParameter.HealthChange"/>:
+        /// <list type="bullet">
+        /// <item><description>Negative Value → Returns <see cref="HealthDownAction"/> (Damage).</description></item>
+        /// <item><description>Positive Value → Returns <see cref="HealAction"/> (Restoration).</description></item>
+        /// </list>
+        /// </remarks>
+        /// <param name="parameter">The semantic key identifying the effect type.</param>
+        /// <param name="value">The raw magnitude or duration.</param>
+        /// <returns>A concrete, executable <see cref="IEffectAction"/>.</returns>
+        /// <exception cref="Exception">Thrown if the provided parameter has no mapped Action implementation.</exception>
         public static IEffectAction Create(EffectParameter parameter, float value)
         {
             switch (parameter)
@@ -31,6 +46,17 @@ namespace Assets.TDPG.EffectSystem.ElementPlanner
                     throw new Exception($"No action for parameter {parameter}");
             }
         }
+        
+        /// <summary>
+        /// Instantiates a complex action derived from a list of values (e.g., Duration + Intensity).
+        /// </summary>
+        /// <remarks>
+        /// Used for effects like <see cref="EffectParameter.HealthDrain"/> which require [Damage, Count, Interval] or <see cref="EffectParameter.SlowdownOverTime"/> [Factor, Duration].
+        /// </remarks>
+        /// <param name="parameter">The semantic key identifying the effect type.</param>
+        /// <param name="value">The list of arguments. The order (Index 0, 1, 2) MUST match the constructor of the target Action.</param>
+        /// <returns>A concrete, executable <see cref="IEffectAction"/>.</returns>
+        /// <exception cref="Exception">Thrown if the provided parameter has no mapped Action implementation.</exception>
         public static IEffectAction Create(EffectParameter parameter, List<float>value)
         {
             switch (parameter)
