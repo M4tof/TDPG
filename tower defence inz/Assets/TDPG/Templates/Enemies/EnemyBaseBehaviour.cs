@@ -9,12 +9,27 @@ using static UnityEngine.EventSystems.EventTrigger;
 
 namespace TDPG.Templates.Enemies
 {
+    /// <summary>
+    /// The Unity MonoBehaviour wrapper acting as the Controller/View for an enemy entity.
+    /// <br/>
+    /// It manages the link between the Unity Scene (Transform, Coroutines, Collision) and the 
+    /// pure logic model (<see cref="EnemyBase"/>).
+    /// </summary>
     public class EnemyBaseBehaviour : MonoBehaviour
     {
+        /// <summary>
+        /// The pure data model containing stats and state (HP, Speed).
+        /// </summary>
         public EnemyBase Logic { get; private set; }
         
+        // Registry of active status effect coroutines (Key = Effect ID).
+        // Used to handle overwriting/refreshing durations.
         private Dictionary<string, Coroutine> effectCoroutines = new Dictionary<string, Coroutine>();
 
+        /// <summary>
+        /// Links this behavior to a specific logic instance and synchronizes initial state.
+        /// </summary>
+        /// <param name="logic">The data model instance.</param>
         public void Initialize(EnemyBase logic)
         {
             Logic = logic;
@@ -22,6 +37,11 @@ namespace TDPG.Templates.Enemies
             Logic.OnCreation();
         }
         
+        /// <summary>
+        /// Handles the destruction sequence of the enemy.
+        /// <br/>
+        /// Triggers logical death events and destroys/pools the GameObject.
+        /// </summary>
         public virtual void Die()
         {
             //EnemyCompendium.Instance.UnregisterEnemy(Logic);
@@ -29,6 +49,10 @@ namespace TDPG.Templates.Enemies
             Destroy(gameObject); // TODO: Replace with Object Pooling
         }
 
+        /// <summary>
+        /// Applies damage to the internal logic model and checks for death conditions.
+        /// </summary>
+        /// <param name="damage">Amount of health to remove.</param>
         public void DealDamage(int damage)
         {
             //Debug.Log($"DEAL {damage} DMG");
@@ -40,17 +64,35 @@ namespace TDPG.Templates.Enemies
             }
         }
 
+        
+        /// <summary>
+        /// Updates the movement speed in the logic model.
+        /// <br/>
+        /// Virtual to allow overrides for animation speed updates.
+        /// </summary>
         public virtual void SetCurrentSpeed(float speed)
         {
             Logic.SetCurrentSpeed(speed);
         }
 
+        /// <summary>
+        /// A utility coroutine that pauses execution for a set time.
+        /// </summary>
         public IEnumerator ApplyWait(float duration)
         {
             yield return new WaitForSeconds(duration);
             // Kod po oczekiwaniu
         }
 
+        /// <summary>
+        /// Schedules a delayed action (e.g., removing a debuff). 
+        /// <br/>
+        /// <b>Refresh Behavior:</b> If an effect with the same <paramref name="effectId"/> is already running, 
+        /// it is stopped (cancelled) and restarted with the new duration.
+        /// </summary>
+        /// <param name="effectId">Unique key for the effect (e.g. "slow_debuff").</param>
+        /// <param name="action">The callback to execute when time expires.</param>
+        /// <param name="duration">Time in seconds to wait.</param>
         public void ApplyOrExtendEffect(string effectId, Action action, float duration)
         {
             // Jeśli efekt już istnieje, zatrzymaj go
@@ -70,6 +112,15 @@ namespace TDPG.Templates.Enemies
             effectCoroutines.Remove(effectId);
         }
         
+        /// <summary>
+        /// Schedules a repeating action (e.g., Damage over Time).
+        /// <br/>
+        /// <b>Refresh Behavior:</b> If this ID exists, the previous sequence is cancelled and a new one starts from iteration 0.
+        /// </summary>
+        /// <param name="effectId">Unique key for the effect (e.g. "poison_dot").</param>
+        /// <param name="action">Callback executed per tick. Receives the iteration index (0 to N-1).</param>
+        /// <param name="iterations">How many times the action should fire.</param>
+        /// <param name="interval">Seconds between ticks.</param>
         public void ApplyOrExtendIterableEffect(string effectId, Action<int> action, int iterations, float interval)
         {
             // Jeśli efekt już istnieje, zatrzymaj go

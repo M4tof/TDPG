@@ -4,6 +4,12 @@ using TDPG.Templates.Grid;
 
 namespace TDPG.Templates.Turret
 {
+    /// <summary>
+    /// The concrete runtime implementation of an active Turret.
+    /// <br/>
+    /// Handles the combat loop: detecting enemies within range, selecting the best target 
+    /// (currently "Closest"), and instantiating projectiles based on <see cref="TurretData"/>.
+    /// </summary>
     public class Turret : TurretBase
     {
         [Header("Runtime State")]
@@ -31,6 +37,9 @@ namespace TDPG.Templates.Turret
             }
         }
 
+        /// <summary>
+        /// Orchestrates the firing sequence: Acquire Targets -> Select Best -> Fire.
+        /// </summary>
         private void PerformCombatLoop()
         {
             // Step 1: Get Possible Targets (Range + Visibility)
@@ -52,6 +61,12 @@ namespace TDPG.Templates.Turret
             }
         }
 
+        /// <summary>
+        /// Performs a Physics OverlapCircle check to find all colliders on the "Enemy" layer within range.
+        /// <br/>
+        /// <b>Note:</b> Range is scaled by <see cref="GridManager.CellSize"/> to ensure consistency across different grid scales.
+        /// </summary>
+        /// <returns>A list of valid enemy transforms.</returns>
         private List<Transform> GetPossibleTargets()
         {
             List<Transform> validTargets = new List<Transform>();
@@ -81,6 +96,13 @@ namespace TDPG.Templates.Turret
             return true;
         }
 
+        /// <summary>
+        /// Evaluates a list of candidates and picks the optimal target based on a strategy.
+        /// <br/>
+        /// <b>Current Strategy:</b> Closest Distance.
+        /// </summary>
+        /// <param name="candidates">List of enemies in range.</param>
+        /// <returns>The best target, or null if list is empty.</returns>
         private Transform SelectTarget(List<Transform> candidates)
         {
             if (candidates.Count == 0) return null;
@@ -106,6 +128,11 @@ namespace TDPG.Templates.Turret
             return bestTarget;
         }
 
+        /// <summary>
+        /// Instantiates the projectile defined in <see cref="TurretData.ProjectilePrefab"/>, 
+        /// aligns it towards the target, and resets the cooldown.
+        /// </summary>
+        /// <param name="target">The locked target.</param>
         private void Shoot(Transform target)
         {
             if (Data.ProjectilePrefab == null) return;

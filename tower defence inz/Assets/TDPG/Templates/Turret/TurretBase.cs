@@ -4,16 +4,21 @@ using TDPG.Templates.Grid;
 
 namespace TDPG.Templates.Turret
 {
+    /// <summary>
+    /// Abstract base class representing a placed Turret entity in the game world.
+    /// <br/>
+    /// Handles visual initialization (Sprite assignment, Scaling) and state management using <see cref="TurretData"/>.
+    /// </summary>
     public abstract class TurretBase : MonoBehaviour
     {
 
         [Header("Runtime State")]
+        [Tooltip("The configuration data (Stats, Sprites, Size) driving this specific turret instance.")]
         public TurretData Data;
-
-
+        
         [Header("Visuals")]
-        [SerializeField] public SpriteRenderer baseRenderer;
-        [SerializeField] public SpriteRenderer crystalRenderer;
+        [SerializeField] [Tooltip("Renderer for the static base/pedestal of the turret.")] public SpriteRenderer baseRenderer;
+        [SerializeField] [Tooltip("Renderer for the active element/crystal of the turret.")] public SpriteRenderer crystalRenderer;
 
         private Vector3 _baseDesignPos;
         private Vector3 _crystalDesignPos;
@@ -27,6 +32,12 @@ namespace TDPG.Templates.Turret
             EnsureOffsetsCached();
         }
 
+        /// <summary>
+        /// Captures the initial LocalPosition and LocalScale of the renderers.
+        /// <br/>
+        /// This creates a "Design Baseline" so that procedural scaling (via <see cref="Initialize"/>) 
+        /// is always applied relative to the prefab's original layout, rather than compounding over time.
+        /// </summary>
         protected void EnsureOffsetsCached()
         {
             if (_initializedOffsets) return;
@@ -44,6 +55,13 @@ namespace TDPG.Templates.Turret
             }
             _initializedOffsets = true;
         }
+        
+        /// <summary>
+        /// Configures the turret instance with specific gameplay data.
+        /// <br/>
+        /// Updates sprites and applies procedural scaling based on <see cref="TurretData.Multiplayer"/>.
+        /// </summary>
+        /// <param name="data">The data container defining this turret's properties.</param>
         public virtual void Initialize(TurretData data)
         {
             EnsureOffsetsCached(); // Safety check
@@ -95,7 +113,15 @@ namespace TDPG.Templates.Turret
 
             }
         }
+        
+        /// <summary>
+        /// Returns the grid dimensions of the turret (Width x Height).
+        /// </summary>
         public Vector2 GetTileSize() => Data != null ? Data.TileSize : Vector2.one;
+        
+        /// <summary>
+        /// Returns the unique ID from the associated data.
+        /// </summary>
         public string GetTurretID() => Data != null ? Data.TurretID : "";
 
         void OnDrawGizmosSelected()

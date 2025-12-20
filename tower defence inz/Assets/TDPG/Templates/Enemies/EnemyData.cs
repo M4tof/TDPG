@@ -1,13 +1,25 @@
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "EnemyData", menuName = "EnemyData", order = 0)]
-public class EnemyData : ScriptableObject
+namespace TDPG.Templates.Enemies
 {
-    [Header("Podstawowe dane")]
-    public string EnemyName;
-    public float MaxHealth;
-    public float Speed;
+    /// <summary>
+    /// A configuration asset defining the base statistics and visuals for an Enemy unit.
+    /// <br/>
+    /// Create instances of this to define different enemy types (e.g., "Goblin", "Boss").
+    /// </summary>
+    [CreateAssetMenu(fileName = "EnemyData", menuName = "EnemyData", order = 0)]
+    public class EnemyData : ScriptableObject
+    {
+        [Header("Basic Stats")]
+        [Tooltip("The display name of the enemy.")]
+        public string EnemyName;
+        [Tooltip("The starting health points of the unit.")]
+        public float MaxHealth;
+        [Tooltip("The base movement speed in World Units per second.")]
+        public float Speed;
 
-    [Header("Wygląd")]
-    public Sprite EnemySprite;
+        [Header("Visuals")]
+        [Tooltip("The sprite used by the SpriteRenderer.")]
+        public Sprite EnemySprite;
+    }
 }
