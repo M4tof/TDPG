@@ -7,6 +7,7 @@ using System.IO;
 using System.Text;
 using System.Collections.Generic;
 using TDPG.Templates.Grid;
+using TDPG.Templates.Grid.MapGen;
 
 public class GameManager : MonoBehaviour
 {

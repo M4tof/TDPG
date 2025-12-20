@@ -1,5 +1,8 @@
 namespace TDPG.Templates.Grid.MapGen
 {
+    /// <summary>
+    /// Simple premade map useful for debuging and testing. Based on a monochromatic picture of an dog.
+    /// </summary>
     public static class DeterministicMap
     {
         public static float[,] noiseMatrix = new float[400, 400] {

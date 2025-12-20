@@ -9,42 +9,56 @@ using UnityEngine.Events;
 
 namespace TDPG.Templates.Grid
 {
+    /// <summary>
+    /// The central bridge between the logical <see cref="TDPG.Templates.Grid.Grid"/> data and the Unity Scene (Visuals/Physics).
+    /// <br/>
+    /// Handles Map Generation lifecycle, coordinate conversion (World &lt;-&gt; Grid), entity spawning, and Tilemap rendering.
+    /// Implements the Singleton pattern.
+    /// </summary>
     public class GridManager : MonoBehaviour
     {
+        /// <summary>
+        /// Global singleton instance.
+        /// </summary>
         public static GridManager Instance { get; set; }
 
         [Header("Required elements")]
         [SerializeField]
+        [Tooltip("Reference to the main camera, used for converting mouse clicks to grid coordinates.")]
         private Camera mainCamera;
 
-        [Header("Parameters")] private int width = 10;
-        private int height = 10;
-        [SerializeField] private float cellSize = 1;
+        [Header("Parameters")] 
+        [Tooltip("Default width if no MapGenerator/Config is provided.")] private int width = 10;
+        [Tooltip("Default height if no MapGenerator/Config is provided.")] private int height = 10;
+        [Tooltip("The size of one grid cell in World Units.")] [SerializeField] private float cellSize = 1;
 
         [Header("Map Generation")]
+        [Tooltip("Optional procedural generator logic. If null, an empty grid is created.")]
         [SerializeField]
         private MapGenerator mapGenerator;
 
-        [Header("Tilemap")][SerializeField] private Tilemap tilemap;
-        [SerializeField] private Tilemap fogTilemap;
-        [SerializeField] private UnityEngine.Grid gridComponent;
-        [SerializeField] private TileBase emptyTile;
-        [SerializeField] private TileBase wallTile;
-        [SerializeField] private TileBase waterTile;
-        [SerializeField] private TileBase nullTile;
+        [Header("Tilemap")][SerializeField] [Tooltip("The primary Tilemap for rendering terrain (Ground, Walls).")]private Tilemap tilemap;
+        [SerializeField] [Tooltip("Secondary Tilemap for Fog of War or 'Null' zones.")] private Tilemap fogTilemap;
+        [SerializeField] [Tooltip("The Unity Grid component controlling the Tilemap layout.")] private UnityEngine.Grid gridComponent;
+        [SerializeField] [Tooltip("Visual asset for walkable ground.")] private TileBase emptyTile;
+        [SerializeField] [Tooltip("Visual asset for obstacles.")] private TileBase wallTile;
+        [SerializeField] [Tooltip("Visual asset for water.")] private TileBase waterTile;
+        [SerializeField] [Tooltip("Visual asset for out-of-bounds/fog.")] private TileBase nullTile;
 
-        [Header("Spawns")][SerializeField] private GameObject Player;
-        [SerializeField] private GameObject EnemySpawnerPrefab;
-        [SerializeField] private GameObject DestinationPrefab;
+        [Header("Spawns")][SerializeField] [Tooltip("The Player prefab to spawn at the start.")] private GameObject Player;
+        [SerializeField] [Tooltip("Prefab for Enemy Spawners.")] private GameObject EnemySpawnerPrefab;
+        [SerializeField] [Tooltip("Prefab for the Target/Base.")] private GameObject DestinationPrefab;
 
         [Header("Events")]
-        [SerializeField] private UnityEvent MapLoaded;
+        [SerializeField] [Tooltip("Event fired when the map is fully generated, visualized, and entities are spawned.")] private UnityEvent MapLoaded;
 
         [Tooltip("Game Object which would be a parent for spawned EnemySpawners")]
         [SerializeField]
         private GameObject SpawnerContainer;
 
-        [Header("Debug")][SerializeField] private GridDebugFiller debugFiller;
+        [Header("Debug")][SerializeField] 
+        [Tooltip("Optional debug utility to fill the grid if MapGenerator is missing. The grid is very simple but creates faster.")]
+        private GridDebugFiller debugFiller;
 
         private Grid grid;
         private GameObject[,] buildingsGrid;
@@ -59,7 +73,14 @@ namespace TDPG.Templates.Grid
         private bool _hasExternalConfig = false;
         private bool _sceneRebuilt = false;
 
+        /// <summary>
+        /// Retrieves the logical data grid.
+        /// </summary>
         public Grid GetGrid() => grid;
+        
+        /// <summary>
+        /// Retrieves the world-unit size of a cell.
+        /// </summary>
         public float CellSize => cellSize;
 
         void Awake()
@@ -183,6 +204,9 @@ namespace TDPG.Templates.Grid
             //Set Camera
         }
 
+        /// <summary>
+        /// Injects external configuration (e.g. from Main Menu or Save File) to override Inspector defaults.
+        /// </summary>
         public void ConfigureMap(MapGenConfig config)
         {
             if (config == null) return;
@@ -215,6 +239,9 @@ namespace TDPG.Templates.Grid
             _hasExternalConfig = true;
         }
 
+        /// <summary>
+        /// Manually sets the destination coordinates (used during Loading).
+        /// </summary>
         public void SetLoadedDestination(int x, int y)
         {
             this.destpos = new Vector3Int(x, y, 0);
@@ -222,6 +249,10 @@ namespace TDPG.Templates.Grid
 
         public Vector3Int GetDestinationGridPosition() => destpos;
 
+        
+        /// <summary>
+        /// Returns the world position of the destination (Base).
+        /// </summary>
         public Vector3 GetDestinationWorldPosition()
         {
             // Use local conversion, do NOT ask MapGenerator
@@ -263,6 +294,9 @@ namespace TDPG.Templates.Grid
             }
         }
 
+        /// <summary>
+        /// Input System callback for debugging tile info on click.
+        /// </summary>
         public void OnMouseClick(InputAction.CallbackContext context)
         {
             if (context.performed)
@@ -358,6 +392,9 @@ namespace TDPG.Templates.Grid
             }
         }
 
+        /// <summary>
+        /// Updates the visual representation of a specific tile at runtime.
+        /// </summary>
         public void UpdateTileVisual(int x, int y, Grid.TileType tileType)
         {
             if (tilemap == null) return;
@@ -369,12 +406,18 @@ namespace TDPG.Templates.Grid
             }
         }
 
+        /// <summary>
+        /// Converts World Position (float) to Grid Indices (int).
+        /// </summary>
         // Convert world position to grid coordinates using Tilemap
         public Vector2Int WorldToGrid(Vector3 worldPosition)
         {
             return grid.GetXY(worldPosition);
         }
 
+        /// <summary>
+        /// Converts Grid Indices (int) to the World Position of the **center** of that tile.
+        /// </summary>
         // Convert grid coordinates to world position using Tilemap
         public Vector3 GridToWorld(int x, int y)
         {
@@ -382,12 +425,18 @@ namespace TDPG.Templates.Grid
         }
 
         //Return tile postition on grid
+        /// <summary>
+        /// Returns the Grid Indices (x,y) for a world position, returned as a Vector2.
+        /// </summary>
         public Vector2 GetGridTilePosition(Vector3 worldPosition)
         {
             return grid.GetXY(worldPosition);
         }
 
         //Return tile world postition on grid
+        /// <summary>
+        /// Returns the World Position of the bottom-left corner of the tile at the given world position.
+        /// </summary>
         public Vector2 GetGridWorldTilePosition(Vector3 worldPosition)
         {
             Vector2 tile = grid.GetXY(worldPosition);
@@ -396,6 +445,9 @@ namespace TDPG.Templates.Grid
         }
 
         //Check if world point is on Grid
+        /// <summary>
+        /// Checks if a world position falls within the grid bounds.
+        /// </summary>
         public bool IsOnGrid(Vector3 worldPosition)
         {
             Vector2 tile = grid.GetXY(worldPosition);
@@ -408,6 +460,9 @@ namespace TDPG.Templates.Grid
         }
 
         //Check if world point is on Grid
+        /// <summary>
+        /// Checks if the given Grid Coordinate (x,y) is within bounds.
+        /// </summary>
         public bool IsTileOnGrid(Vector3 position)
         {
             if (position.x < 0 || position.x >= width || position.y < 0 || position.y >= height)
@@ -418,6 +473,10 @@ namespace TDPG.Templates.Grid
             return true;
         }
 
+        /// <summary>
+        /// Validates if a Turret of a specific size can be placed at the target location.
+        /// <br/>Checks bounds and if the tiles are <see cref="Grid.TileType.EMPTY"/>.
+        /// </summary>
         public bool CanPlaceTurret(Vector3 worldPosition, Vector2 TurretSize)
         {
             Debug.Log($"turret size: {TurretSize}");
@@ -444,6 +503,11 @@ namespace TDPG.Templates.Grid
             return true;
         }
 
+        /// <summary>
+        /// Places a turret on the grid, marking the tiles as <see cref="Grid.TileType.BUILDING"/>.
+        /// <br/>
+        /// <b>Note:</b> Does not instantiate the visual object; it registers the existing object into the data grid.
+        /// </summary>
         public void PlaceTurret(Vector3 worldPosition, GameObject turret)
         {
             Debug.Log($"Place Turrets {turret}");
@@ -495,6 +559,9 @@ namespace TDPG.Templates.Grid
             return cellSize;
         }
 
+        /// <summary>
+        /// Returns the center of the grid in world coordinates.
+        /// </summary>
         public Vector3 GetCenterGrid()
         {
             return new Vector3(width * cellSize / 2, width * cellSize / 2, -10f);
@@ -510,11 +577,18 @@ namespace TDPG.Templates.Grid
             grid.SetTileType(worldPosition, tileType);
         }
 
+        /// <summary>
+        /// Returns the current active Grid instance.
+        /// </summary>
         public Grid GetCurrentGrid()
         {
             return grid;
         }
 
+        /// <summary>
+        /// Overwrites the current grid with a new one (e.g., from loading a save).
+        /// <br/>Resets internal arrays to match the new dimensions.
+        /// </summary>
         public void SetCurrentGrid(Grid g)
         {
             grid = g;
@@ -536,6 +610,9 @@ namespace TDPG.Templates.Grid
         }
 
         //Set Building based on world position
+        /// <summary>
+        /// Registers a building object at the specified position.
+        /// </summary>
         public void SetBuilding(Vector3 worldPosition, GameObject building)
         {
             Vector2Int position;
@@ -544,12 +621,18 @@ namespace TDPG.Templates.Grid
         }
 
         //Set Building based on tile position
+        /// <summary>
+        /// Registers a building object at specific grid coordinates.
+        /// </summary>
         public void SetBuilding(int x, int y, GameObject building)
         {
             buildingsGrid[x, y] = building;
         }
 
         //return building
+        /// <summary>
+        /// Retrieves the building object at the given world position, if any.
+        /// </summary>
         public GameObject GetBuilding(Vector3 worldPosition)
         {
             Vector2Int position = grid.GetXY(worldPosition);
@@ -568,6 +651,13 @@ namespace TDPG.Templates.Grid
                 Quaternion.identity, gameObject.transform);
         }
 
+        /// <summary>
+        /// Attempts to generate a valid map using the provided seed.
+        /// <br/>
+        /// If the initial generation is blocked (spawners unreachable), it attempts a 'Fallback' strategy 
+        /// by carving wider paths.
+        /// </summary>
+        /// <returns>True if a valid map was generated, False if all attempts failed.</returns>
         private bool TryGenerateMapWithFallback(GlobalSeed globalSeed)
         {
             const int MaxFallbackPasses = 4;     // how many times fallback widens
@@ -631,6 +721,9 @@ namespace TDPG.Templates.Grid
             return destinationObject;
         }
 
+        /// <summary>
+        /// Subscribes a listener to the <see cref="MapLoaded"/> event.
+        /// </summary>
         public void SubscribeToEvent(UnityAction listener)
         {
             MapLoaded.AddListener(listener);
@@ -725,6 +818,10 @@ namespace TDPG.Templates.Grid
         }
 
 
+        /// <summary>
+        /// Clears all visual and logical data from the map.
+        /// <br/>Destroys buildings, clears Tilemap, and resets grid data.
+        /// </summary>
         public void ClearMap()
         {
             if (tilemap != null)
@@ -780,6 +877,11 @@ namespace TDPG.Templates.Grid
             }
         }
 
+        /// <summary>
+        /// Forcefully re-instantiates Visuals (Spawners, Map Bounds) after loading data.
+        /// <br/>
+        /// Should be called after loading a save to ensure the Scene graph matches the Logic graph.
+        /// </summary>
         public void ForceRebuildScene()
         {
             if (_sceneRebuilt) return;

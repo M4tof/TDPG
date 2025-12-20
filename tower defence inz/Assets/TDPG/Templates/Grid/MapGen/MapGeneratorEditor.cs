@@ -2,9 +2,18 @@ using UnityEditor;
 
 namespace TDPG.Templates.Grid.MapGen
 {
+    /// <summary>
+    /// A Custom Inspector for the <see cref="MapGenerator"/> component.
+    /// <br/>
+    /// Provides dynamic UI sliders for "Water Level" and "Wall Level" that automatically adjust their 
+    /// Min/Max ranges based on the selected <see cref="MapTypes"/>.
+    /// </summary>
     [CustomEditor(typeof(MapGenerator))]
     public class MapGeneratorEditor : Editor
     {
+        /// <summary>
+        /// Overrides the default Inspector drawing logic to inject custom range clamping.
+        /// </summary>
         public override void OnInspectorGUI()
         {
             serializedObject.Update();

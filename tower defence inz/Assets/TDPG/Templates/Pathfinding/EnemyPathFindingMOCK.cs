@@ -205,5 +205,7 @@ namespace TDPG.Templates.Pathfinding
                 ComputeNewPath();
             }
         }
+        
+        
     }
 }
