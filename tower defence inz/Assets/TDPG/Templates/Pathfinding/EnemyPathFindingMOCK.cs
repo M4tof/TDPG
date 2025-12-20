@@ -3,6 +3,8 @@ using UnityEngine;
 using TDPG.Templates.Grid;
 using static TDPG.Templates.Pathfinding.PathfindingEvents;
 
+//!! MOCK used for pathfinding testing, not actually useful anymore. !!
+
 namespace TDPG.Templates.Pathfinding
 {
     public class EnemyPathFollowerMock : MonoBehaviour
