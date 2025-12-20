@@ -25,7 +25,7 @@ public class EnemysSpawner : MonoBehaviour
     {
         if (!spanwed)
         {
-            SpawnEnemy("Walker",1);
+            SpawnEnemy("Tank",1);
             spanwed = true;
         }
     }
@@ -123,7 +123,6 @@ public class EnemysSpawner : MonoBehaviour
         EnemyCompendium.Instance.RegisterEnemy(logicalEnemy);
 
         // ... Visuals ...
-        Debug.Log($"ENEMY SPAWNER {transform.position}");
         GameObject go = Instantiate(EnemyPrefab, transform.position, Quaternion.identity);
         float cellSize = GridManager.Instance.CellSize;
         if (go.TryGetComponent(out BoxCollider2D col))
@@ -148,6 +147,8 @@ public class EnemysSpawner : MonoBehaviour
         // Note: You might need to handle Seed/Overrides differently here for loading
         var logic = new Enemy(data, EnemyStatsOverride.Default);
         logic.CurrentHealth = save.Health;
+        logic.CurrentDamage = save.Damage;
+        logic.CurrentAttackSpeed = save.AttackSpeed;
         logic.Position = save.Position;
         Debug.Log($"[ForceSpawn] Restoring Enemy {save.EnemyID} at {save.Position}");
 

@@ -54,6 +54,8 @@ public class EnemySaveData
 {
     public string EnemyID;      // "Goblin"
     public float Health;        // 50.0f
+    public int Damage;
+    public float AttackSpeed;
     // public float MaxHealth;
     public Vec3 Position;    // (10.5, 2.0)
     // public int PathIndex;       // Optimization: Where on the path they are

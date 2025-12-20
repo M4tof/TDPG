@@ -27,6 +27,8 @@ public class Enemy : EnemyBase
         // Initialize State
         SetCurrentHealth(baseData.MaxHealth * overrides.HealthMultiplier);
         SetCurrentSpeed(baseData.Speed * overrides.SpeedMultiplier);
+        SetCurrentDamage(baseData.Damage);
+        SetCurrentAttackSpeed(baseData.AttackSpeed);
     }
 
     // Called after loading from JSON to reconnect the SO

@@ -26,7 +26,7 @@ public class ResourceSystem : MonoBehaviour
         // On success reduces value and returns True; else returns False
         public bool Claim(float amount)
         {
-            Debug.Log($"Claim for: {amount}, capacity: {value}");
+            //Debug.Log($"Claim for: {amount}, capacity: {value}");
             float compTarget = canGoIntoDebt ? 0.0f : amount;
 
             if (value < compTarget)

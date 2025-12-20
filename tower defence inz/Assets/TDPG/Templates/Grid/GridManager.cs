@@ -72,6 +72,8 @@ namespace TDPG.Templates.Grid
 
         private bool _hasExternalConfig = false;
         private bool _sceneRebuilt = false;
+        
+        [HideInInspector] public UnityEvent mapChanged;
 
         /// <summary>
         /// Retrieves the logical data grid.
@@ -479,7 +481,6 @@ namespace TDPG.Templates.Grid
         /// </summary>
         public bool CanPlaceTurret(Vector3 worldPosition, Vector2 TurretSize)
         {
-            Debug.Log($"turret size: {TurretSize}");
             Vector2Int firstTile = grid.GetXY(worldPosition);
             for (int x = 0; x < TurretSize.x; x++)
             {
@@ -488,13 +489,13 @@ namespace TDPG.Templates.Grid
                     Vector3Int tile = new Vector3Int(firstTile.x + x, firstTile.y + y, 0);
                     if (!IsTileOnGrid(tile))
                     {
-                        Debug.Log($"Tile {tile} Out of Grid");
+                        //Debug.Log($"Tile {tile} Out of Grid");
                         return false;
                     }
 
                     if (grid.GetTileType(tile.x, tile.y) != Templates.Grid.Grid.TileType.EMPTY)
                     {
-                        Debug.Log($"Tile Blocked");
+                        //Debug.Log($"Tile Blocked");
                         return false;
                     }
                 }
@@ -510,9 +511,7 @@ namespace TDPG.Templates.Grid
         /// </summary>
         public void PlaceTurret(Vector3 worldPosition, GameObject turret)
         {
-            Debug.Log($"Place Turrets {turret}");
             TurretBase turretBase = turret.GetComponent<TurretBase>();
-            Debug.Log($"Turret Base {turretBase}");
             if (turretBase == null)
             {
                 Debug.Log("NULL Place Turrets");
@@ -539,8 +538,7 @@ namespace TDPG.Templates.Grid
                     grid.SetTileType(tile.x, tile.y, Grid.TileType.BUILDING);
                 }
             }
-
-            Debug.Log("FINISH Place Turrets");
+            mapChanged.Invoke();
         }
 
 
@@ -575,6 +573,7 @@ namespace TDPG.Templates.Grid
         internal void SetTileType(Vector3 worldPosition, Grid.TileType tileType)
         {
             grid.SetTileType(worldPosition, tileType);
+            mapChanged.Invoke();
         }
 
         /// <summary>

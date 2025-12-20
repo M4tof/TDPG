@@ -15,7 +15,10 @@ namespace TDPG.Templates.Turret
         [Header("Runtime State")]
         [Tooltip("The configuration data (Stats, Sprites, Size) driving this specific turret instance.")]
         public TurretData Data;
-        
+
+        [Tooltip("The current health points of the turret.")]
+        private int currentHealth;
+
         [Header("Visuals")]
         [SerializeField] [Tooltip("Renderer for the static base/pedestal of the turret.")] public SpriteRenderer baseRenderer;
         [SerializeField] [Tooltip("Renderer for the active element/crystal of the turret.")] public SpriteRenderer crystalRenderer;
@@ -66,7 +69,7 @@ namespace TDPG.Templates.Turret
         {
             EnsureOffsetsCached(); // Safety check
             Data = data;
-
+            currentHealth = data.MaxHP;
             // Safety: Default to 1.0 if GridManager is missing (e.g. prefab mode)
             float cellSize = (GridManager.Instance != null) ? GridManager.Instance.CellSize : 1.0f;
 
@@ -113,7 +116,31 @@ namespace TDPG.Templates.Turret
 
             }
         }
-        
+
+        /// <summary>
+        /// Applies damage to the turret and checks for destruction conditions.
+        /// </summary>
+        /// <param name="damage">Amount of damage to apply.</param>
+        public void DealDamage(int damage)
+        {
+            Debug.Log($"TURRET Dealing damage {damage}");
+            currentHealth -= damage;
+            if (currentHealth <= 0)
+            {
+                DestroyTurret();
+            }
+        }
+
+        /// <summary>
+        /// Handles the destruction of the turret, updating the grid and removing the GameObject.
+        /// </summary> 
+        public void DestroyTurret()
+        {
+            GridManager.Instance.SetTileType(transform.position,Grid.Grid.TileType.EMPTY);
+            Destroy(gameObject);
+        }
+
+
         /// <summary>
         /// Returns the grid dimensions of the turret (Width x Height).
         /// </summary>

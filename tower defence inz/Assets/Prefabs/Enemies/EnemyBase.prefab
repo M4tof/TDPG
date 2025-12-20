@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 6078551099043079629}
   - component: {fileID: 3865733735984565545}
   - component: {fileID: 7681024447512097822}
+  - component: {fileID: 6232245201612764742}
   - component: {fileID: 5709785829554409296}
   m_Layer: 3
   m_Name: EnemyBase
@@ -59,7 +60,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
+  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -85,7 +86,7 @@ SpriteRenderer:
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 7.35, y: 3.37}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 0
@@ -128,10 +129,10 @@ BoxCollider2D:
   m_Offset: {x: 0, y: 0}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
-    pivot: {x: 0, y: 0}
-    oldSize: {x: 0, y: 0}
-    newSize: {x: 0, y: 0}
-    adaptiveTilingThreshold: 0
+    pivot: {x: 0.5, y: 0.5}
+    oldSize: {x: 7.35, y: 3.37}
+    newSize: {x: 7.35, y: 3.37}
+    adaptiveTilingThreshold: 0.5
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
@@ -149,6 +150,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aafd440faec865b548cb8d2d834a33a9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  colorPalette: {fileID: 11400000, guid: 5d9d461d679b0594b9f7ea11c6e39b5e, type: 2}
+--- !u!114 &6232245201612764742
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2166723897330555132}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14f9dd5bb09b47e790490b4701bd5207, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  blinkDuration: 0.1
+  originalColors: []
+  activePalette: {fileID: 0}
 --- !u!114 &5709785829554409296
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -165,7 +182,7 @@ MonoBehaviour:
   destinationObject: {fileID: 0}
   canSwim: 0
   canFly: 0
-  canDestroyBuildings: 0
+  canDestroyBuildings: 1
   speed: 2
 --- !u!1 &7491530692921553115
 GameObject:

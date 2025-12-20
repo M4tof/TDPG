@@ -41,6 +41,8 @@ public class EnemyCompendium : MonoBehaviour
                 {
                     EnemyID = enemy.EnemyID,
                     Health = enemy.CurrentHealth,
+                    Damage = enemy.CurrentDamage,
+                    AttackSpeed = enemy.CurrentAttackSpeed,
                     Position = enemy.Position
                 });
             }

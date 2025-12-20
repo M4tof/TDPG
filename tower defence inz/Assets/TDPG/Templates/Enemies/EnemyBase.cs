@@ -27,6 +27,16 @@ namespace TDPG.Templates.Enemies
         public float CurrentSpeed { get; set; }
         
         /// <summary>
+        /// The current damage this enemy can deal.
+        /// </summary>
+        public int CurrentDamage { get; set; }
+        
+        /// <summary>
+        /// The current attack speed (attacks per second).
+        /// </summary>
+        public float CurrentAttackSpeed { get; set; }
+
+        /// <summary>
         /// The logical position of the enemy (Grid coordinates or 2D World coords).
         /// </summary>
         public Vector2 Position { get; set; }
@@ -92,6 +102,41 @@ namespace TDPG.Templates.Enemies
         {
             return CurrentHealth;
         }
+
+        /// <summary>
+        /// Retrieves the current damage value.
+        /// </summary>
+        /// <returns>Int value representing the current damage value the enemy can deal.</returns>
+        public int GetCurrentDamage()
+        {
+            return CurrentDamage;
+        }
+
+        /// <summary>
+        /// Sets the current damage value.
+        /// </summary>
+        public void SetCurrentDamage(int damage)
+        {
+            CurrentDamage = damage;
+        }
+
+        /// <summary>
+        /// Retrieves the current attack speed.
+        /// </summary>  
+        /// <returns>Float value representing the current attack speed (attacks per second).</returns>
+        public float GetCurrentAttackSpeed()
+        {
+            return CurrentAttackSpeed;
+        }
+        
+        /// <summary>
+        /// Sets the current attack speed.
+        /// </summary>
+        public void SetCurrentAttackSpeed(float attackSpeed)
+        {
+            CurrentAttackSpeed = attackSpeed;
+        }
+        
         /// <summary>
         /// Forcefully sets the current health (e.g. for Heals or initialization).
         /// </summary>

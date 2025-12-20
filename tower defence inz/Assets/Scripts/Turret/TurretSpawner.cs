@@ -21,7 +21,6 @@ public class TurretSpawner : MonoBehaviour
     // Renamed back to Set... for consistency
     public void SetTurretToSpawn(string turretID)
     {
-        Debug.Log("SetTurretToSpawn");
         _selectedTurretID = turretID;
 
         if (string.IsNullOrEmpty(turretID))

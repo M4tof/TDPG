@@ -13,13 +13,23 @@ namespace TDPG.Templates.Enemies
         [Header("Basic Stats")]
         [Tooltip("The display name of the enemy.")]
         public string EnemyName;
+        
         [Tooltip("The starting health points of the unit.")]
         public float MaxHealth;
+        
         [Tooltip("The base movement speed in World Units per second.")]
         public float Speed;
+
+        [Tooltip("The damage dealt by the enemy upon reaching the goal or tower in the way.")]
+        public int Damage;
+        
+        [Tooltip("The attack speed of the enemy (attacks per second).")]
+        public float AttackSpeed;
+
 
         [Header("Visuals")]
         [Tooltip("The sprite used by the SpriteRenderer.")]
         public Sprite EnemySprite;
+        
     }
 }

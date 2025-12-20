@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using TDPG.Templates.Grid;
+using UnityEngine.Events;
 using static TDPG.Templates.Pathfinding.PathfindingEvents;
 
 namespace TDPG.Templates.Pathfinding
@@ -27,6 +28,8 @@ namespace TDPG.Templates.Pathfinding
         private int index;
         private bool isDestroyingBuilding = false;
         private bool hasReachedDestination = false;
+        
+        [HideInInspector] public UnityEvent attackBuilding;
 
         private Vector3 Destination => destinationObject != null ? destinationObject.transform.position : transform.position;
         private float half;
@@ -52,6 +55,8 @@ namespace TDPG.Templates.Pathfinding
             }
             
             PathfindingEvents.OnGridChanged += OnGridChanged;
+            
+            gridManager.mapChanged.AddListener(ComputeNewPath);
         }
 
         /// <summary>
@@ -69,6 +74,8 @@ namespace TDPG.Templates.Pathfinding
                 Debug.LogError("Grid never became available for EnemyPathFollower on " + gameObject.name);
                 yield break;
             }
+            
+            gridManager.mapChanged.AddListener(ComputeNewPath);
 
             InitPathfinderAndCompute();
         }
@@ -159,19 +166,39 @@ namespace TDPG.Templates.Pathfinding
                 return transform.position;
             }
 
-            Vector3 target = (path[index] * gridManager.CellSize) + new Vector3(half, half, 0);
+            Vector3 target;
+            Vector3 NextTile;
+            if (index + 1 < path.Count)
+            {
+                target = (path[index] * gridManager.CellSize) + new Vector3(half, half, 0);
+                NextTile = GetNextTile() ?? Vector3.zero;
+            }
+            else
+            {
+                hasReachedDestination = true;
+                return transform.position;
+            }
             
             if (Vector3.Distance(transform.position, target) < 0.1f)
             {
+                if (canDestroyBuildings && gridManager.GetTileType(NextTile) == Grid.Grid.TileType.BUILDING && !isDestroyingBuilding)
+                {
+                    attackBuilding.Invoke();
+                    isDestroyingBuilding = true;
+                    return transform.position;
+                }
+                if (isDestroyingBuilding)
+                {
+                    return transform.position;
+                }
                 index++; //move to next point in path
-                    
                 // Check if we've reached the final destination
                 if (index >= path.Count)
                 {
                     hasReachedDestination = true;
                     path = null; 
                 }
-                
+                    
                 return (path[index] * gridManager.CellSize) + new Vector3(half, half, 0);
             }
             
@@ -184,7 +211,6 @@ namespace TDPG.Templates.Pathfinding
             }
             
             return target;
-
         }
 
         /// <summary>
@@ -225,6 +251,34 @@ namespace TDPG.Templates.Pathfinding
             ComputeNewPath();
     
             isDestroyingBuilding = false;
+        }
+
+        public Vector3? GetNextTile()
+        {
+            if (index + 1 < path.Count)
+            {
+                return path[index + 1] * gridManager.CellSize + new Vector3(half, half, 0);
+            }
+            return null;
+        }
+
+        public void SetIsDestroyingBuilding(bool destroy)
+        {
+            isDestroyingBuilding = destroy;
+        }
+
+        public GameObject GetBuildingToDestroy()
+        {
+            Vector3? NextTile = GetNextTile();
+            if (NextTile == null)
+            {
+                return new GameObject();
+            }
+            if (gridManager.GetTileType(NextTile ?? Vector3.zero) == Grid.Grid.TileType.BUILDING)
+            {
+                return gridManager.GetBuilding(NextTile ?? Vector3.zero);
+            }
+            return new GameObject();
         }
         
         void OnDrawGizmos()

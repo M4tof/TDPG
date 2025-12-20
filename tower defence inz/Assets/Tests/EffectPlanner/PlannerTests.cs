@@ -35,6 +35,8 @@ namespace Tests.EffectPlanner
             // Initialize State
             CurrentHealth = baseData.MaxHealth * overrides.HealthMultiplier;
             CurrentSpeed = baseData.Speed * overrides.SpeedMultiplier;
+            CurrentDamage = baseData.Damage;
+            CurrentAttackSpeed = baseData.AttackSpeed;
             // Position set by Spawner...
         }
 

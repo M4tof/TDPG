@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TDPG.VideoGeneration;
 using UnityEngine;
 using static UnityEngine.EventSystems.EventTrigger;
 
@@ -15,6 +16,7 @@ namespace TDPG.Templates.Enemies
     /// It manages the link between the Unity Scene (Transform, Coroutines, Collision) and the 
     /// pure logic model (<see cref="EnemyBase"/>).
     /// </summary>
+    [RequireComponent(typeof(ColorSwapController_PaletteWithTolerances))]
     public class EnemyBaseBehaviour : MonoBehaviour
     {
         /// <summary>
@@ -22,6 +24,7 @@ namespace TDPG.Templates.Enemies
         /// </summary>
         public EnemyBase Logic { get; private set; }
         
+
         // Registry of active status effect coroutines (Key = Effect ID).
         // Used to handle overwriting/refreshing durations.
         private Dictionary<string, Coroutine> effectCoroutines = new Dictionary<string, Coroutine>();
@@ -30,10 +33,24 @@ namespace TDPG.Templates.Enemies
         /// Links this behavior to a specific logic instance and synchronizes initial state.
         /// </summary>
         /// <param name="logic">The data model instance.</param>
+
+        [Tooltip("Color palette used for this enemy.")]
+        [SerializeField] private ColorPaletteSO colorPalette;
+        
+        private Dictionary<string, Coroutine> effectCoroutines = new Dictionary<string, Coroutine>();
+
+        private ColorSwapController_PaletteWithTolerances colorSwapController;
+
+        private void Start()
+        {
+            colorSwapController = gameObject.GetComponent<ColorSwapController_PaletteWithTolerances>();
+        }
+        
         public void Initialize(EnemyBase logic)
         {
             Logic = logic;
             transform.position = Logic.Position;
+            //colorSwapController.SetPalette(colorPalette);
             Logic.OnCreation();
         }
         
@@ -57,14 +74,21 @@ namespace TDPG.Templates.Enemies
         {
             //Debug.Log($"DEAL {damage} DMG");
             Logic.DealDamage(damage);
-            Debug.Log($"HP {Logic.GetCurrentHealth()}");
+            colorSwapController.BlinkWhite();
+            //Debug.Log($"HP {Logic.GetCurrentHealth()}");
             if (Logic.GetCurrentHealth() <= 0)
             {
                 Die();
             }
         }
 
+
+        /*public void Attack()
+        {
+            Debug.Log($"ENEMY ATTACK ({Logic.GetCurrentDamage()})");
+        }*/
         
+
         /// <summary>
         /// Updates the movement speed in the logic model.
         /// <br/>

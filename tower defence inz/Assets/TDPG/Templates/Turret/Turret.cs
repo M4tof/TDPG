@@ -48,10 +48,10 @@ namespace TDPG.Templates.Turret
             // Step 2: Select Target (Strategy)
             _currentTarget = SelectTarget(candidates);
 
-            foreach (var item in candidates)
+            /*foreach (var item in candidates)
             {
                 Debug.Log($"target in sight: {item}");
-            }
+            }*/
 
             // Step 3: Shoot
             if (_currentTarget != null)
