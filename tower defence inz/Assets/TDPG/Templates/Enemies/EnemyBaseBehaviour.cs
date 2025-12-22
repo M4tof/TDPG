@@ -5,7 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TDPG.VideoGeneration;
+using TDPG.AudioModulation;
 using UnityEngine;
+using UnityEngine.Audio;
 using static UnityEngine.EventSystems.EventTrigger;
 
 namespace TDPG.Templates.Enemies
@@ -36,21 +38,32 @@ namespace TDPG.Templates.Enemies
 
         [Tooltip("Color palette used for this enemy.")]
         [SerializeField] private ColorPaletteSO colorPalette;
+        [SerializeField] private AudioResource screamSound;
         
         private Dictionary<string, Coroutine> effectCoroutines = new Dictionary<string, Coroutine>();
 
         private ColorSwapController_PaletteWithTolerances colorSwapController;
+        private AudioSource audioSource;
+        private ProceduralAudioController audioController;
 
         private void Start()
         {
             colorSwapController = gameObject.GetComponent<ColorSwapController_PaletteWithTolerances>();
+            audioSource = GetComponent<AudioSource>();
+            audioController = GetComponent<ProceduralAudioController>();
+            
+            if (audioSource != null)
+            {
+                audioSource.resource = screamSound;
+            }
+            
+            colorSwapController.SetPalette(colorPalette);
         }
         
         public void Initialize(EnemyBase logic)
         {
             Logic = logic;
             transform.position = Logic.Position;
-            //colorSwapController.SetPalette(colorPalette);
             Logic.OnCreation();
         }
         
@@ -75,6 +88,8 @@ namespace TDPG.Templates.Enemies
             //Debug.Log($"DEAL {damage} DMG");
             Logic.DealDamage(damage);
             colorSwapController.BlinkWhite();
+            audioController.Play();
+            
             //Debug.Log($"HP {Logic.GetCurrentHealth()}");
             if (Logic.GetCurrentHealth() <= 0)
             {

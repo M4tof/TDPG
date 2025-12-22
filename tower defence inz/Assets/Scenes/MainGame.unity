@@ -1686,6 +1686,7 @@ GameObject:
   - component: {fileID: 781605615}
   - component: {fileID: 781605613}
   - component: {fileID: 781605614}
+  - component: {fileID: 781605616}
   m_Layer: 8
   m_Name: Tilemap
   m_TagString: Untagged
@@ -1754,7 +1755,7 @@ TilemapRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
+  - {fileID: 2100000, guid: 6fe4909b66dcff4c282b989c597a0b7b, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -1798,6 +1799,53 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1339975573}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &781605616
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 781605612}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14f9dd5bb09b47e790490b4701bd5207, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  blinkDuration: 0.1
+  originalColors:
+  - color: {r: 0, g: 0, b: 0, a: 0}
+    tolerance: 0
+  - color: {r: 0, g: 0, b: 0, a: 0}
+    tolerance: 0
+  - color: {r: 0, g: 0, b: 0, a: 0}
+    tolerance: 0
+  - color: {r: 0, g: 0, b: 0, a: 0}
+    tolerance: 0
+  - color: {r: 0, g: 0, b: 0, a: 0}
+    tolerance: 0
+  - color: {r: 0.6509804, g: 1, b: 0.50980395, a: 0}
+    tolerance: 0.1
+  - color: {r: 0.36862746, g: 0.65882355, b: 0.24705882, a: 0}
+    tolerance: 0.1
+  - color: {r: 0.3764706, g: 0.9490196, b: 1, a: 0}
+    tolerance: 0.1
+  - color: {r: 0.3764706, g: 0.7254902, b: 1, a: 0}
+    tolerance: 0.1
+  - color: {r: 0.7372549, g: 0.6666667, b: 0.6156863, a: 0}
+    tolerance: 0.1
+  - color: {r: 0.49019608, g: 0.49019608, b: 0.49019608, a: 0}
+    tolerance: 0.1
+  - color: {r: 1, g: 1, b: 1, a: 0}
+    tolerance: 0.1
+  - color: {r: 0, g: 0, b: 0, a: 0}
+    tolerance: 0
+  - color: {r: 0, g: 0, b: 0, a: 0}
+    tolerance: 0
+  - color: {r: 0, g: 0, b: 0, a: 0}
+    tolerance: 0
+  - color: {r: 0, g: 0, b: 0, a: 0}
+    tolerance: 0
+  activePalette: {fileID: 0}
 --- !u!1 &843496299
 GameObject:
   m_ObjectHideFlags: 0
