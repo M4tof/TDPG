@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4265137978833150334}
   - component: {fileID: 9095416276449560323}
+  - component: {fileID: 8250621132703071353}
   m_Layer: 0
   m_Name: Sprite
   m_TagString: Untagged
@@ -55,7 +56,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
+  - {fileID: 2100000, guid: 6fe4909b66dcff4c282b989c597a0b7b, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -87,6 +88,31 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &8250621132703071353
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 469298825876973805}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14f9dd5bb09b47e790490b4701bd5207, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  blinkDuration: 0.1
+  originalColors:
+  - color: {r: 0.64705884, g: 0.6509804, b: 0.64705884, a: 0}
+    tolerance: 0.1
+  - color: {r: 0.90588236, g: 0.827451, b: 0.7411765, a: 0}
+    tolerance: 0.1
+  - color: {r: 0.7411765, g: 0.6862745, b: 0.63529414, a: 0}
+    tolerance: 0.374
+  - color: {r: 0.6039216, g: 0.4862745, b: 0.39607844, a: 0}
+    tolerance: 0.1
+  - color: {r: 0.40784314, g: 0.40784314, b: 0.40784314, a: 0}
+    tolerance: 0.1
+  activePalette: {fileID: 0}
 --- !u!1 &577046545194946921
 GameObject:
   m_ObjectHideFlags: 0

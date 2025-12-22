@@ -3070,7 +3070,7 @@ MonoBehaviour:
   tilemap: {fileID: 781605613}
   fogTilemap: {fileID: 1123943251}
   gridComponent: {fileID: 1339975576}
-  emptyTile: {fileID: 11400000, guid: d259be43a49468bb68392f5c12133c9f, type: 2}
+  emptyTile: {fileID: 11400000, guid: 245591f996e999de48158143c4425721, type: 2}
   wallTile: {fileID: 11400000, guid: f46228e9649d55d45aec48fab5bea00c, type: 2}
   waterTile: {fileID: 11400000, guid: aeaa97e4579d6d14fbb7c57b1cd3184a, type: 2}
   nullTile: {fileID: 11400000, guid: 061d48ef3fdaf923685578a4af7964f8, type: 2}
@@ -3094,6 +3094,9 @@ MonoBehaviour:
         m_CallState: 2
   SpawnerContainer: {fileID: 1314182201}
   debugFiller: {fileID: 0}
+  mapChanged:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!156049354 &1339975576
 Grid:
   m_ObjectHideFlags: 0

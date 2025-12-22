@@ -27,7 +27,9 @@ Shader "TDPG/MultiColorSwap_Instanced_16_PerColor"
  
     SubShader
     {
-        Tags { "RenderType" = "Transparent" "Queue" = "Transparent" } 
+        Tags { "RenderType" = "Transparent" "Queue" = "Transparent" }
+        Cull Off
+        Lighting Off
         Blend SrcAlpha OneMinusSrcAlpha
         ZWrite Off
         
