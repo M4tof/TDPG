@@ -77,7 +77,7 @@ public class NewGameMenu : MonoBehaviour
         m = Mathf.Max(m, 1);
         e = Mathf.Max(e, 1);
 
-
+        
         // 2. Build Config
         MapGenConfig config = new MapGenConfig
         {

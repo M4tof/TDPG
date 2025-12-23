@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using TDPG.Generators.Seed;
 using UnityEngine;
 
 namespace TDPG.VideoGeneration
@@ -36,9 +37,13 @@ namespace TDPG.VideoGeneration
 
         [Header("Original Colors (Max 16)")]
         [Tooltip("Define the specific colors on the sprite you want to replace and their specific tolerance.")]
-        // 2. Change list to use the new struct
         public List<ColorSwapEntry> originalColors = new List<ColorSwapEntry>();
 
+        [Header("Procedural Generation")]
+        [Tooltip("If Active Palette is empty, it will choose one from here using the Seed.")]
+        [SerializeField] private AllowedPalettesSO allowedPalettes;
+        [SerializeField] private Seed seed;
+        
         [Header("Target Palette")]
         [Tooltip("The ScriptableObject containing the target colors.")]
         [SerializeField] private ColorPaletteSO activePalette;
@@ -72,6 +77,31 @@ namespace TDPG.VideoGeneration
             UpdateShaderProperties();
         }
 
+        private ColorPaletteSO GetDeterministicPalette()
+        {
+            if (allowedPalettes == null || allowedPalettes.palettes == null || allowedPalettes.palettes.Count == 0)
+                return null;
+
+            if (seed == null) return null;
+
+            int count = allowedPalettes.palettes.Count;
+            ulong rawVal = seed.GetBaseValue();
+
+            // Calculate how many digits we need (9 = 1, 12 = 2, 105 = 3, etc)
+            int digitsNeeded = 1;
+            if (count > 1)
+                digitsNeeded = Mathf.FloorToInt(Mathf.Log10(count - 1)) + 1;
+
+            // Extract the digits via power of 10
+            long powerOf10 = (long)Mathf.Pow(10, digitsNeeded);
+            ulong extractedDigits = rawVal % (ulong)powerOf10;
+
+            // Map to valid index (Modulo ensures it's within 0 to count-1)
+            int finalIndex = (int)(extractedDigits % (ulong)count);
+
+            return allowedPalettes.palettes[finalIndex];
+        }
+        
         // -----------------------------------------------------------------------
         // INTERFACE IMPLEMENTATION
         // -----------------------------------------------------------------------
@@ -158,29 +188,42 @@ namespace TDPG.VideoGeneration
             if (_propBlock == null) _propBlock = new MaterialPropertyBlock();
 
             _renderer.GetPropertyBlock(_propBlock);
-            // No global tolerance set
             
             int count = Mathf.Min(originalColors.Count, 16);
             _propBlock.SetInt(CountID, count);
 
+            // RESOLVE PALETTE:
+            // 1. Priority: Runtime code-set overrides
+            // 2. Priority: Manually assigned Active Palette
+            // 3. Priority: Procedural selection via Seed
             List<Color> currentTargets = null;
-            if (_runtimePaletteOverrides != null) currentTargets = _runtimePaletteOverrides;
-            else if (activePalette != null) currentTargets = activePalette.colors;
+
+            if (_runtimePaletteOverrides != null) 
+            {
+                currentTargets = _runtimePaletteOverrides;
+            }
+            else 
+            {
+                // If activePalette is null, try to choose one procedurally
+                ColorPaletteSO paletteToUse = activePalette;
+                if (paletteToUse == null)
+                {
+                    paletteToUse = GetDeterministicPalette();
+                }
+
+                if (paletteToUse != null)
+                {
+                    currentTargets = paletteToUse.colors;
+                }
+            }
 
             for (int i = 0; i < count; i++)
             {
                 ColorSwapEntry entry = originalColors[i];
-                
-                // 3. PACKING:
-                // We take the RGB from the inspector color.
-                // We take the Tolerance float and put it in the Alpha channel.
                 Color packedOrig = entry.color;
                 packedOrig.a = entry.tolerance; 
 
                 Color targ = entry.color; 
-                // Note: The target doesn't need tolerance, so we just use the color.
-                // We keep alpha 1.0 (or whatever the target is) for the result.
-
                 if (currentTargets != null && i < currentTargets.Count)
                 {
                     targ = currentTargets[i];
@@ -192,5 +235,8 @@ namespace TDPG.VideoGeneration
 
             _renderer.SetPropertyBlock(_propBlock);
         }
+        
+        
+        
     }
 }

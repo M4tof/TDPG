@@ -152,7 +152,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aafd440faec865b548cb8d2d834a33a9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  colorPalette: {fileID: 11400000, guid: 5d9d461d679b0594b9f7ea11c6e39b5e, type: 2}
+  colorPalette: {fileID: 0}
   screamSound: {fileID: 8300000, guid: b1a7e211927ff255a8e591bb5c4c285f, type: 3}
 --- !u!114 &6232245201612764742
 MonoBehaviour:
@@ -200,6 +200,12 @@ MonoBehaviour:
     tolerance: 0
   - color: {r: 0, g: 0, b: 0, a: 0}
     tolerance: 0
+  allowedPalettes: {fileID: 11400000, guid: a792d0e957234cec5a15af42bae8838a, type: 2}
+  seed:
+    value: 98082271995315
+    id: -1
+    parentName: REPLACEEEEEEEE
+    isBitBased: 0
   activePalette: {fileID: 0}
 --- !u!114 &5709785829554409296
 MonoBehaviour:

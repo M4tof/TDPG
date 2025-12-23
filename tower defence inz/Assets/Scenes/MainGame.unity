@@ -1845,6 +1845,12 @@ MonoBehaviour:
     tolerance: 0
   - color: {r: 0, g: 0, b: 0, a: 0}
     tolerance: 0
+  allowedPalettes: {fileID: 11400000, guid: 496760e0f354f158b92145cda3e11298, type: 2}
+  seed:
+    value: 11
+    id: -1
+    parentName: NONEREPLACEGENERATION_IN_MAPINIT
+    isBitBased: 0
   activePalette: {fileID: 0}
 --- !u!1 &843496299
 GameObject:

@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eb516b7c894b4816bc3b10cfe18303e3, type: 3}
+  m_Name: Palettes for enemies
+  m_EditorClassIdentifier: 
+  palettes:
+  - {fileID: 0}
+  - {fileID: 11400000, guid: ce10b032e347e6a4cba1898a1d4cf815, type: 2}
+  - {fileID: 11400000, guid: 85a20ae32f14066448d9ed1e735a1281, type: 2}
+  - {fileID: 11400000, guid: 36b4407ca6917cc4ebbd773ba41f1c86, type: 2}
+  - {fileID: 11400000, guid: 8afd7d8feae68e4ff84eeff08e5bc017, type: 2}
+  - {fileID: 11400000, guid: 409a64efee47de046a6b2dc1cbb958f7, type: 2}
+  - {fileID: 11400000, guid: 7cefef8816a5cee4c9996072446a8033, type: 2}
+  - {fileID: 11400000, guid: bb0603f5dd6ca64428511da74d0d83d4, type: 2}
+  - {fileID: 11400000, guid: 2eabd3530f91101448480f35b40555ea, type: 2}
+  - {fileID: 11400000, guid: 522cb6655840eaa46a0465d09fe5a726, type: 2}
+  - {fileID: 11400000, guid: e7d6d763f2bf4275f85d5fe56d506962, type: 2}
+  - {fileID: 11400000, guid: 6c45a2eac13c51224af57e28e897cc1e, type: 2}
+  - {fileID: 11400000, guid: 47e66c13277b4654b8f104193193167c, type: 2}
+  - {fileID: 11400000, guid: e797c0844e30ee5cca13fcafd2332977, type: 2}
+  - {fileID: 11400000, guid: a3734af78e234c1c1b72f3a95655bcee, type: 2}
+  - {fileID: 0}
