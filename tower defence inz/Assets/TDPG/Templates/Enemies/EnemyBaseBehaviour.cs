@@ -25,7 +25,6 @@ namespace TDPG.Templates.Enemies
         /// The pure data model containing stats and state (HP, Speed).
         /// </summary>
         public EnemyBase Logic { get; private set; }
-        
 
         // Registry of active status effect coroutines (Key = Effect ID).
         // Used to handle overwriting/refreshing durations.
@@ -38,6 +37,7 @@ namespace TDPG.Templates.Enemies
 
         [Tooltip("Color palette used for this enemy.")]
         [SerializeField] private ColorPaletteSO colorPalette;
+
         [SerializeField] private AudioResource screamSound;
         
         private Dictionary<string, Coroutine> effectCoroutines = new Dictionary<string, Coroutine>();
@@ -57,7 +57,6 @@ namespace TDPG.Templates.Enemies
                 audioSource.resource = screamSound;
             }
             
-            colorSwapController.SetPalette(colorPalette);
         }
         
         public void Initialize(EnemyBase logic)

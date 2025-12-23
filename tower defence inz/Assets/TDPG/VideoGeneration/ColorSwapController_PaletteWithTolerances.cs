@@ -39,10 +39,8 @@ namespace TDPG.VideoGeneration
         [Tooltip("Define the specific colors on the sprite you want to replace and their specific tolerance.")]
         public List<ColorSwapEntry> originalColors = new List<ColorSwapEntry>();
 
-        [Header("Procedural Generation")]
-        [Tooltip("If Active Palette is empty, it will choose one from here using the Seed.")]
-        [SerializeField] private AllowedPalettesSO allowedPalettes;
-        [SerializeField] private Seed seed;
+        [Header("Procedural Logic")]
+        [SerializeField] public ChoseAndApplyPalette paletteSelector;
         
         [Header("Target Palette")]
         [Tooltip("The ScriptableObject containing the target colors.")]
@@ -76,31 +74,6 @@ namespace TDPG.VideoGeneration
             if (activePalette != null) _runtimePaletteOverrides = null;
             UpdateShaderProperties();
         }
-
-        private ColorPaletteSO GetDeterministicPalette()
-        {
-            if (allowedPalettes == null || allowedPalettes.palettes == null || allowedPalettes.palettes.Count == 0)
-                return null;
-
-            if (seed == null) return null;
-
-            int count = allowedPalettes.palettes.Count;
-            ulong rawVal = seed.GetBaseValue();
-
-            // Calculate how many digits we need (9 = 1, 12 = 2, 105 = 3, etc)
-            int digitsNeeded = 1;
-            if (count > 1)
-                digitsNeeded = Mathf.FloorToInt(Mathf.Log10(count - 1)) + 1;
-
-            // Extract the digits via power of 10
-            long powerOf10 = (long)Mathf.Pow(10, digitsNeeded);
-            ulong extractedDigits = rawVal % (ulong)powerOf10;
-
-            // Map to valid index (Modulo ensures it's within 0 to count-1)
-            int finalIndex = (int)(extractedDigits % (ulong)count);
-
-            return allowedPalettes.palettes[finalIndex];
-        }
         
         // -----------------------------------------------------------------------
         // INTERFACE IMPLEMENTATION
@@ -125,7 +98,6 @@ namespace TDPG.VideoGeneration
         public void SetPalette(ColorPaletteSO newPalette)
         {
             activePalette = newPalette;
-            _runtimePaletteOverrides = null;
             UpdateShaderProperties();
         }
         
@@ -192,28 +164,29 @@ namespace TDPG.VideoGeneration
             int count = Mathf.Min(originalColors.Count, 16);
             _propBlock.SetInt(CountID, count);
 
-            // RESOLVE PALETTE:
-            // 1. Priority: Runtime code-set overrides
-            // 2. Priority: Manually assigned Active Palette
-            // 3. Priority: Procedural selection via Seed
             List<Color> currentTargets = null;
-
-            if (_runtimePaletteOverrides != null) 
+            
+            // Priority Check:
+            // 1. Runtime Override
+            // 2. Inspector 'Active Palette'
+            // 3. Procedural 'ChoseAndApply' logic
+            if (_runtimePaletteOverrides != null)
             {
                 currentTargets = _runtimePaletteOverrides;
             }
-            else 
+            else
             {
-                // If activePalette is null, try to choose one procedurally
-                ColorPaletteSO paletteToUse = activePalette;
-                if (paletteToUse == null)
+                ColorPaletteSO finalPalette = activePalette;
+                
+                // If no active palette is manually set, use the deterministic selector
+                if (finalPalette == null && paletteSelector != null)
                 {
-                    paletteToUse = GetDeterministicPalette();
+                    finalPalette = paletteSelector.ChosePalette();
                 }
 
-                if (paletteToUse != null)
+                if (finalPalette != null)
                 {
-                    currentTargets = paletteToUse.colors;
+                    currentTargets = finalPalette.colors;
                 }
             }
 

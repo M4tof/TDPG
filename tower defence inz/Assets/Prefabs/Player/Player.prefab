@@ -112,12 +112,13 @@ MonoBehaviour:
     tolerance: 0.1
   - color: {r: 0.40784314, g: 0.40784314, b: 0.40784314, a: 0}
     tolerance: 0.1
-  allowedPalettes: {fileID: 11400000, guid: 5a8e06140cfcf0a37bc371f531137f21, type: 2}
-  seed:
-    value: 2801
-    id: -1
-    parentName: REPLACE_ON_NEW_GAME!
-    isBitBased: 0
+  paletteSelector:
+    seed:
+      value: 920968
+      id: -1
+      parentName: REPLACE_DURING_GAME_INIT
+      isBitBased: 0
+    allowedPalettes: {fileID: 11400000, guid: 5a8e06140cfcf0a37bc371f531137f21, type: 2}
   activePalette: {fileID: 0}
 --- !u!1 &577046545194946921
 GameObject:
