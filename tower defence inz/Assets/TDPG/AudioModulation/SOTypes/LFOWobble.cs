@@ -7,7 +7,7 @@ namespace TDPG.AudioModulation.SOTypes
     /// <br/>
     /// Creates a vibrato effect. Useful for unstable engines, magic hums, or sci-fi sirens.
     /// </summary>
-    [CreateAssetMenu(menuName = "TDPG/Audio/LFO Wobble")]
+    [CreateAssetMenu(menuName = "TDPG/Audio/Mod/LFO Wobble")]
     public class LFOWobble : AudioModifier
     {
         [Tooltip("Speed of the wobble in Hz")]

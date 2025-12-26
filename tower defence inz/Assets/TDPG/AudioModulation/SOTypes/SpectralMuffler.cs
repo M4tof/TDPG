@@ -8,7 +8,7 @@ namespace TDPG.AudioModulation.SOTypes
     /// This "muffles" the sound by removing high frequencies, simulating effects like being underwater, 
     /// behind a wall, or inside a helmet.
     /// </summary>
-    [CreateAssetMenu(menuName = "TDPG/Audio/Spectral Muffler")]
+    [CreateAssetMenu(menuName = "TDPG/Audio/Mod/Spectral Muffler")]
     public class SpectralMuffler : AudioModifier
     {
         //adds an AudioLowPassFilter component to the object.

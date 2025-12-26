@@ -7,7 +7,7 @@ namespace TDPG.AudioModulation.SOTypes
     /// <br/>
     /// The intensity is chosen randomly within a range. Can be conditionally activated using bitwise seed checks (genetic traits).
     /// </summary>
-    [CreateAssetMenu(menuName = "TDPG/Audio/Audio Crusher")]
+    [CreateAssetMenu(menuName = "TDPG/Audio/Mod/Audio Crusher")]
     public class AudioCrusher : AudioModifier
     {
         [Header("Distortion")]

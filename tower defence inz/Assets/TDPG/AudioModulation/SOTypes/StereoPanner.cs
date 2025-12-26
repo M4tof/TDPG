@@ -8,7 +8,7 @@ namespace TDPG.AudioModulation.SOTypes
     /// Can either animate the sound moving Left-to-Right (Auto-Pan) or assign a fixed random position 
     /// within the stereo field based on the seed.
     /// </summary>
-    [CreateAssetMenu(menuName = "TDPG/Audio/Stereo Panner")]
+    [CreateAssetMenu(menuName = "TDPG/Audio/Mod/Stereo Panner")]
     public class StereoPanner : AudioModifier
     {
         [Header("Settings")]

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using TDPG.Generators.Seed;
+using UnityEditor;
 using UnityEngine;
 
 namespace TDPG.AudioModulation
@@ -14,17 +15,36 @@ namespace TDPG.AudioModulation
     public class ProceduralAudioController : MonoBehaviour
     {
         /// <summary>
-        /// The raw seed value used by the modifiers.
-        /// <br/>
-        /// Useful for bitwise checks or generating unique deterministic modifications.
-        /// <para>
-        /// This can be set manually, or populated via <see cref="Play(ulong)"/>. 
-        /// Default is "123456789".
-        /// </para>
+        /// Should the controller pick the modifications manually from the given modifiers or based on lists (<see cref="AllowedModsListSO"/>, <see cref="AudioListSO"/>).
         /// </summary>
-        [Header("Configuration")]
-        [Tooltip("The seed used for deterministic generation. Can be set manually or via code.")]
-        public ulong seedValue = 123456789;
+        public enum GenerationMode
+        {
+            /// <summary>
+            /// Use <see cref="ProceduralAudioController.modifiers"/> and the currently assigned clip on the AudioSource.
+            /// </summary>
+            Manual, 
+            
+            /// <summary>
+            /// Use <see cref="ProceduralAudioController.clipPool"/> and <see cref="ProceduralAudioController.modifierPool"/> to pick content.
+            /// </summary>
+            Procedural
+        }
+        
+        [Header("Mode Selection")]
+        [Tooltip("Manual: Use the specific clip and modifiers assigned below.\nProcedural: Pick from the SO Lists using the Selection Seed.")]
+        public GenerationMode mode = GenerationMode.Manual;
+        
+        [Header("General Seeds")]
+        [Tooltip("Seed A: Used for the 'Modulation' (the internal logic of modifiers).")]
+        public ulong modulationSeed = 123456789;
+
+        [Tooltip("Seed B: Used for 'Selection' (picking which clip and which modifiers to use).")]
+        public ulong selectionSeed = 987654321;
+        
+        [Header("Procedural Sources (Mode: Procedural)")]
+        public AudioListSO clipPool;
+        public AllowedModsListSO modifierPool;
+        [Range(0, 10)] public int maxModifiersToPick = 2;
         
         /// <summary>
         /// A list of <see cref="AudioModifier"/> ScriptableObjects to apply to the source.
@@ -32,7 +52,8 @@ namespace TDPG.AudioModulation
         /// The library executes them in sequential order. 
         /// Common examples include <see cref="TDPG.AudioModulation.SOTypes.AudioCrusher"/>.
         /// </summary>
-        [Tooltip("List of modifiers to apply. Order matters (sequential execution).")]
+        [Header("Active Configuration")]
+        [Tooltip("The list of modifiers currently active. In Manual mode, you set these. In Procedural mode, these are generated.")]
         public List<AudioModifier> modifiers = new List<AudioModifier>();
         
         /// <summary>
@@ -57,6 +78,33 @@ namespace TDPG.AudioModulation
         private float _inspectorPitch;
         private float _inspectorVolume;
 
+        /// <summary>
+        /// Triggers the selection logic (if in Procedural mode) and starts playback.
+        /// </summary>
+        [ContextMenu("Generate and Play")]
+        public void GenerateAndPlay()
+        {
+            EnsureDependencies();
+
+            if (mode == GenerationMode.Procedural)
+            {
+                ApplyProceduralSelection();
+            }
+
+            // In Editor Mode (not playing), we can't use PlayScheduled, so we just assign the data.
+            if (!Application.isPlaying)
+            {
+                Debug.Log("[ProceduralAudioController] Generated configuration in Editor. Press Play to hear it.");
+#if UNITY_EDITOR
+                EditorUtility.SetDirty(this);
+                EditorUtility.SetDirty(_source);
+#endif
+                return;
+            }
+
+            Play();
+        }
+        
         void Awake()
         {
             _source = GetComponent<AudioSource>();
@@ -70,23 +118,69 @@ namespace TDPG.AudioModulation
 
         void Start()
         {
-            if (playOnStart) Play();
+            // Call GenerateAndPlay instead of Play to ensure procedural logic runs
+            if (playOnStart) GenerateAndPlay();
+        }
+
+        /// <summary>
+        /// Ensures the AudioSource reference is valid, even if called from the Editor.
+        /// </summary>
+        private void EnsureDependencies()
+        {
+            if (_source == null) _source = GetComponent<AudioSource>();
+        }
+        
+        /// <summary>
+        /// Uses the Selection Seed to pick a clip and modifiers from the provided SO lists.
+        /// </summary>
+        private void ApplyProceduralSelection()
+        {
+            if (clipPool == null || modifierPool == null)
+            {
+                Debug.LogWarning($"[ProceduralAudioController] Procedural mode active on {gameObject.name} but Lists are missing!");
+                return;
+            }
+
+            // We use a simple C# Random initialized with the selectionSeed for picking
+            // This ensures if the seed is the same, the selection is the same.
+            System.Random prng = new System.Random((int)selectionSeed);
+
+            // 1. Select Clip
+            if (clipPool.audioClips.Count > 0)
+            {
+                int clipIndex = prng.Next(clipPool.audioClips.Count);
+                _source.clip = clipPool.audioClips[clipIndex];
+            }
+
+            // 2. Select Modifiers
+            modifiers.Clear();
+            if (modifierPool.allowedMods.Count > 0)
+            {
+                int countToPick = prng.Next(0, maxModifiersToPick + 1);
+                for (int i = 0; i < countToPick; i++)
+                {
+                    int modIndex = prng.Next(modifierPool.allowedMods.Count);
+                    modifiers.Add(modifierPool.allowedMods[modIndex]);
+                }
+            }
         }
 
         /// <summary>
         /// Convenience overload to play audio using a <see cref="Seed"/> object.
         /// </summary>
         /// <param name="seedObj">The seed object. If null, falls back to a default value.</param>
-        public void Play(Seed seedObj) => Play(seedObj != null ? seedObj.GetBaseValue() : 12345);
+        public void Play(Seed seedObj) => Play(seedObj != null ? seedObj.GetBaseValue() : 12345, selectionSeed);
 
         /// <summary>
-        /// Updates the seed value and starts playback.
+        /// Updates both seed values and starts the generation/playback process.
         /// </summary>
-        /// <param name="rawSeed">The new raw seed value to use for this playback instance.</param>
-        public void Play(ulong rawSeed)
+        /// <param name="modSeed">The new raw seed value for modifier logic.</param>
+        /// <param name="selSeed">The new raw seed value for procedural selection.</param>
+        public void Play(ulong modSeed, ulong selSeed)
         {
-            this.seedValue = rawSeed;
-            Play();
+            this.modulationSeed = modSeed;
+            this.selectionSeed = selSeed;
+            GenerateAndPlay();
         }
 
         /// <summary>
@@ -95,11 +189,18 @@ namespace TDPG.AudioModulation
         /// </summary>
         public void Play()
         {
+            if (_source.clip == null)
+            {
+                Debug.LogWarning($"[ProceduralAudioController] Play called on {gameObject.name} but no AudioClip is assigned!");
+                return;
+            }
+
             // Reset to inspector defaults before applying new modifiers
             _source.pitch = _inspectorPitch;
             _source.volume = _inspectorVolume;
 
-            _context = new AudioContext(_source, seedValue);
+            // Use the Modulation Seed for the context
+            _context = new AudioContext(_source, modulationSeed);
 
             foreach (var mod in modifiers)
             {
@@ -122,7 +223,6 @@ namespace TDPG.AudioModulation
             
             // Calculate precise time relative to the scheduled start
             double timeAlive = AudioSettings.dspTime - _dspStartTime;
-            
             float safeTime = (float)System.Math.Max(0, timeAlive);
             
             ApplyModulation(safeTime);

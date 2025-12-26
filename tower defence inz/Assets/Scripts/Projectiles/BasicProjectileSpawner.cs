@@ -11,5 +11,6 @@ public class BasicProjectileSpawner : MonoBehaviour
         float rotZ = Mathf.Atan2(rotationPosition.y, rotationPosition.x) * Mathf.Rad2Deg;
         GameObject bullet = Instantiate(projectile, spawnPosition, Quaternion.Euler(0f, 0f, rotZ));
         bullet.GetComponent<BasicProjectile>().SetDamage(projectileDamage);
+        
     }
 }

@@ -8,7 +8,7 @@ namespace TDPG.AudioModulation.SOTypes
     /// Applies a deterministic random offset to pitch and volume. 
     /// Essential for breaking repetition in frequent sounds like footsteps or gunshots.
     /// </summary>
-    [CreateAssetMenu(menuName = "TDPG/Audio/Simple Randomizer")]
+    [CreateAssetMenu(menuName = "TDPG/Audio/Mod/Simple Randomizer")]
     public class SimpleRandomizer : AudioModifier
     {
         [Tooltip("The pitch range for the clip. X=min. Y=max.")]

@@ -5,33 +5,44 @@ using UnityEngine;
 
 namespace Tests.AudioTest
 {
+    /// <summary>
+    /// Test wrapper to simulate enemy spawning and trigger procedural audio logic.
+    /// </summary>
     public class EnemySpawnSimulator : MonoBehaviour
     {
         [Header("Target")]
         public ProceduralAudioController audioController;
 
-        [Header("Settings")]
-        [Tooltip("How long to wait before playing the sound (simulating spawn animation)")]
-        public float simulatedSpawnDelay = 2.0f;
-    
-        [Tooltip("If true, it will pick a new random seed every time it plays")]
-        public bool randomizeSeed = true;
+        [Header("Seeds Configuration")]
+        [Tooltip("The seed used to pick the Clip and Modifiers from the pools.")]
+        public ulong selectionSeed = 987654321;
+        
+        [Tooltip("The seed used to drive the internal logic of the modifiers (pitch shifting, etc).")]
+        public ulong modulationSeed = 123456789;
+
+        [Header("Randomization Settings")]
+        [Tooltip("If true, picks a new Selection Seed every trigger (changes the clip/mod list).")]
+        public bool randomizeSelection = true;
+        
+        [Tooltip("If true, picks a new Modulation Seed every trigger (changes the 'flavor' of the modifiers).")]
+        public bool randomizeModulation = false;
+
+        [Header("Testing Mode")]
+        [Tooltip("Should we test using the raw ulongs or the Seed object wrapper?")]
+        public bool useSeedObjectOverload = false;
 
         [Header("Auto-Loop")]
-        [Tooltip("Keep re-playing to test stability?")]
         public bool loopTest = false;
         public float loopInterval = 3.0f;
+        public float simulatedSpawnDelay = 1.0f;
 
         private IEnumerator Start()
         {
-            // 1. Initial wait (Simulating the enemy loading in)
-            Debug.Log($"<color=yellow>[Simulator]</color> Enemy instantiated. Waiting {simulatedSpawnDelay}s for initialization...");
+            Debug.Log("<color=yellow>[Simulator]</color> Initializing test environment...");
             yield return new WaitForSeconds(simulatedSpawnDelay);
 
-            // 2. Trigger the sound
             TriggerSound();
 
-            // 3. Optional Looping to test many variations quickly
             if (loopTest)
             {
                 while (true)
@@ -42,26 +53,37 @@ namespace Tests.AudioTest
             }
         }
 
-        // You can also click the "Context Menu" (three dots) on this script component to trigger this manually
+        /// <summary>
+        /// Triggers the audio controller using the new seed logic.
+        /// </summary>
         [ContextMenu("Trigger Audio Now")]
         public void TriggerSound()
         {
             if (audioController == null)
             {
-                Debug.LogError("No Audio Controller assigned!");
+                Debug.LogError("[Simulator] No Audio Controller assigned!");
                 return;
             }
 
-            // Generate a mock seed (like your generator would)
-            ulong seedValue = randomizeSeed ? (ulong)Random.Range(0, 9999999) : 11111111UL;
-        
-            // Use your Seed class
-            Seed mockEnemySeed = new Seed(seedValue, 1, "MockEnemy");
+            // 1. Handle Randomization
+            if (randomizeSelection) selectionSeed = (ulong)Random.Range(0, 999999);
+            if (randomizeModulation) modulationSeed = (ulong)Random.Range(0, 999999);
 
-            Debug.Log($"<color=green>[Simulator]</color> Enemy Ready. Playing Sound with Seed: <b>{seedValue}</b>");
-        
-            // This calls the logic we wrote (Initialize -> Schedule -> Play)
-            audioController.Play(mockEnemySeed);
+            Debug.Log($"<color=green>[Simulator]</color> Triggering Sound | SelSeed: {selectionSeed} | ModSeed: {modulationSeed}");
+
+            // 2. Test the different Play overloads
+            if (useSeedObjectOverload)
+            {
+                // Create the seed object (it will use its base value for modulation, 
+                // and fall back to the controller's current selection seed).
+                Seed mockSeed = new Seed(modulationSeed, 1, "MockEnemyModulation");
+                audioController.Play(mockSeed);
+            }
+            else
+            {
+                // Directly test the new dual-seed logic
+                audioController.Play(modulationSeed, selectionSeed);
+            }
         }
     }
 }

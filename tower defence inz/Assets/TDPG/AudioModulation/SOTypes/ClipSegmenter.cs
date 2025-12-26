@@ -7,7 +7,7 @@ namespace TDPG.AudioModulation.SOTypes
     /// <br/>
     /// Useful for creating variations from a single long recording (e.g., picking a random bird chirp from a 1-minute forest ambience).
     /// </summary>
-    [CreateAssetMenu(menuName = "TDPG/Audio/Clip Segmenter")]
+    [CreateAssetMenu(menuName = "TDPG/Audio/Mod/Clip Segmenter")]
     public class ClipSegmenter : AudioModifier
     {
         [Tooltip("Minimal allowed duration for the clip. (in seconds)")]

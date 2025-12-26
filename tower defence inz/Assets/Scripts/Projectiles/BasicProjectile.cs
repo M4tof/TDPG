@@ -1,4 +1,5 @@
 using UnityEngine;
+using TDPG.AudioModulation;
 
 [RequireComponent(typeof(Rigidbody2D))]
 [RequireComponent(typeof(Collider2D))]
@@ -9,12 +10,20 @@ public class BasicProjectile : MonoBehaviour
     private int damage = 1;
 
     private Rigidbody2D rb;
+    private ProceduralAudioController _audioController; 
     private float timeRemaining = 0f;
 
     public void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         timeRemaining = lifeTime; 
+        
+        _audioController = GetComponent<ProceduralAudioController>();
+        
+        if (_audioController != null)
+        {
+            _audioController.Play();
+        }
     }
     
     void FixedUpdate()

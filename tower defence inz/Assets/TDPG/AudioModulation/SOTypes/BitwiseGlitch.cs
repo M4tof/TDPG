@@ -7,7 +7,7 @@ namespace TDPG.AudioModulation.SOTypes
     /// <br/>
     /// This creates a robotic stutter or signal interference sound using a high-frequency sine wave.
     /// </summary>
-    [CreateAssetMenu(menuName = "TDPG/Audio/Bitwise Glitch")]
+    [CreateAssetMenu(menuName = "TDPG/Audio/Mod/Bitwise Glitch")]
     public class BitwiseGlitch : AudioModifier
     {
         [Header("Activation Settings")]

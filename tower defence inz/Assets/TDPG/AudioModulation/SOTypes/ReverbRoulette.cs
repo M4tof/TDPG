@@ -7,7 +7,7 @@ namespace TDPG.AudioModulation.SOTypes
     /// <br/>
     /// The specific reverb preset is selected deterministically based on the seed.
     /// </summary>
-    [CreateAssetMenu(menuName = "TDPG/Audio/Reverb Roulette")]
+    [CreateAssetMenu(menuName = "TDPG/Audio/Mod/Reverb Roulette")]
     public class ReverbRoulette : AudioModifier
     {
         //It randomly assigns a physical space characteristic to the sound using Unity's AudioReverbFilter.

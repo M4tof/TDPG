@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using TDPG.AudioModulation;
 using TDPG.EffectSystem.ElementLogic;
 using TDPG.EffectSystem.ElementPlanner;
 using UnityEngine;
@@ -7,16 +8,23 @@ public class EffectProjectile : BasicProjectile
 {
     [SerializeField] private ElementPlanner planner;
     private EffectContext effectContext;
+    private ProceduralAudioController _audioController; 
     private bool hasHit = false;
     
     void Start()
     {
         base.Start();
-        //TODO Zmienić aby nie hard codować elementów :)
+        //TODO Zmienić aby nie hard codować elementów :) :] 
         //elements.Add(RegistryManager.Instance.GetRegistry().GetElement("Fire"));
         planner = new ElementPlanner(RegistryManager.Instance.GetRegistry());
         planner.RegisterElement("Fire");
         planner.BuildPlan();
+        
+        _audioController = GetComponent<ProceduralAudioController>();
+        if (_audioController != null)
+        {
+            _audioController.Play();
+        }
     }
     
     private void OnTriggerEnter2D(Collider2D other)

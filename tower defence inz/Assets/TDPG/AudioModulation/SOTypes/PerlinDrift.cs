@@ -7,7 +7,7 @@ namespace TDPG.AudioModulation.SOTypes
     /// <br/>
     /// Useful for making looping sounds (drones, engines, wind) feel less static without sounding random.
     /// </summary>
-    [CreateAssetMenu(menuName = "TDPG/Audio/Perlin Drift")]
+    [CreateAssetMenu(menuName = "TDPG/Audio/Mod/Perlin Drift")]
     public class PerlinDrift : AudioModifier
     {
         //creates an "Organic" wandering effect.

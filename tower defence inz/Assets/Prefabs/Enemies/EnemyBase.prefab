@@ -152,7 +152,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aafd440faec865b548cb8d2d834a33a9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  screamSound: {fileID: 8300000, guid: b1a7e211927ff255a8e591bb5c4c285f, type: 3}
+  colorPalette: {fileID: 0}
+  screamSound: {fileID: 8300000, guid: 2d8b8d7e553fe89abb9625c9e6f55a12, type: 3}
 --- !u!114 &6232245201612764742
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -165,40 +166,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14f9dd5bb09b47e790490b4701bd5207, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  blinkDuration: 0.1
-  originalColors:
-  - color: {r: 0, g: 0, b: 0, a: 0}
-    tolerance: 0
-  - color: {r: 0, g: 0, b: 0, a: 0}
-    tolerance: 0
-  - color: {r: 0, g: 0, b: 0, a: 0}
-    tolerance: 0
-  - color: {r: 0, g: 0, b: 0, a: 0}
-    tolerance: 0
-  - color: {r: 0, g: 0, b: 0, a: 0}
-    tolerance: 0
-  - color: {r: 0, g: 0, b: 0, a: 0}
-    tolerance: 0
-  - color: {r: 0, g: 0, b: 0, a: 0}
-    tolerance: 0
-  - color: {r: 0, g: 0, b: 0, a: 0}
-    tolerance: 0
-  - color: {r: 0, g: 0, b: 0, a: 0}
-    tolerance: 0
-  - color: {r: 0, g: 0, b: 0, a: 0}
-    tolerance: 0
-  - color: {r: 0, g: 0, b: 0, a: 0}
-    tolerance: 0
-  - color: {r: 0, g: 0, b: 0, a: 0}
-    tolerance: 0
-  - color: {r: 0.47843137, g: 0.2901961, b: 0.827451, a: 0}
-    tolerance: 0.1
-  - color: {r: 0.1764706, g: 0, b: 0.5019608, a: 0}
-    tolerance: 0.2
-  - color: {r: 0, g: 0, b: 0, a: 0}
-    tolerance: 0
-  - color: {r: 0, g: 0, b: 0, a: 0}
-    tolerance: 0
   paletteSelector:
     seed:
       value: 1007034102
@@ -207,6 +174,40 @@ MonoBehaviour:
       isBitBased: 0
     allowedPalettes: {fileID: 11400000, guid: a792d0e957234cec5a15af42bae8838a, type: 2}
   activePalette: {fileID: 0}
+  blinkDuration: 0.05
+  originalColors:
+  - original: {r: 0, g: 0, b: 0, a: 0}
+    tolerance: 0
+  - original: {r: 0, g: 0, b: 0, a: 0}
+    tolerance: 0
+  - original: {r: 0, g: 0, b: 0, a: 0}
+    tolerance: 0
+  - original: {r: 0, g: 0, b: 0, a: 0}
+    tolerance: 0
+  - original: {r: 0, g: 0, b: 0, a: 0}
+    tolerance: 0
+  - original: {r: 0, g: 0, b: 0, a: 0}
+    tolerance: 0
+  - original: {r: 0, g: 0, b: 0, a: 0}
+    tolerance: 0
+  - original: {r: 0, g: 0, b: 0, a: 0}
+    tolerance: 0
+  - original: {r: 0, g: 0, b: 0, a: 0}
+    tolerance: 0
+  - original: {r: 0, g: 0, b: 0, a: 0}
+    tolerance: 0
+  - original: {r: 0, g: 0, b: 0, a: 0}
+    tolerance: 0
+  - original: {r: 0, g: 0, b: 0, a: 0}
+    tolerance: 0
+  - original: {r: 0.47843137, g: 0.2901961, b: 0.827451, a: 0}
+    tolerance: 0.1
+  - original: {r: 0.1764706, g: 0, b: 0.5019608, a: 0}
+    tolerance: 0.2
+  - original: {r: 0, g: 0, b: 0, a: 0}
+    tolerance: 0
+  - original: {r: 0, g: 0, b: 0, a: 0}
+    tolerance: 0
 --- !u!114 &5709785829554409296
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -337,7 +338,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dccc8b294dd34f4691c86d68423ad184, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  seedValue: 123456789
+  mode: 1
+  modulationSeed: 123456789
+  selectionSeed: 987654321
+  clipPool: {fileID: 11400000, guid: c87874a39450382ecb20af06508d421c, type: 2}
+  modifierPool: {fileID: 11400000, guid: c5686148d02289dce857ac12341b2658, type: 2}
+  maxModifiersToPick: 2
   modifiers:
   - {fileID: 0}
   playOnStart: 0

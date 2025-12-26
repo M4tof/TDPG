@@ -147,8 +147,8 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: 525dfb8cba43096529860985ec3a9539, type: 3}
-  m_Resource: {fileID: 8300000, guid: 525dfb8cba43096529860985ec3a9539, type: 3}
+  m_audioClip: {fileID: 8300000, guid: 468168bf8540c17299d28815167588c6, type: 3}
+  m_Resource: {fileID: 8300000, guid: 468168bf8540c17299d28815167588c6, type: 3}
   m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
@@ -261,9 +261,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dccc8b294dd34f4691c86d68423ad184, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  seedValue: 11111111
+  mode: 1
+  modulationSeed: 123456789
+  selectionSeed: 987654321
+  clipPool: {fileID: 11400000, guid: c87874a39450382ecb20af06508d421c, type: 2}
+  modifierPool: {fileID: 11400000, guid: 0b970071a96091bd4ac3cb8f9aaa1846, type: 2}
+  maxModifiersToPick: 5
   modifiers:
-  - {fileID: 11400000, guid: b8faa685ea61e25019037d949bcdf821, type: 2}
+  - {fileID: 11400000, guid: 809987fb87b7c30cfa8e5ddb1d14b99a, type: 2}
   - {fileID: 11400000, guid: 8c96d01c12fac44fbac40b4af87f9c88, type: 2}
   playOnStart: 0
 --- !u!1 &1135542568
@@ -433,10 +438,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   audioController: {fileID: 373538861}
-  simulatedSpawnDelay: 2
-  randomizeSeed: 0
+  selectionSeed: 987654321
+  modulationSeed: 123456789
+  randomizeSelection: 1
+  randomizeModulation: 1
+  useSeedObjectOverload: 0
   loopTest: 1
   loopInterval: 3
+  simulatedSpawnDelay: 2
 --- !u!4 &1400561718
 Transform:
   m_ObjectHideFlags: 0

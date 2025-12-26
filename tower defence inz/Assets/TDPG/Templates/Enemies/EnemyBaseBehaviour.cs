@@ -18,7 +18,7 @@ namespace TDPG.Templates.Enemies
     /// It manages the link between the Unity Scene (Transform, Coroutines, Collision) and the 
     /// pure logic model (<see cref="EnemyBase"/>).
     /// </summary>
-    [RequireComponent(typeof(ColorSwapController_PaletteWithTolerances))]
+    [RequireComponent(typeof(BaseColorSwapController))]
     public class EnemyBaseBehaviour : MonoBehaviour
     {
         /// <summary>
@@ -40,13 +40,13 @@ namespace TDPG.Templates.Enemies
 
         [SerializeField] private AudioResource screamSound;
 
-        private ColorSwapController_PaletteWithTolerances colorSwapController;
+        private BaseColorSwapController colorSwapController;
         private AudioSource audioSource;
         private ProceduralAudioController audioController;
 
         private void Start()
         {
-            colorSwapController = gameObject.GetComponent<ColorSwapController_PaletteWithTolerances>();
+            colorSwapController = gameObject.GetComponent<BaseColorSwapController>();
             audioSource = GetComponent<AudioSource>();
             audioController = GetComponent<ProceduralAudioController>();
             

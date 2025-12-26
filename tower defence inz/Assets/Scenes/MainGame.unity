@@ -1811,40 +1811,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14f9dd5bb09b47e790490b4701bd5207, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  blinkDuration: 0.1
-  originalColors:
-  - color: {r: 0, g: 0, b: 0, a: 0}
-    tolerance: 0
-  - color: {r: 0, g: 0, b: 0, a: 0}
-    tolerance: 0
-  - color: {r: 0, g: 0, b: 0, a: 0}
-    tolerance: 0
-  - color: {r: 0, g: 0, b: 0, a: 0}
-    tolerance: 0
-  - color: {r: 0, g: 0, b: 0, a: 0}
-    tolerance: 0
-  - color: {r: 0.6509804, g: 1, b: 0.50980395, a: 0}
-    tolerance: 0.1
-  - color: {r: 0.36862746, g: 0.65882355, b: 0.24705882, a: 0}
-    tolerance: 0.1
-  - color: {r: 0.3764706, g: 0.9490196, b: 1, a: 0}
-    tolerance: 0.1
-  - color: {r: 0.3764706, g: 0.7254902, b: 1, a: 0}
-    tolerance: 0.1
-  - color: {r: 0.7372549, g: 0.6666667, b: 0.6156863, a: 0}
-    tolerance: 0.1
-  - color: {r: 0.49019608, g: 0.49019608, b: 0.49019608, a: 0}
-    tolerance: 0.1
-  - color: {r: 1, g: 1, b: 1, a: 0}
-    tolerance: 0.1
-  - color: {r: 0, g: 0, b: 0, a: 0}
-    tolerance: 0
-  - color: {r: 0, g: 0, b: 0, a: 0}
-    tolerance: 0
-  - color: {r: 0, g: 0, b: 0, a: 0}
-    tolerance: 0
-  - color: {r: 0, g: 0, b: 0, a: 0}
-    tolerance: 0
   paletteSelector:
     seed:
       value: 980822725
@@ -1853,6 +1819,40 @@ MonoBehaviour:
       isBitBased: 0
     allowedPalettes: {fileID: 11400000, guid: 496760e0f354f158b92145cda3e11298, type: 2}
   activePalette: {fileID: 0}
+  blinkDuration: 0.1
+  originalColors:
+  - original: {r: 0, g: 0, b: 0, a: 0}
+    tolerance: 0
+  - original: {r: 0, g: 0, b: 0, a: 0}
+    tolerance: 0
+  - original: {r: 0, g: 0, b: 0, a: 0}
+    tolerance: 0
+  - original: {r: 0, g: 0, b: 0, a: 0}
+    tolerance: 0
+  - original: {r: 0, g: 0, b: 0, a: 0}
+    tolerance: 0
+  - original: {r: 0.6509804, g: 1, b: 0.50980395, a: 0}
+    tolerance: 0.1
+  - original: {r: 0.36862746, g: 0.65882355, b: 0.24705882, a: 0}
+    tolerance: 0.1
+  - original: {r: 0.3764706, g: 0.9490196, b: 1, a: 0}
+    tolerance: 0.1
+  - original: {r: 0.3764706, g: 0.7254902, b: 1, a: 0}
+    tolerance: 0.45
+  - original: {r: 0.7372549, g: 0.6666667, b: 0.6156863, a: 0}
+    tolerance: 0.1
+  - original: {r: 0.49019608, g: 0.49019608, b: 0.49019608, a: 0}
+    tolerance: 1
+  - original: {r: 1, g: 1, b: 1, a: 0}
+    tolerance: 1
+  - original: {r: 0, g: 0, b: 0, a: 0}
+    tolerance: 0
+  - original: {r: 0, g: 0, b: 0, a: 0}
+    tolerance: 0
+  - original: {r: 0, g: 0, b: 0, a: 0}
+    tolerance: 0
+  - original: {r: 0, g: 0, b: 0, a: 0}
+    tolerance: 0
 --- !u!1 &843496299
 GameObject:
   m_ObjectHideFlags: 0
