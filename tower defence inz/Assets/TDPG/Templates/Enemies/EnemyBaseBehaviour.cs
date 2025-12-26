@@ -39,8 +39,6 @@ namespace TDPG.Templates.Enemies
         [SerializeField] private ColorPaletteSO colorPalette;
 
         [SerializeField] private AudioResource screamSound;
-        
-        private Dictionary<string, Coroutine> effectCoroutines = new Dictionary<string, Coroutine>();
 
         private ColorSwapController_PaletteWithTolerances colorSwapController;
         private AudioSource audioSource;
