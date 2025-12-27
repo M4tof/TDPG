@@ -1,3 +1,4 @@
+using TDPG.Generators.AttackPatterns;
 using UnityEngine;
 
 namespace TDPG.Templates.Turret
@@ -8,6 +9,8 @@ namespace TDPG.Templates.Turret
     /// Create instances of this in the Project view to define different towers (e.g., "Archer Tower", "Cannon").
     /// </summary>
     [CreateAssetMenu(fileName = "NewTurret", menuName = "TD/Turret Data")]
+
+    
     public class TurretData : ScriptableObject
     {
         [Tooltip("Unique string identifier used for Serialization (Save/Load).")]
@@ -32,6 +35,10 @@ namespace TDPG.Templates.Turret
 
         [Header("Projectile")]
         // We reference the GameObject containing BasicProjectile script
-        [Tooltip("The bullet prefab spawned when firing.")] public GameObject ProjectilePrefab; 
+        [Tooltip("The bullet prefab spawned when firing.")] public GameObject ProjectilePrefab;
+
+        [Header("Procedural Patterns")]
+        [Tooltip("Assigned attack pattern used by the turret to shoot its projectiles.")]
+        public AbstractAttackPatternGenerator PatternGenerator;
     }
 }

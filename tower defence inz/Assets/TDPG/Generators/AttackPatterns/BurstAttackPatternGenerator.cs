@@ -2,6 +2,7 @@
 using TDPG.Generators.Interfaces;
 using TDPG.Generators.Scalars;
 using TDPG.Generators.Vectors;
+using UnityEngine;
 
 namespace TDPG.Generators.AttackPatterns
 {
@@ -12,6 +13,7 @@ namespace TDPG.Generators.AttackPatterns
     /// within the burst.
     /// </summary>
     [Serializable]
+    [CreateAssetMenu(fileName = "New Burst Pattern", menuName = "TDPG/Patterns/Burst")]
     public class BurstAttackPatternGenerator : AbstractAttackPatternGenerator
     {
         /// <summary>

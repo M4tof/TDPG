@@ -1,6 +1,8 @@
-using UnityEngine;
+using System.Collections;
 using System.Collections.Generic;
+using TDPG.Generators.AttackPatterns;
 using TDPG.Templates.Grid;
+using UnityEngine;
 
 namespace TDPG.Templates.Turret
 {
@@ -42,23 +44,82 @@ namespace TDPG.Templates.Turret
         /// </summary>
         private void PerformCombatLoop()
         {
-            // Step 1: Get Possible Targets (Range + Visibility)
             List<Transform> candidates = GetPossibleTargets();
-
-            // Step 2: Select Target (Strategy)
             _currentTarget = SelectTarget(candidates);
 
-            /*foreach (var item in candidates)
-            {
-                Debug.Log($"target in sight: {item}");
-            }*/
-
-            // Step 3: Shoot
             if (_currentTarget != null)
             {
-                Shoot(_currentTarget);
-                _cooldownTimer = 1f / Data.FireRate;
+                // Sprawdzamy, czy mamy generator wzorców
+                if (Data.PatternGenerator != null)
+                {
+                    // Odpalamy wzorzec tylko jeœli poprzedni siê skoñczy³ 
+                    // lub zgodnie z FireRate (tutaj: FireRate jako odstêp miêdzy wzorcami)
+                    if (_cooldownTimer <= 0)
+                    {
+                        ExecutePattern(_currentTarget);
+                        _cooldownTimer = 1f / Data.FireRate;
+                    }
+                }
+                else
+                {
+                    // Standardowy strza³
+                    Shoot(_currentTarget);
+                    _cooldownTimer = 1f / Data.FireRate;
+                }
             }
+        }
+
+        private void ExecutePattern(Transform target)
+        {
+            // Generujemy nowy wzorzec (u¿ywaj¹c np. czasu jako seedu dla unikalnoœci)
+            var pattern = Data.PatternGenerator.Preview((ulong)(Time.time * 1000));
+            StartCoroutine(PatternRoutine(pattern, target));
+        }
+
+        private IEnumerator PatternRoutine(AttackPattern pattern, Transform target)
+        {
+            float startTime = Time.time;
+            int eventIndex = 0;
+
+            // Sortujemy zdarzenia po czasie, aby mieæ pewnoœæ chronologii
+            pattern.events.Sort((a, b) => a.timeOffset.CompareTo(b.timeOffset));
+
+            while (eventIndex < pattern.events.Count)
+            {
+                float elapsed = Time.time - startTime;
+
+                if (elapsed >= pattern.events[eventIndex].timeOffset)
+                {
+                    SpawnProjectileFromEvent(pattern.events[eventIndex], target);
+                    eventIndex++;
+                }
+                yield return null; // Czekaj do nastêpnej klatki
+            }
+        }
+
+        private void SpawnProjectileFromEvent(AttackEvent ev, Transform target)
+        {
+            if (Data.ProjectilePrefab == null) return;
+
+            // 1. Oblicz bazow¹ rotacjê w stronê celu (jak w starym kodzie)
+            Vector3 targetDir = (target != null) ? (target.position - transform.position).normalized : transform.right;
+            float baseRotZ = Mathf.Atan2(targetDir.y, targetDir.x) * Mathf.Rad2Deg;
+
+            // 2. Dodaj modyfikatory z wzorca (Spread i Direction z generatora)
+            // Jeœli wzorzec podaje w³asny kierunek, u¿ywamy go, jeœli nie - u¿ywamy kierunku na cel
+            float finalRotZ = baseRotZ + ev.spreadAngle;
+            Quaternion bulletRotation = Quaternion.Euler(0f, 0f, finalRotZ);
+
+            Vector3 spawnPos = transform.position + (Vector3)(Data.TileSize * 0.5f);
+
+            GameObject bulletGo = Instantiate(Data.ProjectilePrefab, spawnPos, bulletRotation);
+
+            // OPCJONALNIE: Przekazanie statystyk z Patternu do pocisku
+            // var projectileScript = bulletGo.GetComponent<BasicProjectile>();
+            // if(projectileScript != null) {
+            //    projectileScript.Speed = ev.speed;
+            //    projectileScript.Damage = ev.damage;
+            // }
         }
 
         /// <summary>
@@ -152,6 +213,8 @@ namespace TDPG.Templates.Turret
             // The BasicProjectile script takes over movement via its FixedUpdate.
             // Damage application is handled by the projectile's collision logic (not implemented here).
         }
+
+
 
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace TDPG.Generators.AttackPatterns
 {
@@ -72,5 +73,11 @@ namespace TDPG.Generators.AttackPatterns
         /// <br/>Game logic can use this to switch between different projectile prefabs.
         /// </summary>
         public string metaTag;
+
+        public Vector3 GetDirection()
+        {
+            if (direction == null || direction.Count < 2) return Vector3.right;
+            return new Vector3(direction[0], direction[1], direction.Count > 2 ? direction[2] : 0).normalized;
+        }
     }
 }

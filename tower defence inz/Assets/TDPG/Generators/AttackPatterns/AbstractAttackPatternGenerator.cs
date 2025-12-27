@@ -1,6 +1,7 @@
 ﻿using System;
 using TDPG.Generators.Interfaces;
 using TDPG.Generators.Scalars;
+using UnityEngine;
 
 namespace TDPG.Generators.AttackPatterns
 {
@@ -11,7 +12,7 @@ namespace TDPG.Generators.AttackPatterns
     /// (Duration and Event Count).
     /// </summary>
     [Serializable]
-    public abstract class AbstractAttackPatternGenerator : IAttackPatternGenerator
+    public abstract class AbstractAttackPatternGenerator : ScriptableObject, IAttackPatternGenerator
     {
         /// <summary>
         /// Generator responsible for determining the total duration (in seconds) of the attack pattern.
