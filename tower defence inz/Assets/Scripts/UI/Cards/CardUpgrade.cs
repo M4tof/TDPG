@@ -1,10 +1,9 @@
+using TDPG.Templates.Turret;
 using TMPro;
 using UnityEngine;
 
 public class CardUpgrade : MonoBehaviour
 {
-    
-    
     private CardData cardData;
     public TMP_Text text;
     private CardSelectionMenu cardSelectionMenu;
@@ -19,8 +18,18 @@ public class CardUpgrade : MonoBehaviour
 
         cardSelectionMenu.SetNewCardUpgrade(cardData);
     }
-    
-    
+        
+    public void UseCard()
+    {
+        Debug.Log($"SELECT: {cardSelectionMenu}");
+        if (cardSelectionMenu == null || cardData == null)
+        {
+            return;
+        }
+
+        cardSelectionMenu.UseCardUpgrade(cardData.id);
+    }
+        
     public void SetText()
     {
         text.text = cardData.TextInfo();

@@ -10,18 +10,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 48b7f4daa554cd410be8710ad2974482, type: 3}
-  m_Name: GenericTurret
+  m_Name: Target
   m_EditorClassIdentifier: 
-  TurretID: Normal
+  TurretID: Target
   BaseSprite: {fileID: -1515134823594722529, guid: ccaa28a09cade8dda8cd7fdb786d0609, type: 3}
-  CrystalSprite: {fileID: -3446471830066921269, guid: ccaa28a09cade8dda8cd7fdb786d0609, type: 3}
-  Cost: 25
+  CrystalSprite: {fileID: -1493861469240322331, guid: 8b3353a0a94e47e4dbff64f918723be9, type: 3}
+  Cost: 0
   TileSize: {x: 1, y: 1}
   Multiplayer: 1
-  CanShoot: 1
-  Range: 10
-  Damage: 2
+  CanShoot: 0
+  Range: 0
+  Damage: 0
   FireRate: 1
-  MaxHP: 5
-  modifierList: []
-  ProjectilePrefab: {fileID: 1195895545647384619, guid: 54f1a2241ea8b704390fa0976c4ece48, type: 3}
+  MaxHP: 10
+  ProjectilePrefab: {fileID: 1195895545647384619, guid: b1fab52a54f5c3f4e9b9df79c84498a1, type: 3}

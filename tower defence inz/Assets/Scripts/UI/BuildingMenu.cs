@@ -3,6 +3,7 @@ using UnityEngine;
 public class BuildingMenu : MonoBehaviour
 {
     [SerializeField] private GameObject buildingPanel;
+    [SerializeField] private CardSelectionMenu cardSelectionMenu;
     private bool isActive = false;
     
     void Start()
@@ -19,6 +20,7 @@ public class BuildingMenu : MonoBehaviour
     public void CloseBuildingPanel()
     {
         buildingPanel.SetActive(false);
+        cardSelectionMenu.Close();
         isActive = false;
     }
     
@@ -26,6 +28,7 @@ public class BuildingMenu : MonoBehaviour
     {
         isActive = !isActive;
         buildingPanel.SetActive(isActive);
+        cardSelectionMenu.Close();
     }
 
     public bool GetIsActive()

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace TDPG.Templates.Turret
@@ -29,9 +30,11 @@ namespace TDPG.Templates.Turret
         [Tooltip("Base damage dealt per hit.")] public int Damage = 1;
         [Tooltip("Attack speed in shots per second.")] public float FireRate = 1f; // Shots per second
         [Tooltip("Maximum health of the building.")] public int MaxHP = 10;
+        [Tooltip("Upgrade List for turret")] public List<CardData> modifierList;
 
         [Header("Projectile")]
         // We reference the GameObject containing BasicProjectile script
-        [Tooltip("The bullet prefab spawned when firing.")] public GameObject ProjectilePrefab; 
+        [Tooltip("The bullet prefab spawned when firing.")] public GameObject ProjectilePrefab;
+        
     }
 }
