@@ -149,18 +149,26 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mainCamera: {fileID: 1796767792}
-  cellSize: 5
+  cellSize: 3
   mapGenerator: {fileID: 0}
   tilemap: {fileID: 0}
+  fogTilemap: {fileID: 0}
   gridComponent: {fileID: 0}
   emptyTile: {fileID: 0}
   wallTile: {fileID: 0}
   waterTile: {fileID: 0}
+  nullTile: {fileID: 0}
   Player: {fileID: 0}
   EnemySpawnerPrefab: {fileID: 0}
   DestinationPrefab: {fileID: 0}
+  MapLoaded:
+    m_PersistentCalls:
+      m_Calls: []
   SpawnerContainer: {fileID: 0}
   debugFiller: {fileID: 769840562}
+  mapChanged:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!4 &310619388
 Transform:
   m_ObjectHideFlags: 0

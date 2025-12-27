@@ -13,9 +13,10 @@ public class AStar
 {
     private Grid grid;
 
-    private PriorityQueue<Vector3, float> frontier;
-    private Dictionary<Vector3, Vector3?> cameFrom;
-    private Dictionary<Vector3, float> costSoFar;
+    // Persist these at the class level to reuse memory buffers
+    private readonly PriorityQueue<Vector3, float> frontier = new();
+    private readonly Dictionary<Vector3, Vector3?> cameFrom = new();
+    private readonly Dictionary<Vector3, float> costSoFar = new();
 
     /// <summary>
     /// Initializes the pathfinder with a reference to the logical grid.
@@ -41,9 +42,9 @@ public class AStar
     /// </returns>
     public List<Vector3> FindPath(Vector3 start, Vector3 goal, bool canSwim, bool canFLy, bool canDestroyBuildings)
     {
-        frontier = new PriorityQueue<Vector3, float>();
-        cameFrom = new Dictionary<Vector3, Vector3?>();
-        costSoFar = new Dictionary<Vector3, float>();
+        frontier.Clear();
+        cameFrom.Clear();
+        costSoFar.Clear();
 
         frontier.Enqueue(start, 0);
         cameFrom[start] = null;
