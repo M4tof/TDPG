@@ -150,7 +150,12 @@ namespace TDPG.Templates.Turret
         /// Returns the unique ID from the associated data.
         /// </summary>
         public string GetTurretID() => Data != null ? Data.TurretID : "";
-
+        
+        /// <summary>
+        /// Returns the current HP of this turret for cost calculations.
+        /// </summary>
+        public int GetCurrentHealth() => currentHealth;
+        
         void OnDrawGizmosSelected()
         {
             if (Data != null)

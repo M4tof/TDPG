@@ -637,7 +637,19 @@ namespace TDPG.Templates.Grid
             Vector2Int position = grid.GetXY(worldPosition);
             return buildingsGrid[position.x, position.y];
         }
-
+        
+        /// <summary>
+        /// Retrieves the building object at the given grid position, if any.
+        /// </summary>
+        /// <param name="x">X position of the building</param>
+        /// <param name="y">Y position of the building</param>
+        /// <returns>The game object (building) stored there</returns>
+        public GameObject GetBuildingAtIndices(int x, int y)
+        {
+            if (x < 0 || x >= width || y < 0 || y >= height) return null;
+            return buildingsGrid[x, y];
+        }
+        
         private void SetStartPlayerPosition()
         {
             Vector3 newPosition = GetDestinationWorldPosition();

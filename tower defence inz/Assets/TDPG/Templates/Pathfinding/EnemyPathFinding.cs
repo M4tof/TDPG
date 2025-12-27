@@ -103,50 +103,7 @@ namespace TDPG.Templates.Pathfinding
             index = 0;
             hasReachedDestination = false; // Reset when computing new path
         }
-
-        void Update()
-        {
-            return;
-            if (hasReachedDestination) return;
-            
-            if (path == null || path.Count == 0 || index >= path.Count || gridManager == null)
-                return;
-    
-            Vector3 target = (path[index] * gridManager.CellSize) + new Vector3(half, half, 0);
-    
-            // Only move if not currently destroying a building
-            if (!isDestroyingBuilding)
-            {
-                transform.position = Vector3.MoveTowards(transform.position, target, Time.deltaTime * speed);
-            }
-
-            if (Vector3.Distance(transform.position, target) < 0.1f)
-            {
-                if (canDestroyBuildings && gridManager.GetTileType(target) == Grid.Grid.TileType.BUILDING && !isDestroyingBuilding)
-                {
-                    // Start destroying the building
-                    StartCoroutine(DestroyBuilding(target));
-                }
-                else
-                {
-                    index++; //move to next point in path
-                    
-                    // Check if we've reached the final destination
-                    if (index >= path.Count)
-                    {
-                        hasReachedDestination = true;
-                        path = null; // Clear the path to stop drawing gizmos
-                    }
-                }
-            }
-            
-            // Additional check: if we're very close to the actual destination object, consider it reached
-            if (destinationObject != null && Vector3.Distance(transform.position, destinationObject.transform.position) < 0.5f)
-            {
-                hasReachedDestination = true;
-                path = null;
-            }
-        }
+        
 
         /// <summary>
         /// Retrieves the current waypoint the agent should move towards.

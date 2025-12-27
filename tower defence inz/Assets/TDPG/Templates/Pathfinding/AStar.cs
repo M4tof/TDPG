@@ -1,5 +1,7 @@
 using System.Collections.Generic;
+using TDPG.Templates.Grid;
 using TDPG.Templates.Pathfinding;
+using TDPG.Templates.Turret;
 using UnityEngine;
 using Grid = TDPG.Templates.Grid.Grid;
 
@@ -12,8 +14,7 @@ using Grid = TDPG.Templates.Grid.Grid;
 public class AStar
 {
     private Grid grid;
-
-    // Persist these at the class level to reuse memory buffers
+    // Reuse collections to avoid GC allocations
     private readonly PriorityQueue<Vector3, float> frontier = new();
     private readonly Dictionary<Vector3, Vector3?> cameFrom = new();
     private readonly Dictionary<Vector3, float> costSoFar = new();
@@ -22,7 +23,6 @@ public class AStar
     /// Initializes the pathfinder with a reference to the logical grid.
     /// </summary>
     /// <param name="grid">The data grid containing terrain info (Walls, Water, etc).</param>
-
     public AStar(Grid grid)
     {
         this.grid = grid;
@@ -56,10 +56,27 @@ public class AStar
 
             if (current == goal)
                 break;
-
-            foreach (Vector3 next in grid.GetNeighbors(new Vector3Int((int)current.x, (int)current.y, 0), canSwim, canFLy, canDestroyBuildings))
+            
+            foreach (Vector3 next in grid.GetNeighbors(current, canSwim, canFLy, canDestroyBuildings))
             {
-                float newCost = costSoFar[current] + 1;
+                // 1. Base distance cost is 1.0 (assuming grid cells are 1 unit apart logically)
+                float moveWeight = 1.0f;
+                
+                // 2. Add Building Health if applicable
+                // Flyers ignore buildings; non-flyers only calculate cost if they CAN destroy them
+                if (canDestroyBuildings && !canFLy)
+                {
+                    // Use the (int, int) overload to avoid WorldPos conversion issues
+                    int nx = Mathf.FloorToInt(next.x);
+                    int ny = Mathf.FloorToInt(next.y);
+                    
+                    if (grid.GetTileType(nx,ny) == Grid.TileType.BUILDING)
+                    {
+                        moveWeight += GetBuildingHealthCost(nx,ny);
+                    }
+                }
+                
+                float newCost = costSoFar[current] + moveWeight;
 
                 if (!costSoFar.ContainsKey(next) || newCost < costSoFar[next])
                 {
@@ -76,6 +93,22 @@ public class AStar
         return ReconstructPath(goal);
     }
 
+    /// <summary>
+    /// Communicates with GridManager to find the health of a turret at a specific world position.
+    /// </summary>
+    private float GetBuildingHealthCost(int x, int y)
+    {
+        // Access GridManager to find the building at specific Grid Indices
+        GameObject buildingObj = GridManager.Instance.GetBuildingAtIndices(x, y);
+
+        if (buildingObj != null)
+        {
+            TurretBase turret = buildingObj.GetComponent<TurretBase>();
+            if (turret != null) return turret.GetCurrentHealth();
+        }
+        return 0;
+    }
+    
     /// <summary>
     /// Calculates the estimated cost from A to B.
     /// </summary>
