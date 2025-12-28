@@ -8,6 +8,8 @@ using System.Text;
 using System.Collections.Generic;
 using TDPG.Templates.Grid;
 using TDPG.Templates.Grid.MapGen;
+using TDPG.VideoGeneration;
+using System.Linq;
 
 public class GameManager : MonoBehaviour
 {
@@ -75,6 +77,12 @@ public class GameManager : MonoBehaviour
         {
             if (scene.name == "MainGame")
             {
+                Seed CSSeed = GSeed.NextSubSeed(InitializerFromDate.QuickGenerate(Slot).ToString());
+                List<ChoseAndApplyPalette> ColorSwappers = GetComponents<ChoseAndApplyPalette>().ToList();
+                foreach (var cs in ColorSwappers)
+                {
+                    cs.seed = CSSeed;
+                }
                 // PRIORITY 1: LOADING A SAVE
                 // If we have a save file pending, we MUST load it and IGNORE the new game config.
                 if (!string.IsNullOrEmpty(PendingLoadPath))
