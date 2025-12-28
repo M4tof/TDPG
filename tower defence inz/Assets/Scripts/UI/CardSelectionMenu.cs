@@ -167,6 +167,11 @@ public class CardSelectionMenu : MonoBehaviour
             ToRange = 1.01f + (int.Parse(digits.Substring(5, 2)) / 100.0f) / 4; //1.01 - 2.0
         }
 
+        if (ToDamage == 1 && ToRange == 1 && ToHP == 1)
+        {
+            ToDamage = 1.01f + (int.Parse(digits.Substring(7, 2)) / 100.0f) / 4; //1.01 - 2.0
+        }
+
         cardData.damageMultiplayer = ToDamage;
         cardData.hpMultiplayer = ToHP;
         cardData.rangeMultiplayer = ToRange;
