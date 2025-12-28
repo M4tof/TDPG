@@ -23,11 +23,11 @@ public class EnemysSpawner : MonoBehaviour
 
     void Update()
     {
-        if (!spanwed)
-        {
-            SpawnEnemy("Tank",1);
-            spanwed = true;
-        }
+        // if (!spanwed)
+        // {
+        //     SpawnEnemy("Tank",1);
+        //     spanwed = true;
+        // }
     }
 
     private void InitializeFactory()

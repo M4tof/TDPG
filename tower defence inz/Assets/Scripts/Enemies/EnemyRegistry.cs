@@ -64,4 +64,9 @@ public class EnemyRegistry
         Debug.LogError($"[EnemyRegistry] Enemy ID '{id}' not found!");
         return null;
     }
+
+    public List<string> ListIDs()
+    {
+        return _lookup.Keys.ToList();
+    }
 }
