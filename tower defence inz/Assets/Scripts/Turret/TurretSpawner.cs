@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using TDPG.Templates.Grid;   // Lib
 using TDPG.Templates.Turret; // Lib
@@ -17,9 +18,10 @@ public class TurretSpawner : MonoBehaviour
     private string _selectedTurretID;
     private bool _canSpawnTurret;
     private TurretData data;
+    private List<CardData> modifiersList = new List<CardData>();
 
     // Renamed back to Set... for consistency
-    public void SetTurretToSpawn(string turretID)
+    public void SetTurretToSpawn(string turretID, List<CardData> modifiers = null)
     {
         _selectedTurretID = turretID;
 
@@ -35,8 +37,12 @@ public class TurretSpawner : MonoBehaviour
         {
             Debug.LogError($"Cannot find turret data: {turretID}");
             TurretVisualizer.gameObject.SetActive(false);
+            modifiersList = new List<CardData>();
             return;
         }
+        
+        //Set Modifiers
+        modifiersList = (modifiers == null || modifiers.Count == 0) ?  new List<CardData>() : modifiers;
 
         // Setup Visualizer
         TurretVisualizer.gameObject.SetActive(true);
@@ -90,6 +96,7 @@ public class TurretSpawner : MonoBehaviour
         // Initialize the new instance (It will calculate offset from its clean state)
         var logic = newTurret.GetComponent<Turret>();
         logic.Initialize(data);
+        logic.ApplyModifiers(modifiersList);
 
         GridManager.Instance.PlaceTurret(worldPosition, newTurret);
 
@@ -139,6 +146,7 @@ public class TurretSpawner : MonoBehaviour
 
         // Init Logic
         newTurret.GetComponent<TurretBase>().Initialize(data);
+        newTurret.GetComponent<TurretBase>().ApplyModifiers(modifiersList);
 
         // Register in Grid
         GridManager.Instance.PlaceTurret(worldPosition, newTurret);

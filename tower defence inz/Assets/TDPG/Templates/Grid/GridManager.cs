@@ -48,6 +48,7 @@ namespace TDPG.Templates.Grid
         [Header("Spawns")][SerializeField] [Tooltip("The Player prefab to spawn at the start.")] private GameObject Player;
         [SerializeField] [Tooltip("Prefab for Enemy Spawners.")] private GameObject EnemySpawnerPrefab;
         [SerializeField] [Tooltip("Prefab for the Target/Base.")] private GameObject DestinationPrefab;
+        [SerializeField] [Tooltip("Statistics for Target")] private TurretData data;
 
         [Header("Events")]
         [SerializeField] [Tooltip("Event fired when the map is fully generated, visualized, and entities are spawned.")] private UnityEvent MapLoaded;
@@ -55,6 +56,9 @@ namespace TDPG.Templates.Grid
         [Tooltip("Game Object which would be a parent for spawned EnemySpawners")]
         [SerializeField]
         private GameObject SpawnerContainer;
+
+        [Tooltip("Game Object which would be a parent for spawned target and turret")]
+        [SerializeField] private GameObject TurretContainer;
 
         [Header("Debug")][SerializeField] 
         [Tooltip("Optional debug utility to fill the grid if MapGenerator is missing. The grid is very simple but creates faster.")]
@@ -658,8 +662,16 @@ namespace TDPG.Templates.Grid
 
         private void SetDestination()
         {
-            destinationObject = Instantiate(DestinationPrefab, GetDestinationWorldPosition(),
-                Quaternion.identity, gameObject.transform);
+            //PlaceTurret(GetDestinationWorldPosition(), DestinationPrefab);
+            /*destinationObject = Instantiate(new GameObject(), GetDestinationWorldPosition(),
+                Quaternion.identity, gameObject.transform);*/
+            
+            destinationObject = Instantiate(DestinationPrefab, GetDestinationWorldPosition(), Quaternion.identity,TurretContainer.transform);
+            // Initialize the new instance (It will calculate offset from its clean state)
+            var logic = destinationObject.GetComponent<Turret.Turret>();
+            logic.Initialize(data);
+
+            PlaceTurret(GetDestinationWorldPosition(), destinationObject);
         }
 
         /// <summary>
@@ -722,7 +734,7 @@ namespace TDPG.Templates.Grid
         {
             foreach (Vector3Int pos in spawnerPositions)
             {
-                Debug.Log($"SPAWNER POSITION {GridToWorld(pos.x, pos.y)} == {pos}");
+                //Debug.Log($"SPAWNER POSITION {GridToWorld(pos.x, pos.y)} == {pos}");
                 Instantiate(EnemySpawnerPrefab, GridToWorld(pos.x, pos.y), Quaternion.identity, SpawnerContainer.transform);
             }
         }
@@ -760,6 +772,16 @@ namespace TDPG.Templates.Grid
             if (tilemap == null)
             {
                 Debug.LogWarning("Tilemap is not assigned", this);
+            }
+
+            if (TurretContainer == null)
+            {
+                Debug.LogWarning("TurretContainer is not assigned", this);
+            }
+            
+            if (SpawnerContainer == null)
+            {
+                Debug.LogWarning("SpawnerContainer is not assigned", this);
             }
         }
 

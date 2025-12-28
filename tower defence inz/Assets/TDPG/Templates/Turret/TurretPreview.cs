@@ -38,6 +38,6 @@ namespace TDPG.Templates.Turret
             base.Initialize(data);
             SetPlacementValid(true); // Default to green
         }
-    
+
     }
 }

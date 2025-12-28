@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 using TDPG.Templates.Grid;
+using UnityEngine.Events;
 
 namespace TDPG.Templates.Turret
 {
@@ -15,6 +16,8 @@ namespace TDPG.Templates.Turret
         [Header("Runtime State")]
         [Tooltip("The configuration data (Stats, Sprites, Size) driving this specific turret instance.")]
         public TurretData Data;
+        [Tooltip("Modyficator for Turret")]
+        [SerializeField] List<CardData> playerCardApplied;
 
         [Tooltip("The current health points of the turret.")]
         private int currentHealth;
@@ -23,6 +26,8 @@ namespace TDPG.Templates.Turret
         [SerializeField] [Tooltip("Renderer for the static base/pedestal of the turret.")] public SpriteRenderer baseRenderer;
         [SerializeField] [Tooltip("Renderer for the active element/crystal of the turret.")] public SpriteRenderer crystalRenderer;
 
+        public UnityEvent turretDestroyed; 
+        
         private Vector3 _baseDesignPos;
         private Vector3 _crystalDesignPos;
         private Vector3 _baseDesignScale;
@@ -68,7 +73,8 @@ namespace TDPG.Templates.Turret
         public virtual void Initialize(TurretData data)
         {
             EnsureOffsetsCached(); // Safety check
-            Data = data;
+            
+            Data = Instantiate(data); //make copy of data
             currentHealth = data.MaxHP;
             // Safety: Default to 1.0 if GridManager is missing (e.g. prefab mode)
             float cellSize = (GridManager.Instance != null) ? GridManager.Instance.CellSize : 1.0f;
@@ -137,6 +143,7 @@ namespace TDPG.Templates.Turret
         public void DestroyTurret()
         {
             GridManager.Instance.SetTileType(transform.position,Grid.Grid.TileType.EMPTY);
+            turretDestroyed.Invoke();
             Destroy(gameObject);
         }
 
@@ -155,6 +162,36 @@ namespace TDPG.Templates.Turret
         /// Returns the current HP of this turret for cost calculations.
         /// </summary>
         public int GetCurrentHealth() => currentHealth;
+
+        public void ApplyModifiers(List<CardData> modifiers)
+        {
+            if (modifiers == null || modifiers.Count == 0)
+            {
+                Debug.Log("SET Modifier are EMPTY!!!");
+                return;
+            } 
+            Debug.Log("SET Modifier");
+            foreach (CardData modifier in modifiers)
+            {
+                if (modifier.hpMultiplayer != 1)
+                {
+                    Data.MaxHP = Mathf.RoundToInt(Data.MaxHP * modifier.hpMultiplayer);
+                    currentHealth += Data.MaxHP - currentHealth;
+                }
+                if (modifier.damageMultiplayer != 1)
+                {
+                    Data.Damage = Mathf.RoundToInt(Data.Damage * modifier.damageMultiplayer);
+                }
+                if (modifier.rangeMultiplayer != 1)
+                {
+                    Data.Range = Mathf.RoundToInt(Data.Range * modifier.rangeMultiplayer);
+                }
+
+                Data.Cost += modifier.ResourceCost;
+            }
+
+            playerCardApplied = modifiers;
+        }
         
         void OnDrawGizmosSelected()
         {
