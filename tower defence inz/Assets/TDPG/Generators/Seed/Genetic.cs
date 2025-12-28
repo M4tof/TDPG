@@ -21,6 +21,7 @@ namespace TDPG.Generators.Seed
         /// 1. XORs the two arrays (overlapping).
         /// 2. Performs a cyclic bit-shift (Rotation) to scramble patterns.
         /// 3. Truncates/Converts to ulong.
+        /// <br/>This is a "gentle" crossover that preserves some bitwise relationships 
         /// </summary>
         /// <param name="aByte">First byte array (DNA A).</param>
         /// <param name="bByte">Second byte array (DNA B).</param>
@@ -240,5 +241,36 @@ namespace TDPG.Generators.Seed
             return tmpSeed;
         }
         
+        /// <summary>
+        /// A 64-bit non-linear mixer (Finalizer) based on MurmurHash3/SplitMix64.
+        /// <br/>Ensures the Avalanche Effect: changing one bit in the input 
+        /// results in roughly 32 bits changing in the output.
+        /// </summary>
+        public static ulong Scramble(ulong x)
+        {
+            x = (x ^ (x >> 30)) * 0xbf58476d1ce4e5b9L;
+            x = (x ^ (x >> 27)) * 0x94d049bb133111ebL;
+            x = x ^ (x >> 31);
+            return x;
+        }
+        
+        /// <summary>
+        /// Generates a stable 64-bit hash from a string using the FNV-1a algorithm.
+        /// <br/>Unlike string.GetHashCode(), this is guaranteed to be identical across 
+        /// different .NET runtimes and OS platforms.
+        /// </summary>
+        /// <param name="str">Text input value</param>
+        /// <returns>Hashed value from the str</returns>
+        public static ulong GetDeterministicHash(string str)
+        {
+            // A simple FNV-1a hash for strings
+            ulong hash = 0xcbf29ce484222325;
+            foreach (char c in str)
+            {
+                hash ^= (ulong)c;
+                hash *= 0x100000001b3;
+            }
+            return hash;
+        }
     }
 }

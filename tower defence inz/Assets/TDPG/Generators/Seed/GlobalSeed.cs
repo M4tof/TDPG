@@ -7,15 +7,19 @@ namespace TDPG.Generators.Seed
 {
     /// <summary>
     /// Acts as the central factory and registry for all seeds within a specific game session or save file.
+    /// Uses an "Evolving State" pattern.
     /// <br/>
     /// The GlobalSeed holds the "Master Entropy" and generates deterministic children (SubSeeds) 
     /// based on string keys, ensuring that the same save file always produces the same world.
+    /// <br/>Every time a SubSeed is generated, the Master Base evolves, ensuring that 
+    /// subsequent requests (even with the same key) result in distinct, high-entropy seeds.
     /// </summary>
     [Serializable]
     public class GlobalSeed:ISeed
     {
         /// <summary>
-        /// The Master Entropy value from which all SubSeeds are derived.
+        /// The current internal entropy state. This value changes every time 
+        /// <see cref="NextSubSeed"/> is called to ensure sequence uniqueness.
         /// </summary>
         public ulong Base { get; private set; }
         
@@ -90,31 +94,41 @@ namespace TDPG.Generators.Seed
         }
 
         /// <summary>
-        /// Generates a deterministic child seed by combining the Global Base with a provided string key.
-        /// <br/>
-        /// The new seed is registered in the <see cref="subSeeds"/> list.
+        /// Generates a unique SubSeed using a 4-step Pipeline:
+        /// <list type="number">
+        /// <item>Combine Key + Counter and Scramble (Input Prep).</item>
+        /// <item>Scramble the current Global Base (State Prep).</item>
+        /// <item>Perform Genetic Crossover between Key and State (Breeding).</item>
+        /// <item>Evolve the Global Base using the new Offspring (State Split).</item>
+        /// </list>
         /// </summary>
-        /// <param name="key">
-        /// A unique context string (e.g., "Dungeon_Level_1", "Player_Stats", "Time_12:00").
-        /// <br/>Using the same key and Base always results in the same Child Seed.
-        /// </param>
-        /// <returns>A new <see cref="Seed"/> instance derived via Genetic Crossover.</returns>
+        /// <param name="key">A context string (e.g. "Loot_Chest").</param>
+        /// <returns>A deterministic but high-entropy SubSeed.</returns>
         public Seed NextSubSeed(string key)
         {
-            // Convert key to hash, then to bytes
-            var hash = new Hash128();
-            hash.Append(key);
-            byte[] hashedKey = Encoding.ASCII.GetBytes(hash.ToString());
-    
-            // Convert base to bytes
-            byte[] bitBase = BitConverter.GetBytes(this.GetBaseValue());
+            //Update counter
+            currIndex++;
             
-            ulong value = Genetic.ByteCrossover(bitBase, hashedKey);
-    
-            Seed result = new Seed(value, currIndex++, "Child of global seed");
-            subSeeds.Add(result);
+            // Step 1: Input Prep (Hash + Scramble)
+            ulong keyRaw = Genetic.GetDeterministicHash(key) ^ (uint)currIndex;
+            ulong keyScrambled = Genetic.Scramble(keyRaw);
             
-            return result;
+            // Step 2: State Prep (Scramble the Base so the 'gentle' crossover has high entropy)
+            ulong stateScrambled = Genetic.Scramble(Base);
+         
+            // Step 3: Genetic Crossover
+            byte[] parentA = BitConverter.GetBytes(stateScrambled);
+            byte[] parentB = BitConverter.GetBytes(keyScrambled);
+            ulong offspringValue = Genetic.ByteCrossover(parentA, parentB);
+            
+            // Step 4: State Evolution (The Split)
+            // This ensures that even if you call "Card" and then "Card" again, 
+            // the second "Card" starts with a different base.
+            Base = Genetic.Scramble(Base ^ offspringValue);
+            
+            Seed newSeed = new Seed(offspringValue, currIndex, "CHILD_OF_GLOBAL_SEED", true);
+            subSeeds.Add(newSeed);
+            return newSeed;
         }
 
         /// <summary>
