@@ -12,7 +12,7 @@ namespace TDPG.Generators.Vectors
     /// </summary>
     /// <typeparam name="TScalar">The type of the individual elements (e.g., float, int).</typeparam>
     [Serializable]
-    public class VectorGenerator<TScalar> : IGenerator<List<TScalar>>
+    public class VectorGenerator<TScalar> : IVectorGenerator<TScalar>
     {
         
         /// <summary>
