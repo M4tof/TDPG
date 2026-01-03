@@ -77,6 +77,7 @@ public class EnemyBehavior : EnemyBaseBehaviour
     public override void Die()
     {
         EnemyCompendium.Instance.UnregisterEnemy(Logic);
+        ResourceSystem.Instance.mana.Grant(Logic.GetReward());
         base.Die();
     }
 

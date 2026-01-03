@@ -899,6 +899,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 685601784388444713, guid: a010ffa40888912c7b79be26926245ad, type: 3}
+      propertyPath: maxValue
+      value: 4000
+      objectReference: {fileID: 0}
     - target: {fileID: 2356923077073476969, guid: a010ffa40888912c7b79be26926245ad, type: 3}
       propertyPath: m_LocalPosition.x
       value: 402.29617
@@ -3289,6 +3293,8 @@ MonoBehaviour:
   waveSetup: 3
   maxEnemyTypeCountPerWaveNumber: 3
   minEnemyTypeCountPerWaveNumber: 1
+  Reward: 100
+  WaveRewardMultiplier: 100
   spawners: []
 --- !u!4 &1341360919
 Transform:

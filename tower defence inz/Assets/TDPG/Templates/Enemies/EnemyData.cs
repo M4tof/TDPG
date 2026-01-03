@@ -26,10 +26,14 @@ namespace TDPG.Templates.Enemies
         [Tooltip("The attack speed of the enemy (attacks per second).")]
         public float AttackSpeed;
 
+        [Tooltip("Reward for eleminating enemy")]
+        public int Reward;
 
         [Header("Visuals")]
         [Tooltip("The sprite used by the SpriteRenderer.")]
         public Sprite EnemySprite;
+        
+        
         
     }
 }

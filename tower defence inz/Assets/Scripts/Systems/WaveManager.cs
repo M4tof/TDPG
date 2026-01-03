@@ -16,6 +16,9 @@ public class WaveManager : MonoBehaviour
     [SerializeField] private int maxEnemyTypeCountPerWaveNumber = 3;
     [SerializeField] private int minEnemyTypeCountPerWaveNumber = 1;
 
+    [SerializeField] private int Reward;
+    [SerializeField] private float WaveRewardMultiplier;
+
     [Header("References")]
     // [SerializeField] private EnemyRegistry enemyRegistry;
     [SerializeField] private List<EnemysSpawner> spawners; // Assuming a script called EnemySpawner exists
@@ -148,6 +151,7 @@ public class WaveManager : MonoBehaviour
     {
         _isWaveActive = false;
         _cooldownTimer = cooldownPeriod;
+        ResourceSystem.Instance.mana.Grant(Reward + WaveRewardMultiplier * currentWaveNumber);
         Debug.Log($"Wave {currentWaveNumber} cleared. Cooldown started.");
     }
 

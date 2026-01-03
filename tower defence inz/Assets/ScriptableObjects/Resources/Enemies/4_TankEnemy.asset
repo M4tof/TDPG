@@ -17,4 +17,5 @@ MonoBehaviour:
   Speed: 30
   Damage: 1
   AttackSpeed: 1
+  Reward: 1000
   EnemySprite: {fileID: 7233898121321405496, guid: 3e0c605eb0d9d59399ac5e198ff137b9, type: 3}

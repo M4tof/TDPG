@@ -145,5 +145,10 @@ namespace TDPG.Templates.Enemies
             CurrentHealth = health;
         }
 
+        public int GetReward()
+        {
+            return Data.Reward;
+        }
+
     }
 }

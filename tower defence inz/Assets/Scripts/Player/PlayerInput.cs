@@ -33,6 +33,7 @@ public class PlayerInput : MonoBehaviour
 
     private bool inMenu;
     private bool inMap;
+    private bool isShooting = false;
     private GameObject buildingToBuild; 
     
     //Initial
@@ -67,12 +68,21 @@ public class PlayerInput : MonoBehaviour
                     break;
             }
         }
+
+        Vector3 worldMousePosition = mainCamera.ScreenToWorldPoint(Mouse.current.position.ReadValue());
+        if (isShooting)
+        {
+            if (!inMenu)
+            {
+                projectileSpawner.Shoot(transform.position, worldMousePosition);
+            }
+        }
         //Move player
         rb.linearVelocity = moveDirection * speed * speedMultiplier;
         RotateSprite();
         
         //Move building preview
-        turretSpawner.UpdateVisualizerPosition(mainCamera.ScreenToWorldPoint(Mouse.current.position.ReadValue()));
+        turretSpawner.UpdateVisualizerPosition(worldMousePosition);
     }
     
     //Set player direction based on input system
@@ -91,7 +101,6 @@ public class PlayerInput : MonoBehaviour
             GridManager.Instance.OnMouseClick(context);
             if (!inMenu)
             {
-                projectileSpawner.Shoot(transform.position, worldMousePosition);
                 return;
             }
 
@@ -99,6 +108,19 @@ public class PlayerInput : MonoBehaviour
             {
                 turretSpawner.SpawnTurret(worldMousePosition);
             }
+        }
+
+        if (context.started)
+        {
+            if (!inMenu)
+            {
+                isShooting = true;
+            }
+        }
+
+        if (context.canceled)
+        {
+            isShooting = false;
         }
         
     }
