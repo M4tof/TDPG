@@ -7,7 +7,7 @@ namespace TDPG.Templates.Turret
     public class TurretSelection : MonoBehaviour
     {
         [Header("Parameters")]
-        [SerializeField] [Tooltip("Turret id")] string turretToSpawn;
+        [SerializeField] [Tooltip("Turret id")] private string turretToSpawn;
         [SerializeField] [Tooltip("For Debugging")] private List<CardData> turretCards;
         [Header("Game Objects")]
         [SerializeField] [Tooltip("Component used to spawn turrets")] TurretSpawner turretSpawner;
@@ -40,6 +40,11 @@ namespace TDPG.Templates.Turret
         public int GetTurretUpgrades()
         {
             return turretCards.Count;
+        }
+
+        public string GetTurretName()
+        {
+            return turretToSpawn;
         }
     
         void OnValidate()

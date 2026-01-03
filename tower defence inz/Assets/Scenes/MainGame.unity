@@ -1039,6 +1039,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   SelectionBox: {fileID: 1499045517}
   CardBox: {fileID: 267132901}
+  TurretBox: {fileID: 2082853665}
   CardFirstPosition: {x: -370, y: -10}
   CardUpgradePrefab: {fileID: 3314750622765985125, guid: 9a925d517ad8a1647811e6692eeffa3f, type: 3}
   PlayerCardPrefab: {fileID: 3314750622765985125, guid: fc7899013d6e236488dc46949b02aa5f, type: 3}

@@ -8,7 +8,9 @@ public class CardSelectionMenu : MonoBehaviour
     [Header("Parameters")]
     [SerializeField] [Tooltip("GameObject with have all visuals for selcting cards")] private GameObject SelectionBox;
     [SerializeField] [Tooltip("Object which will be parent for card buttons")] private GameObject CardBox;
+    [SerializeField] [Tooltip("Object which is parrent for turret")] private GameObject TurretBox;
     [SerializeField] [Tooltip("Start Position where would appear firs cards")] private Vector2 CardFirstPosition;
+    [Header("Prefabs")]
     [SerializeField] [Tooltip("Prefab for card button used to select upgrade")] private GameObject CardUpgradePrefab;
     [SerializeField] [Tooltip("Prefab for card button which show player's current cards")] private GameObject PlayerCardPrefab;
     
@@ -113,7 +115,30 @@ public class CardSelectionMenu : MonoBehaviour
         {
             if (playerCard.id == id)
             {
+                //Set Upgrade for Turret Selection
                 lastUsedTurretSelection.AddUpgrade(playerCard);
+
+                //Set Upgrade for placed turrets
+                if(CardBox != null)
+                {
+                    for (int i = 0; i < TurretBox.transform.childCount; i++)
+                    {
+                        Transform child = TurretBox.transform.GetChild(i);
+                        
+                        TurretBase turret = child.gameObject.GetComponent<TurretBase>();
+                        if(turret == null)
+                        {
+                            continue;
+                        }
+
+                        if (lastUsedTurretSelection.GetTurretName() == turret.GetTurretID())
+                        {
+                            turret.AddAndApplyModifier(playerCard);
+                            Debug.Log($"TURRET ID: { turret.GetTurretID() }");
+                        }
+                    }
+                }
+                
                 playerCards.Remove(playerCard);
                 break;
             }
@@ -177,7 +202,6 @@ public class CardSelectionMenu : MonoBehaviour
         cardData.rangeMultiplayer = ToRange;
 
         Debug.Log($"STATS: {ToDamage} {ToHP} {ToRange}");
-        //TODO Generowanie statystyk
         return cardData;
     }
 
@@ -203,6 +227,23 @@ public class CardSelectionMenu : MonoBehaviour
     public void LoadNextId(int nextId)
     {
         this.nextId = nextId;
+    }
+
+
+    void OnValidate()
+    {
+        if (SelectionBox == null)
+        {
+            Debug.LogWarning("Sellection box is null", this);
+        }
+        if (CardBox == null)
+        {
+            Debug.LogWarning("Card Box is null", this);
+        }
+        if (TurretBox == null)
+        {
+            Debug.LogWarning("Turret Box is null", this);
+        }
     }
     
 }

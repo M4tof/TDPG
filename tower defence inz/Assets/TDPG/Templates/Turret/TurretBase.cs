@@ -17,7 +17,7 @@ namespace TDPG.Templates.Turret
         [Tooltip("The configuration data (Stats, Sprites, Size) driving this specific turret instance.")]
         public TurretData Data;
         [Tooltip("Modyficator for Turret")]
-        [SerializeField] List<CardData> playerCardApplied;
+        [SerializeField] List<CardData> playerCardApplied = new List<CardData>();
 
         [Tooltip("The current health points of the turret.")]
         private int currentHealth;
@@ -163,6 +163,9 @@ namespace TDPG.Templates.Turret
         /// </summary>
         public int GetCurrentHealth() => currentHealth;
 
+        /// <summary>
+        /// Apply all modifiers from list and set list of modifiers
+        /// </summary>
         public void ApplyModifiers(List<CardData> modifiers)
         {
             if (modifiers == null || modifiers.Count == 0)
@@ -173,24 +176,64 @@ namespace TDPG.Templates.Turret
             Debug.Log("SET Modifier");
             foreach (CardData modifier in modifiers)
             {
-                if (modifier.hpMultiplayer != 1)
-                {
-                    Data.MaxHP = Mathf.RoundToInt(Data.MaxHP * modifier.hpMultiplayer);
-                    currentHealth += Data.MaxHP - currentHealth;
-                }
-                if (modifier.damageMultiplayer != 1)
-                {
-                    Data.Damage = Mathf.RoundToInt(Data.Damage * modifier.damageMultiplayer);
-                }
-                if (modifier.rangeMultiplayer != 1)
-                {
-                    Data.Range = Mathf.RoundToInt(Data.Range * modifier.rangeMultiplayer);
-                }
-
-                Data.Cost += modifier.ResourceCost;
+                ApplyModifier(modifier);
             }
 
             playerCardApplied = modifiers;
+        }
+        
+        /// <summary>
+        /// Apply modifiers which changes parameters of turret
+        /// </summary>
+        public void ApplyModifier(CardData modifier)
+        {
+            if (modifier.hpMultiplayer != 1)
+            {
+                Data.MaxHP = Mathf.RoundToInt(Data.MaxHP * modifier.hpMultiplayer);
+                currentHealth += Data.MaxHP - currentHealth;
+            }
+            if (modifier.damageMultiplayer != 1)
+            {
+                Data.Damage = Mathf.RoundToInt(Data.Damage * modifier.damageMultiplayer);
+            }
+            if (modifier.rangeMultiplayer != 1)
+            {
+                Data.Range = Mathf.RoundToInt(Data.Range * modifier.rangeMultiplayer);
+            }
+
+            Data.Cost += modifier.ResourceCost;
+        }
+
+
+        /// <summary>
+        /// Add and apply modifier to current modifiers
+        /// </summary>
+        public void AddAndApplyModifier(CardData modifier)
+        {
+            Debug.Log("SET Modifier");
+            if (modifier == null) 
+            {
+                return;
+            }
+            ApplyModifier(modifier);
+
+            playerCardApplied.Add(modifier);
+        }
+
+        /// <summary>
+        /// Getter for Data
+        /// </summary>
+        public TurretData GetData()
+        {
+            return Data;
+        }
+
+        /// <summary>
+        /// Get id from Data
+        /// </summary>
+        public string GetTurretId()
+        {
+            return Data.TurretID;
         }
         
         void OnDrawGizmosSelected()
