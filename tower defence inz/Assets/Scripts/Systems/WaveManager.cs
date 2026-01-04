@@ -16,12 +16,17 @@ public class WaveManager : MonoBehaviour
     [SerializeField] private int maxEnemyTypeCountPerWaveNumber = 3;
     [SerializeField] private int minEnemyTypeCountPerWaveNumber = 1;
 
+    [Header("Rewards Settings")]
     [SerializeField] private int Reward;
-    [SerializeField] private float WaveRewardMultiplier;
+    [SerializeField] private float WaveRewardMultiplier = 1;
+    [SerializeField] private bool UpgradesOnEndWave = true;
+    [SerializeField] private int numberOfUpgrades = 3;
+    
 
     [Header("References")]
     // [SerializeField] private EnemyRegistry enemyRegistry;
     [SerializeField] private List<EnemysSpawner> spawners; // Assuming a script called EnemySpawner exists
+    [SerializeField] private CardSelectionMenu cardSelectionMenu;
 
     private float _cooldownTimer;
     private bool _isWaveActive = false;
@@ -152,6 +157,11 @@ public class WaveManager : MonoBehaviour
         _isWaveActive = false;
         _cooldownTimer = cooldownPeriod;
         ResourceSystem.Instance.mana.Grant(Reward + WaveRewardMultiplier * currentWaveNumber);
+        if (UpgradesOnEndWave)
+        {
+            cardSelectionMenu.GetNewCard(numberOfUpgrades);
+        }
+        
         Debug.Log($"Wave {currentWaveNumber} cleared. Cooldown started.");
     }
 
@@ -212,4 +222,12 @@ public class WaveManager : MonoBehaviour
     }
 
     #endregion
+    
+    void OnValidate()
+    {
+        if (cardSelectionMenu == null)
+        {
+            Debug.LogWarning("cardSelectionMenu is null", this);
+        }
+    }
 }

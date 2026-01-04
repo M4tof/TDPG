@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   TurretID: Normal
   BaseSprite: {fileID: -1515134823594722529, guid: ccaa28a09cade8dda8cd7fdb786d0609, type: 3}
-  CrystalSprite: {fileID: -3446471830066921269, guid: ccaa28a09cade8dda8cd7fdb786d0609, type: 3}
+  CrystalSprite: {fileID: -3964856179284347504, guid: ccaa28a09cade8dda8cd7fdb786d0609, type: 3}
   Cost: 25
   TileSize: {x: 1, y: 1}
   Multiplayer: 1
