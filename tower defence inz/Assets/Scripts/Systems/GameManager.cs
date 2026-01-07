@@ -187,6 +187,8 @@ public class GameManager : MonoBehaviour
             currentEnemies = EnemyCompendium.Instance.GetSaveData();
         }
 
+        int CNextId = FindFirstObjectByType<CardSelectionMenu>().nextId;
+
         GameSaveData data = new GameSaveData
         {
             // SlotNumber = Slot,
@@ -207,7 +209,8 @@ public class GameManager : MonoBehaviour
                 DestX = dX,
                 DestY = dY,
                 SpawnerPositions = savedSpawners
-            }
+            },
+            CardNextId = CNextId
         };
 
         string json = JsonConvert.SerializeObject(data, Formatting.Indented);
@@ -348,6 +351,8 @@ public class GameManager : MonoBehaviour
                 {
                     EnemyCompendium.Instance.LoadFromData(data.Enemies);
                 }
+
+                FindFirstObjectByType<CardSelectionMenu>().nextId = data.CardNextId;
                 Debug.Log($"Game Loaded successfully. Version: {data.SaveVersion}");
             }
         }

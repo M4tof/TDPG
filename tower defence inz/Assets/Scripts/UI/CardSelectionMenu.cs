@@ -6,21 +6,31 @@ using UnityEngine;
 public class CardSelectionMenu : MonoBehaviour
 {
     [Header("Parameters")]
-    [SerializeField] [Tooltip("GameObject with have all visuals for selcting cards")] private GameObject SelectionBox;
-    [SerializeField] [Tooltip("Object which will be parent for card buttons")] private GameObject CardBox;
-    [SerializeField] [Tooltip("Object which is parrent for turret")] private GameObject TurretBox;
-    [SerializeField] [Tooltip("Start Position where would appear firs cards")] private Vector2 CardFirstPosition;
+    [SerializeField][Tooltip("GameObject with have all visuals for selcting cards")] private GameObject SelectionBox;
+    [SerializeField][Tooltip("Object which will be parent for card buttons")] private GameObject CardBox;
+    [SerializeField][Tooltip("Object which is parrent for turret")] private GameObject TurretBox;
+    [SerializeField][Tooltip("Start Position where would appear firs cards")] private Vector2 CardFirstPosition;
     [Header("Prefabs")]
-    [SerializeField] [Tooltip("Prefab for card button used to select upgrade")] private GameObject CardUpgradePrefab;
-    [SerializeField] [Tooltip("Prefab for card button which show player's current cards")] private GameObject PlayerCardPrefab;
-    
-    [SerializeField] [Tooltip("Default number cards for selecting")] private int defautlNumberOfCards = 3;
+    [SerializeField][Tooltip("Prefab for card button used to select upgrade")] private GameObject CardUpgradePrefab;
+    [SerializeField][Tooltip("Prefab for card button which show player's current cards")] private GameObject PlayerCardPrefab;
+
+    [SerializeField][Tooltip("Default number cards for selecting")] private int defautlNumberOfCards = 3;
+
+
+    [Header("Balancing - RNG")]
+    [SerializeField] private float baseStatScale = 1.10f; // Was 1.01f (1% -> 10% base boost)
+    [SerializeField] private float seedNormalizer = 100.0f; // Keep 100.0f
+    [SerializeField] private float secondaryStatDivisor = 2.0f; // Was 4.0f. Secondary stats were too weak.
+
+
+
+
     private List<CardData> playerCards = new List<CardData>();
-    
-    private int nextId = 0; //TODO WAŻNE ABY BYŁO ZAPISYWANE I WCZYTYWANE
+
+    public int nextId = 0; //TODO WAŻNE ABY BYŁO ZAPISYWANE I WCZYTYWANE
 
     private TurretSelection lastUsedTurretSelection;
-    
+
     //Show and generate new upgrades to use
     public void GetNewCard(int numberOfCards = -1)
     {
@@ -28,21 +38,21 @@ public class CardSelectionMenu : MonoBehaviour
         {
             numberOfCards = defautlNumberOfCards;
         }
-        
+
         if (CardBox == null || SelectionBox == null)
         {
             return;
         }
-        
+
         //cards = new List<CardData>();
         SelectionBox.SetActive(true);
 
         CleanCards();
-        
+
         for (int i = 0; i < numberOfCards; i++)
         {
             //Spawning card object
-            Vector2 anchoredPosition  = CardFirstPosition + new Vector2(200 * i,-10);
+            Vector2 anchoredPosition = CardFirstPosition + new Vector2(200 * i, -10);
             GameObject card = Instantiate(CardUpgradePrefab, CardBox.transform);
             RectTransform rectTransform = card.GetComponent<RectTransform>();
             if (rectTransform != null)
@@ -50,7 +60,7 @@ public class CardSelectionMenu : MonoBehaviour
                 rectTransform.anchoredPosition = anchoredPosition;
                 rectTransform.localScale = Vector3.one;
             }
-            
+
             //Set Card Data Info
             Debug.Log($"ITERACJA: {i}");
             CardData cardData = GenerateUpgradeData(i);
@@ -71,15 +81,15 @@ public class CardSelectionMenu : MonoBehaviour
         {
             return;
         }
-        
+
         lastUsedTurretSelection = turretSelection;
         SelectionBox.SetActive(true);
         CleanCards();
-        
+
         for (int i = 0; i < playerCards.Count; i++)
         {
             //Place Visualisation
-            Vector2 anchoredPosition  = CardFirstPosition + new Vector2(200 * i,-10);
+            Vector2 anchoredPosition = CardFirstPosition + new Vector2(200 * i, -10);
             GameObject card = Instantiate(PlayerCardPrefab, CardBox.transform);
             RectTransform rectTransform = card.GetComponent<RectTransform>();
             if (rectTransform != null)
@@ -87,7 +97,7 @@ public class CardSelectionMenu : MonoBehaviour
                 rectTransform.anchoredPosition = anchoredPosition;
                 rectTransform.localScale = Vector3.one;
             }
-            
+
             //Set Card Data Info
             CardData cardData = playerCards[i];
             CardUpgrade cardUpgrade = card.gameObject.GetComponent<CardUpgrade>();
@@ -119,14 +129,14 @@ public class CardSelectionMenu : MonoBehaviour
                 lastUsedTurretSelection.AddUpgrade(playerCard);
 
                 //Set Upgrade for placed turrets
-                if(CardBox != null)
+                if (CardBox != null)
                 {
                     for (int i = 0; i < TurretBox.transform.childCount; i++)
                     {
                         Transform child = TurretBox.transform.GetChild(i);
-                        
+
                         TurretBase turret = child.gameObject.GetComponent<TurretBase>();
-                        if(turret == null)
+                        if (turret == null)
                         {
                             continue;
                         }
@@ -134,11 +144,11 @@ public class CardSelectionMenu : MonoBehaviour
                         if (lastUsedTurretSelection.GetTurretName() == turret.GetTurretID())
                         {
                             turret.AddAndApplyModifier(playerCard);
-                            Debug.Log($"TURRET ID: { turret.GetTurretID() }");
+                            Debug.Log($"TURRET ID: {turret.GetTurretID()}");
                         }
                     }
                 }
-                
+
                 playerCards.Remove(playerCard);
                 break;
             }
@@ -154,14 +164,14 @@ public class CardSelectionMenu : MonoBehaviour
     private CardData GenerateUpgradeData(int iteration)
     {
         CardData cardData = new CardData();
-        
+
         //Seed for generating numbers
         Seed seed = GameManager.Instance.GSeed.NextSubSeed("Card Generation" + nextId * nextId + iteration);
         seed.IsBitBased = false;
         seed.NormalizeSeedValue();
         ulong seedVal = seed.GetBaseValue();
         string digits = seedVal.ToString();
-        
+
         //Seed for generating statistics
         Seed DNA = GameManager.Instance.GSeed.NextSubSeed("Upgrade Parameters Generation" + nextId * nextId + iteration);
         DNA.IsBitBased = true;
@@ -169,32 +179,32 @@ public class CardSelectionMenu : MonoBehaviour
         float ToDamage = 1;
         float ToHP = 1;
         float ToRange = 1;
-        
+
         Debug.Log($"SEED: {digits}\n DNA: {DNA.GetBaseValue()}");
-        
+
         if (DNA.GetBaseValue().ToString()[0] == '0')
         {
-            ToDamage = Mathf.Ceil(1.01f +  int.Parse(digits.Substring(0, 2)) / 100.0f);
+            ToDamage = Mathf.Ceil(baseStatScale + int.Parse(digits.Substring(0, 2)) / seedNormalizer);
         }
 
         if (DNA.IsBitSet(0))
         {
-            ToDamage = 1.01f +  int.Parse(digits.Substring(0, 2)) / 100.0f; //1.01 - 2.0
+            ToDamage = baseStatScale + int.Parse(digits.Substring(0, 2)) / seedNormalizer; //1.01 - 2.0
         }
 
         if (DNA.IsBitSet(1))
         {
-            ToHP = 1.01f +  int.Parse(digits.Substring(3, 2)) / 100.0f; //1.01 - 2.0
+            ToHP = baseStatScale + int.Parse(digits.Substring(3, 2)) / seedNormalizer; //1.01 - 2.0
         }
-        
+
         if (DNA.IsBitSet(2))
         {
-            ToRange = 1.01f + (int.Parse(digits.Substring(5, 2)) / 100.0f) / 4; //1.01 - 2.0
+            ToRange = baseStatScale + (int.Parse(digits.Substring(5, 2)) / seedNormalizer) / secondaryStatDivisor; //1.01 - 2.0
         }
 
         if (ToDamage == 1 && ToRange == 1 && ToHP == 1)
         {
-            ToDamage = 1.01f + (int.Parse(digits.Substring(7, 2)) / 100.0f) / 4; //1.01 - 2.0
+            ToDamage = baseStatScale + (int.Parse(digits.Substring(7, 2)) / seedNormalizer) / secondaryStatDivisor; //1.01 - 2.0
         }
 
         cardData.damageMultiplayer = ToDamage;
@@ -217,12 +227,12 @@ public class CardSelectionMenu : MonoBehaviour
     {
         nextId += 1;
     }
-    
+
     public int GetNextId()
     {
         return nextId;
     }
-    
+
     //Use only for loading save
     public void LoadNextId(int nextId)
     {
@@ -245,5 +255,5 @@ public class CardSelectionMenu : MonoBehaviour
             Debug.LogWarning("Turret Box is null", this);
         }
     }
-    
+
 }

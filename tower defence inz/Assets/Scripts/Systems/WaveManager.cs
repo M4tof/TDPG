@@ -9,16 +9,16 @@ public class WaveManager : MonoBehaviour
 {
     [Header("Wave Settings")]
     [SerializeField] private int currentWaveNumber = 0;
-    [SerializeField] private float cooldownPeriod = 5f;
-    [SerializeField] private float spawnStaggerDelay = 0.5f;
+    [SerializeField] private float cooldownPeriod = 15f;
+    [SerializeField] private float spawnStaggerDelay = 0.8f;
 
-    [SerializeField] private int waveSetup = 3;
+    [SerializeField] private int waveStepup = 3;
     [SerializeField] private int maxEnemyTypeCountPerWaveNumber = 3;
     [SerializeField] private int minEnemyTypeCountPerWaveNumber = 1;
 
     [Header("Rewards Settings")]
     [SerializeField] private int Reward;
-    [SerializeField] private float WaveRewardMultiplier = 1;
+    [SerializeField] private float WaveRewardMultiplier = 5;
     [SerializeField] private bool UpgradesOnEndWave = true;
     [SerializeField] private int numberOfUpgrades = 3;
     
@@ -34,6 +34,7 @@ public class WaveManager : MonoBehaviour
 
     private IntGenerator Gen;
     private Seed WaveSeed;
+    public Queue<string> enemyIdsToSpawn;
 
     public static WaveManager Instance { get; private set; }
 
@@ -62,6 +63,10 @@ public class WaveManager : MonoBehaviour
         WaveSeed = GameManager.Instance.GSeed.NextSubSeed(InitializerFromDate.QuickGenerate(GameManager.Instance.Slot).ToString());
         // Inside your WaveManager Start or Awake:
         spawners = new List<EnemysSpawner>(FindObjectsByType<EnemysSpawner>(FindObjectsSortMode.None));
+        if (enemyIdsToSpawn.Count > 0)
+        {
+            ForceEarlySpawn();
+        }
     }
 
     private void Update()
@@ -98,7 +103,7 @@ public class WaveManager : MonoBehaviour
         _isWaveActive = true;
 
         // Generate the list of IDs for this wave
-        Queue<string> enemyIdsToSpawn = GenerateWaveData(currentWaveNumber);
+        enemyIdsToSpawn = GenerateWaveData(currentWaveNumber);
 
         if (spawners.Count <= 0)
         {
@@ -165,6 +170,17 @@ public class WaveManager : MonoBehaviour
         Debug.Log($"Wave {currentWaveNumber} cleared. Cooldown started.");
     }
 
+    public void ForceSpawnQueue()
+    {
+        if (_isSpawning && enemyIdsToSpawn.Count > 0)
+        {
+            StartCoroutine(SpawnWaveRoutine(enemyIdsToSpawn));
+        }
+        else
+        {
+            enemyIdsToSpawn.Clear();
+        }
+    }
     /// <summary>
     /// Logic to determine how many and which enemies to spawn.
     /// Uses placeholder logic for random selection.
@@ -175,7 +191,7 @@ public class WaveManager : MonoBehaviour
         Queue<string> waveIds = new Queue<string>();
         for (int i = 0; i < EnemyIDs.Count; i++)
         {
-            if (i * waveSetup < waveNumber)
+            if (i * waveStepup < waveNumber)
             {
                 for (int j = CalculateEnemyCount(waveNumber); j > 0; j--)
                 {

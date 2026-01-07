@@ -3,7 +3,8 @@ using TDPG.Generators.Seed;
 using TDPG.Generators.Scalars;
 using System;
 
-namespace TDPG.Templates.Enemies { 
+namespace TDPG.Templates.Enemies
+{
     /// <summary>
     /// A factory responsible for instantiating <see cref="EnemyBase"/> logic models with procedurally generated stats.
     /// <br/>
@@ -12,10 +13,12 @@ namespace TDPG.Templates.Enemies {
     public class EnemyFactory
     {
         private Seed EnemySeed;
-        
-        private FloatGenerator Gen;
+
+        // private FloatGenerator Gen;
+        public FloatGenerator speedGen;
+        public FloatGenerator hpGen;
         private float Difficulty;
-        
+
         /// <summary>
         /// Delegate function that handles the actual instantiation of the concrete EnemyBase class.
         /// </summary>
@@ -35,7 +38,19 @@ namespace TDPG.Templates.Enemies {
             _creationStrategy = createStrategy;
             EnemySeed = gs.NextSubSeed(InitializerFromDate.QuickGenerate(slot).ToString());
             Difficulty = 1f;
-            Gen = new FloatGenerator { mode = FloatGenerator.Mode.Uniform, min = 1f, max = Difficulty };
+            // Gen = new FloatGenerator { mode = FloatGenerator.Mode.Uniform, min = 1f, max = Difficulty };
+            speedGen = new FloatGenerator
+                {
+                    mode = FloatGenerator.Mode.Uniform,
+                    min = 1f,
+                    max = Mathf.Min(1.5f, 1f + (Difficulty * 0.05f))
+                };
+                hpGen = new FloatGenerator
+                {
+                    mode = FloatGenerator.Mode.Uniform,
+                    min = 1f,
+                    max = 1f + (Difficulty * 0.2f)
+                };
         }
 
         /// <summary>
@@ -52,13 +67,25 @@ namespace TDPG.Templates.Enemies {
             if (waveDifficulty != Difficulty)
             {
                 Difficulty = waveDifficulty;
-                Gen = new FloatGenerator { mode = FloatGenerator.Mode.Uniform, min = 1f, max = Difficulty };
+                // Gen = new FloatGenerator { mode = FloatGenerator.Mode.Uniform, min = 1f, max = Difficulty };
+                speedGen = new FloatGenerator
+                {
+                    mode = FloatGenerator.Mode.Uniform,
+                    min = 1f,
+                    max = Mathf.Min(1.5f, 1f + (waveDifficulty * 0.05f))
+                };
+                hpGen = new FloatGenerator
+                {
+                    mode = FloatGenerator.Mode.Uniform,
+                    min = 1f,
+                    max = 1f + (waveDifficulty * 0.2f)
+                };
             }
-            
+
             var overrides = new EnemyStatsOverride
             {
-                HealthMultiplier = Gen.Generate(EnemySeed),
-                SpeedMultiplier = Gen.Generate(EnemySeed)
+                HealthMultiplier = hpGen.Generate(EnemySeed),
+                SpeedMultiplier = speedGen.Generate(EnemySeed)
             };
 
             return _creationStrategy(template, overrides);

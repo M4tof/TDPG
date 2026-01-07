@@ -76,6 +76,17 @@ public class GridSaveData
     public System.Collections.Generic.List<Vec3> SpawnerPositions = new System.Collections.Generic.List<Vec3>();
 }
 
+[System.Serializable]
+public class WaveData
+{
+    int CWaveNum;
+    float CDPeriod;
+    float SSDelay;
+
+    int WStepup;
+    // int 
+}
+
 // The master data class that holds all saved data
 [System.Serializable]
 public class GameSaveData
@@ -94,4 +105,5 @@ public class GameSaveData
     public List<TurretSaveData> Turrets;
     public List<EnemySaveData> Enemies;
     public GridSaveData GData;
+    public int CardNextId;
 }
