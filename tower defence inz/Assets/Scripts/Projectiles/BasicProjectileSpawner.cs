@@ -1,5 +1,5 @@
 using UnityEngine;
-
+using TDPG.AudioModulation;
 public class BasicProjectileSpawner : MonoBehaviour
 {
     [SerializeField] private int projectileDamage = 1;
@@ -31,6 +31,11 @@ public class BasicProjectileSpawner : MonoBehaviour
         Vector3 rotationPosition = (Vector2) mousePosition - (Vector2) transform.position;
         float rotZ = Mathf.Atan2(rotationPosition.y, rotationPosition.x) * Mathf.Rad2Deg;
         GameObject bullet = Instantiate(projectile, spawnPosition, Quaternion.Euler(0f, 0f, rotZ));
+
+        var ac = bullet.GetComponentInChildren<ProceduralAudioController>();
+        ac.selectionSeed = GameManager.Instance.ACSeed1.GetBaseValue();
+        ac.modulationSeed = GameManager.Instance.ACSeed2.GetBaseValue();
+        
         bullet.GetComponent<BasicProjectile>().SetDamage(projectileDamage);
         reloading = true;
     }
