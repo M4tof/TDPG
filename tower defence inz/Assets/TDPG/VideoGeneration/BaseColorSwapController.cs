@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using TDPG.Generators.Seed;
 using UnityEngine;
 
 namespace TDPG.VideoGeneration
@@ -140,17 +141,24 @@ namespace TDPG.VideoGeneration
         /// </summary>
         private List<Color> ResolveTargetColors()
         {
-            if (_runtimePaletteOverrides != null) return _runtimePaletteOverrides;
-            if (activePalette != null) return activePalette.colors;
             if (paletteSelector != null)
             {
                 ColorPaletteSO chosen = paletteSelector.ChosePalette();
                 if (chosen != null) return chosen.colors;
             }
+            if (_runtimePaletteOverrides != null) return _runtimePaletteOverrides;
+            if (activePalette != null) return activePalette.colors;
             return null;
         }
 
         /// <summary> Implemented by children to handle their specific list structures. </summary>
         protected abstract void OnUpdateBlock(MaterialPropertyBlock block, List<Color> resolvedTargets, bool forceWhite);
+
+        // TODO: add summary
+        public void SetSeed(Seed s)
+        {
+            paletteSelector.seed = s;
+            UpdateShaderProperties();
+        }
     }
 }
