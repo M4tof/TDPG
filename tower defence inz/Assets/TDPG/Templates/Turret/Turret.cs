@@ -14,7 +14,8 @@ namespace TDPG.Templates.Turret
     /// </summary>
     public class Turret : TurretBase
     {
-        [Header("Runtime State")]
+        [Header("Runtime State")] [SerializeField]
+        private Transform shootPosition;
         private float _cooldownTimer;
         private Transform _currentTarget;
         private int _enemyLayerMask;
@@ -23,6 +24,10 @@ namespace TDPG.Templates.Turret
         {
             _enemyLayerMask = LayerMask.GetMask("Enemy");
             EnsureOffsetsCached();
+            if (shootPosition == null)
+            {
+                shootPosition = transform;
+            }
         }
 
         void Update()
@@ -49,11 +54,11 @@ namespace TDPG.Templates.Turret
 
             if (_currentTarget != null)
             {
-                // Sprawdzamy, czy mamy generator wzorców
+                // Sprawdzamy, czy mamy generator wzorcï¿½w
                 if (Data.PatternGenerator != null)
                 {
-                    // Odpalamy wzorzec tylko jeœli poprzedni siê skoñczy³ 
-                    // lub zgodnie z FireRate (tutaj: FireRate jako odstêp miêdzy wzorcami)
+                    // Odpalamy wzorzec tylko jeï¿½li poprzedni siï¿½ skoï¿½czyï¿½ 
+                    // lub zgodnie z FireRate (tutaj: FireRate jako odstï¿½p miï¿½dzy wzorcami)
                     if (_cooldownTimer <= 0)
                     {
                         ExecutePattern(_currentTarget);
@@ -62,7 +67,7 @@ namespace TDPG.Templates.Turret
                 }
                 else
                 {
-                    // Standardowy strza³
+                    // Standardowy strzaï¿½
                     Shoot(_currentTarget);
                     _cooldownTimer = 1f / Data.FireRate;
                 }
@@ -71,7 +76,7 @@ namespace TDPG.Templates.Turret
 
         private void ExecutePattern(Transform target)
         {
-            // Generujemy nowy wzorzec (u¿ywaj¹c np. czasu jako seedu dla unikalnoœci)
+            // Generujemy nowy wzorzec (uï¿½ywajï¿½c np. czasu jako seedu dla unikalnoï¿½ci)
             var pattern = Data.PatternGenerator.Preview((ulong)(Time.time * 1000));
             StartCoroutine(PatternRoutine(pattern, target));
         }
@@ -81,7 +86,7 @@ namespace TDPG.Templates.Turret
             float startTime = Time.time;
             int eventIndex = 0;
 
-            // Sortujemy zdarzenia po czasie, aby mieæ pewnoœæ chronologii
+            // Sortujemy zdarzenia po czasie, aby mieï¿½ pewnoï¿½ï¿½ chronologii
             pattern.events.Sort((a, b) => a.timeOffset.CompareTo(b.timeOffset));
 
             while (eventIndex < pattern.events.Count)
@@ -93,7 +98,7 @@ namespace TDPG.Templates.Turret
                     SpawnProjectileFromEvent(pattern.events[eventIndex], target);
                     eventIndex++;
                 }
-                yield return null; // Czekaj do nastêpnej klatki
+                yield return null; // Czekaj do nastï¿½pnej klatki
             }
         }
 
@@ -101,16 +106,17 @@ namespace TDPG.Templates.Turret
         {
             if (Data.ProjectilePrefab == null) return;
 
-            // 1. Oblicz bazow¹ rotacjê w stronê celu (jak w starym kodzie)
+            // 1. Oblicz bazowï¿½ rotacjï¿½ w stronï¿½ celu (jak w starym kodzie)
             Vector3 targetDir = (target != null) ? (target.position - transform.position).normalized : transform.right;
             float baseRotZ = Mathf.Atan2(targetDir.y, targetDir.x) * Mathf.Rad2Deg;
 
             // 2. Dodaj modyfikatory z wzorca (Spread i Direction z generatora)
-            // Jeœli wzorzec podaje w³asny kierunek, u¿ywamy go, jeœli nie - u¿ywamy kierunku na cel
+            // Jeï¿½li wzorzec podaje wï¿½asny kierunek, uï¿½ywamy go, jeï¿½li nie - uï¿½ywamy kierunku na cel
             float finalRotZ = baseRotZ + ev.spreadAngle;
             Quaternion bulletRotation = Quaternion.Euler(0f, 0f, finalRotZ);
 
-            Vector3 spawnPos = transform.position + (Vector3)(Data.TileSize * 0.5f);
+            //Vector3 spawnPos = transform.position + (Vector3)(Data.TileSize * 0.5f);
+            Vector3 spawnPos = shootPosition.position;
 
             GameObject bulletGo = Instantiate(Data.ProjectilePrefab, spawnPos, bulletRotation);
 
@@ -205,7 +211,8 @@ namespace TDPG.Templates.Turret
 
             // Spawn Projectile
             // Use center of tile (transform.position) + offset if needed
-            Vector3 spawnPos = transform.position + (Vector3)(Data.TileSize * 0.5f);
+            //Vector3 spawnPos = transform.position + (Vector3)(Data.TileSize * 0.5f);
+            Vector3 spawnPos = shootPosition.position;
 
             Instantiate(Data.ProjectilePrefab, spawnPos, bulletRotation);
 

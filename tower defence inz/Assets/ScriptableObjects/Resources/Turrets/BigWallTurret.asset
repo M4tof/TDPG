@@ -17,10 +17,13 @@ MonoBehaviour:
   CrystalSprite: {fileID: -690352682, guid: 71acbc7519fc62b4192c07d648f52b4b, type: 3}
   Cost: 75
   TileSize: {x: 2, y: 2}
-  Multiplayer: 2.5
+  Offset: {x: 0, y: 4}
+  Scale: 2
   CanShoot: 1
   Range: 0
   Damage: 0
   FireRate: 1
   MaxHP: 120
+  modifierList: []
   ProjectilePrefab: {fileID: 0}
+  PatternGenerator: {fileID: 0}
