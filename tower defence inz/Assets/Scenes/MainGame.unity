@@ -1125,6 +1125,10 @@ MonoBehaviour:
   CardUpgradePrefab: {fileID: 3314750622765985125, guid: 9a925d517ad8a1647811e6692eeffa3f, type: 3}
   PlayerCardPrefab: {fileID: 3314750622765985125, guid: fc7899013d6e236488dc46949b02aa5f, type: 3}
   defautlNumberOfCards: 3
+  baseStatScale: 1.1
+  seedNormalizer: 100
+  secondaryStatDivisor: 2
+  nextId: 0
 --- !u!1 &405982792
 GameObject:
   m_ObjectHideFlags: 0
@@ -3725,7 +3729,7 @@ MonoBehaviour:
   currentWaveNumber: 0
   cooldownPeriod: 5
   spawnStaggerDelay: 0.5
-  waveSetup: 3
+  waveStepup: 3
   maxEnemyTypeCountPerWaveNumber: 3
   minEnemyTypeCountPerWaveNumber: 1
   Reward: 100

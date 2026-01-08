@@ -7,6 +7,8 @@ using UnityEngine;
 public class EnemyBehavior : EnemyBaseBehaviour
 {
     public Enemy Logic { get; private set; }
+    [SerializeField] private HPBarVisualisation hpBarVisualiation;
+    
     private SpriteRenderer _renderer;
     private EnemyPathFollower _enemyPathFollower;
     
@@ -36,6 +38,9 @@ public class EnemyBehavior : EnemyBaseBehaviour
 
         // 3. Trigger Creation Logic
         Logic.OnCreation();
+        
+        // 4. Set HP Bar Value
+        hpBarVisualiation.Init(logic.Data.MaxHealth);
     }
 
     void Update()
@@ -79,6 +84,13 @@ public class EnemyBehavior : EnemyBaseBehaviour
         EnemyCompendium.Instance.UnregisterEnemy(Logic);
         ResourceSystem.Instance.mana.Grant(Logic.GetReward());
         base.Die();
+    }
+
+    public override void DealDamage(int damage)
+    {
+        Debug.Log("NEW DAMAGE");
+        base.DealDamage(damage);
+        hpBarVisualiation.SetValue(GetCurrentHealth());
     }
 
     public void AttackTurret()

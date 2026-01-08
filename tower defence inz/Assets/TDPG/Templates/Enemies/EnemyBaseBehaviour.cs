@@ -80,7 +80,7 @@ namespace TDPG.Templates.Enemies
         /// Applies damage to the internal logic model and checks for death conditions.
         /// </summary>
         /// <param name="damage">Amount of health to remove.</param>
-        public void DealDamage(int damage)
+        public virtual void DealDamage(int damage)
         {
             //Debug.Log($"DEAL {damage} DMG");
             Logic.DealDamage(damage);
