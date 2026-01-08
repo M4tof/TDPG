@@ -110,7 +110,7 @@ namespace TDPG.Templates.Grid
 
         void Start()
         {
-            
+            DoStuff();
             //Set Camera
         }
 

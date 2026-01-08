@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using TDPG.Templates.Enemies;
 using TDPG.Templates.Grid;
 using TDPG.Templates.Pathfinding;
+using TDPG.AudioModulation;
+using TDPG.VideoGeneration;
+using System.Security.Cryptography;
 
 public class EnemysSpawner : MonoBehaviour
 {
@@ -14,7 +17,7 @@ public class EnemysSpawner : MonoBehaviour
     private EnemyFactory _factory;
 
     private bool spanwed = false; //TODO USUNĄĆ
-    
+
     void Start()
     {
         EndPoint = GridManager.Instance.GetDestinationObject().transform;
@@ -116,7 +119,7 @@ public class EnemysSpawner : MonoBehaviour
         }
 
         logicalEnemy.Position = transform.position;
-        
+
         // Debug 3: Check Compendium (Is object in scene?)
         if (EnemyCompendium.Instance == null) { Debug.LogError("❌ EnemyCompendium is NULL! Missing GameObject in scene?"); return; }
 
@@ -131,6 +134,14 @@ public class EnemysSpawner : MonoBehaviour
         }
         go.GetComponent<EnemyBehavior>().Initialize(logicalEnemy);
         go.GetComponent<EnemyPathFollower>().Initialize(GridManager.Instance, EndPoint.gameObject);
+        
+        var cs = go.GetComponentInChildren<BaseColorSwapController>();
+        cs.SetSeed(GameManager.Instance.CSSeed);
+
+
+        var ac = go.GetComponentInChildren<ProceduralAudioController>();
+        ac.selectionSeed = GameManager.Instance.ACSeed1.GetBaseValue();
+        ac.modulationSeed = GameManager.Instance.ACSeed2.GetBaseValue();
     }
 
     public void DebugSpawn()
@@ -173,9 +184,17 @@ public class EnemysSpawner : MonoBehaviour
             {
                 // Triggers calculation from CURRENT position to EndPoint
                 follower.Initialize(TDPG.Templates.Grid.GridManager.Instance, EndPoint.gameObject);
-                follower.ComputeNewPath(); 
+                follower.ComputeNewPath();
             }
         }
+
+        var cs = go.GetComponentInChildren<BaseColorSwapController>();
+        cs.SetSeed(GameManager.Instance.CSSeed);
+
+
+        var ac = go.GetComponentInChildren<ProceduralAudioController>();
+        ac.selectionSeed = GameManager.Instance.ACSeed1.GetBaseValue();
+        ac.modulationSeed = GameManager.Instance.ACSeed2.GetBaseValue();
 
         // Register
         EnemyCompendium.Instance.RegisterEnemy(logic);

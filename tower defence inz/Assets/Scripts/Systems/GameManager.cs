@@ -10,6 +10,7 @@ using TDPG.Templates.Grid;
 using TDPG.Templates.Grid.MapGen;
 using TDPG.VideoGeneration;
 using System.Linq;
+using TDPG.AudioModulation;
 
 public class GameManager : MonoBehaviour
 {
@@ -28,6 +29,9 @@ public class GameManager : MonoBehaviour
     public string PendingLoadPath;
 
     public MapGenConfig PendingMapConfig;
+    public Seed CSSeed;
+    public Seed ACSeed1;
+    public Seed ACSeed2;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -84,12 +88,25 @@ public class GameManager : MonoBehaviour
 
             if (scene.name == "MainGame")
             {
-                // Seed CSSeed = GSeed.NextSubSeed(InitializerFromDate.QuickGenerate(Slot).ToString());
-                // List<ChoseAndApplyPalette> ColorSwappers = GetComponents<ChoseAndApplyPalette>().ToList();
-                // foreach (var cs in ColorSwappers)
-                // {
-                //     cs.seed = CSSeed;
-                // }
+                CSSeed = GSeed.NextSubSeed(InitializerFromDate.QuickGenerate(Slot).ToString());
+                List<BaseColorSwapController> ColorSwappers = FindObjectsByType<BaseColorSwapController>(FindObjectsSortMode.None).ToList();
+                Debug.Log($"ColorSwappers.Count: {ColorSwappers.Count}");
+                foreach (var cs in ColorSwappers)
+                {
+                    cs.SetSeed(CSSeed);
+                    // cs.UpdateShaderProperties();
+                }
+
+                ACSeed1 = GSeed.NextSubSeed(InitializerFromDate.QuickGenerate(Slot).ToString());
+                ACSeed2 = GSeed.NextSubSeed(InitializerFromDate.QuickGenerate(Slot).ToString());
+                List<ProceduralAudioController> AudioControllers = FindObjectsByType<ProceduralAudioController>(FindObjectsSortMode.None).ToList();
+                Debug.Log($"AudioControllers.Count: {AudioControllers.Count}");
+                foreach (var ac in AudioControllers)
+                {
+                    ac.selectionSeed = ACSeed1.GetBaseValue();
+                    ac.modulationSeed = ACSeed2.GetBaseValue();
+                }
+
                 // PRIORITY 1: LOADING A SAVE
                 // If we have a save file pending, we MUST load it and IGNORE the new game config.
                 if (!string.IsNullOrEmpty(PendingLoadPath))
@@ -118,7 +135,7 @@ public class GameManager : MonoBehaviour
                         // RegenSeed();
                         Debug.Log(GSeed.Serialize());
                         GridManager.Instance.globalSeed = GameManager.Instance.GSeed;
-                        GridManager.Instance.DoStuff();
+                        // GridManager.Instance.DoStuff();
                     }
                     PendingMapConfig = null; // Consume
                 }

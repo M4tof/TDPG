@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using TDPG.Templates.Grid;   // Lib
 using TDPG.Templates.Turret; // Lib
+using TDPG.AudioModulation;
 
 public class TurretSpawner : MonoBehaviour
 {
@@ -141,6 +142,11 @@ public class TurretSpawner : MonoBehaviour
 
         // Instantiate
         GameObject newTurret = Instantiate(GenericTurretPrefab, worldPosition, Quaternion.identity);
+        
+        var ac = newTurret.GetComponentInChildren<ProceduralAudioController>();
+        ac.selectionSeed = GameManager.Instance.ACSeed1.GetBaseValue();
+        ac.modulationSeed = GameManager.Instance.ACSeed2.GetBaseValue();
+        
         newTurret.SetActive(true);
         newTurret.transform.SetParent(TurretBox.transform);
 
