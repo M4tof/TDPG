@@ -26,7 +26,7 @@ public class HPBarVisualisation : MonoBehaviour
         }
         SetMaxValue(value);
         SetValue(value);
-        ShowBar(true);
+        ShowBar(false);
     }
 
     public void SetMaxValue(float value)

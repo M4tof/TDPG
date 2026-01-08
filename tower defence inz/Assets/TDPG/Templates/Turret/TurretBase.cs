@@ -26,7 +26,8 @@ namespace TDPG.Templates.Turret
         [SerializeField] [Tooltip("Renderer for the static base/pedestal of the turret.")] public SpriteRenderer baseRenderer;
         [SerializeField] [Tooltip("Renderer for the active element/crystal of the turret.")] public SpriteRenderer crystalRenderer;
 
-        public UnityEvent turretDestroyed; 
+        public UnityEvent turretDestroyed;
+        public UnityEvent HealthChanged;
         
         private Vector3 _baseDesignPos;
         private Vector3 _crystalDesignPos;
@@ -131,6 +132,7 @@ namespace TDPG.Templates.Turret
         {
             Debug.Log($"TURRET Dealing damage {damage}");
             currentHealth -= damage;
+            HealthChanged.Invoke();
             if (currentHealth <= 0)
             {
                 DestroyTurret();
@@ -191,6 +193,7 @@ namespace TDPG.Templates.Turret
             {
                 Data.MaxHP = Mathf.RoundToInt(Data.MaxHP * modifier.hpMultiplayer);
                 currentHealth += Data.MaxHP - currentHealth;
+                HealthChanged.Invoke();
             }
             if (modifier.damageMultiplayer != 1)
             {
