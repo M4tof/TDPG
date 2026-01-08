@@ -34,7 +34,7 @@ public class WaveManager : MonoBehaviour
 
     private IntGenerator Gen;
     private Seed WaveSeed;
-    public Queue<string> enemyIdsToSpawn;
+    public Queue<string> enemyIdsToSpawn = new Queue<string>();
 
     public static WaveManager Instance { get; private set; }
 
