@@ -10,7 +10,7 @@ public class Enemy : EnemyBase
     public EnemyStatsOverride Overrides;
 
     // Runtime Only (Re-assigned on Load)
-    [System.NonSerialized] private EnemyData _baseData;
+    [System.NonSerialized] public EnemyData _baseData;
 
     // Movement State
     private Queue<Vector2> _path;

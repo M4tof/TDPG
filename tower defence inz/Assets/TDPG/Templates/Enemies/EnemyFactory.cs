@@ -2,6 +2,8 @@ using UnityEngine;
 using TDPG.Generators.Seed;
 using TDPG.Generators.Scalars;
 using System;
+using TDPG.TextGeneration;
+using TDPG.TextGeneration.TrainingFiles;
 
 namespace TDPG.Templates.Enemies
 {
@@ -88,8 +90,11 @@ namespace TDPG.Templates.Enemies
                 SpeedMultiplier = speedGen.Generate(EnemySeed)
             };
 
+            MarkovChain markov = new MarkovChain(2);
+            markov.Train(TrainingData.DataFantasy);
+            template.GenName = markov.Generate(EnemySeed);
+
             return _creationStrategy(template, overrides);
         }
     }
-
 }
