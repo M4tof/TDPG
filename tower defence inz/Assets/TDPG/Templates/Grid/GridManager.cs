@@ -88,7 +88,7 @@ namespace TDPG.Templates.Grid
         /// Retrieves the world-unit size of a cell.
         /// </summary>
         public float CellSize => cellSize;
-
+        public GlobalSeed globalSeed;
         void Awake()
         {
             // Singleton pattern to ensure only one instance exists
@@ -109,6 +109,12 @@ namespace TDPG.Templates.Grid
         }
 
         void Start()
+        {
+            
+            //Set Camera
+        }
+
+        public void DoStuff()
         {
             SetupTilemapGridAlignment();
 
@@ -141,7 +147,6 @@ namespace TDPG.Templates.Grid
 
                     // TODO: fix this
 
-                    GlobalSeed globalSeed = new GlobalSeed(QuickGenerate(1));
 
                     const int MaxFullRegenerations = 5;   // how many reseeded attempts allowed
                     bool success = false;
@@ -207,7 +212,6 @@ namespace TDPG.Templates.Grid
 
             MapLoaded.Invoke();
 
-            //Set Camera
         }
 
         /// <summary>
@@ -687,7 +691,10 @@ namespace TDPG.Templates.Grid
             const int CarveStep = 2;             // widen radius each pass
 
             //Generate the initial map
-            Grid.TileType[,] mapData = mapGenerator.GenerateMap(globalSeed.NextSubSeed("MAP_MAIN"));
+            Debug.Log(globalSeed.Serialize());
+            Seed s = globalSeed.NextSubSeed("MAP_MAIN");
+            Debug.Log(s);
+            Grid.TileType[,] mapData = mapGenerator.GenerateMap(s);
             ApplyMapToGridWithTilemap(mapData);
 
             mapGenerator.setGrid(grid);

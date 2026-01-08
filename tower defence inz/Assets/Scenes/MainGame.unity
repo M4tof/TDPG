@@ -181,7 +181,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 108618552}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6f41e9a0564e4e5ab286802ce94ef66a, type: 3}
   m_Name: 
@@ -1125,6 +1125,10 @@ MonoBehaviour:
   CardUpgradePrefab: {fileID: 3314750622765985125, guid: 9a925d517ad8a1647811e6692eeffa3f, type: 3}
   PlayerCardPrefab: {fileID: 3314750622765985125, guid: fc7899013d6e236488dc46949b02aa5f, type: 3}
   defautlNumberOfCards: 3
+  baseStatScale: 1.1
+  seedNormalizer: 100
+  secondaryStatDivisor: 2
+  nextId: 0
 --- !u!1 &405982792
 GameObject:
   m_ObjectHideFlags: 0
@@ -3681,6 +3685,9 @@ MonoBehaviour:
   mapChanged:
     m_PersistentCalls:
       m_Calls: []
+  globalSeed:
+    subSeeds: []
+    currIndex: 0
 --- !u!156049354 &1339975576
 Grid:
   m_ObjectHideFlags: 0
@@ -3725,7 +3732,7 @@ MonoBehaviour:
   currentWaveNumber: 0
   cooldownPeriod: 5
   spawnStaggerDelay: 0.5
-  waveSetup: 3
+  waveStepup: 3
   maxEnemyTypeCountPerWaveNumber: 3
   minEnemyTypeCountPerWaveNumber: 1
   Reward: 100
