@@ -117,10 +117,12 @@ namespace TDPG.Templates.Grid.MapGen
             _mapInit = new TileType[width, height];
             bool skipGeneration = false;
 
-            if (providedSeed != null)
-            {
-                seed = providedSeed.GetNextSeed();
-            }
+            // TODO: fix if needed
+            
+            // if (providedSeed != null)
+            // {
+            //     seed = providedSeed.GetNextSeed();
+            // }
 
             seed ??= new Seed(240_11_8, -1, "missingSeedInMapGen", false);
 

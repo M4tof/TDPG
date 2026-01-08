@@ -181,7 +181,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 108618552}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6f41e9a0564e4e5ab286802ce94ef66a, type: 3}
   m_Name: 
@@ -3685,6 +3685,9 @@ MonoBehaviour:
   mapChanged:
     m_PersistentCalls:
       m_Calls: []
+  globalSeed:
+    subSeeds: []
+    currIndex: 0
 --- !u!156049354 &1339975576
 Grid:
   m_ObjectHideFlags: 0

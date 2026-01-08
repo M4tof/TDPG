@@ -68,21 +68,28 @@ public class GameManager : MonoBehaviour
 
     void OnDestroy()
     {
-        SceneManager.sceneLoaded -= OnSceneLoaded;
+        if (Instance == this)
+        {
+            SceneManager.sceneLoaded -= OnSceneLoaded;
+
+        }
     }
 
     void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
+        if (this != Instance) return; 
         if (scene.name == "MainGame")
         {
+            Debug.Log($"[GameManager] OnSceneLoaded fired for {scene.name}. Config: {(PendingMapConfig != null ? "Yes" : "No")}, Save: {(PendingLoadPath != null ? "Yes" : "No")}");
+
             if (scene.name == "MainGame")
             {
-                Seed CSSeed = GSeed.NextSubSeed(InitializerFromDate.QuickGenerate(Slot).ToString());
-                List<ChoseAndApplyPalette> ColorSwappers = GetComponents<ChoseAndApplyPalette>().ToList();
-                foreach (var cs in ColorSwappers)
-                {
-                    cs.seed = CSSeed;
-                }
+                // Seed CSSeed = GSeed.NextSubSeed(InitializerFromDate.QuickGenerate(Slot).ToString());
+                // List<ChoseAndApplyPalette> ColorSwappers = GetComponents<ChoseAndApplyPalette>().ToList();
+                // foreach (var cs in ColorSwappers)
+                // {
+                //     cs.seed = CSSeed;
+                // }
                 // PRIORITY 1: LOADING A SAVE
                 // If we have a save file pending, we MUST load it and IGNORE the new game config.
                 if (!string.IsNullOrEmpty(PendingLoadPath))
@@ -107,6 +114,11 @@ public class GameManager : MonoBehaviour
                     if (GridManager.Instance != null)
                     {
                         GridManager.Instance.ConfigureMap(PendingMapConfig);
+                        Debug.Log(GSeed.Serialize());
+                        // RegenSeed();
+                        Debug.Log(GSeed.Serialize());
+                        GridManager.Instance.globalSeed = GameManager.Instance.GSeed;
+                        GridManager.Instance.DoStuff();
                     }
                     PendingMapConfig = null; // Consume
                 }
@@ -370,6 +382,7 @@ public class GameManager : MonoBehaviour
 
     public void StartNewGame(int slotIndex, MapGenConfig config)
     {
+        PendingLoadPath = null;
         Debug.Log($"[GameManager.StartNewGame(): config]: \n{Newtonsoft.Json.JsonConvert.SerializeObject(config, Newtonsoft.Json.Formatting.Indented)}");
         // Debug.Break();
         // 1. Set Active Slot
