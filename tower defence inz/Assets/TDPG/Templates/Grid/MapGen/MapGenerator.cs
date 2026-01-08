@@ -452,7 +452,7 @@ namespace TDPG.Templates.Grid.MapGen
 
         private Vector3Int FindCentralDestination()
         {
-            int cx = _boundsWX;
+            int cx = _boundsWX / 2;
             int cy = _boundsHY / 2;
 
             int[][] directions = new int[][]
