@@ -20,11 +20,14 @@ namespace TDPG.Templates.Turret
         [Header("Visuals")]
         [Tooltip("The sprite used for the static pedestal/foundation.")] public Sprite BaseSprite;    // The static base
         [Tooltip("The sprite used for the active, rotating, or color-swapped top part.")] public Sprite CrystalSprite; // The rotating/color-swapped part
-
+        
+        
+        
         [Header("Building")]
         [Tooltip("Resource cost to place this turret.")] public float Cost = 50f;
         [Tooltip("The footprint of the turret in Grid Cells (Width x Height).")] public Vector2 TileSize = new Vector2(1, 1);
-        [Tooltip("Visual Scale Multiplier (1.0 = Original Prefab Size).")] public float Multiplayer;
+        public Vector2 Offset;
+        [Tooltip("Visual Scale Multiplier (1.0 = Original Prefab Size).")] public float Scale = 1;
 
         [Header("Combat")]
         [Tooltip("If false, the turret logic updates but does not fire (e.g. Walls/Farms).")] public bool CanShoot =  true;

@@ -87,11 +87,13 @@ namespace TDPG.Templates.Turret
             //     0f
             // );
 
+            transform.localScale = new Vector3(data.Scale, data.Scale, 0);
+                
             // APPLY: Always set relative to the CLEAN Design Position
             if (baseRenderer != null)
             {
                 baseRenderer.sprite = data.BaseSprite;
-                baseRenderer.transform.localScale = new Vector3(
+                /*baseRenderer.transform.localScale = new Vector3(
                     _baseDesignScale.x * data.Multiplayer,
                     _baseDesignScale.y * data.Multiplayer,
                     1f
@@ -100,15 +102,15 @@ namespace TDPG.Templates.Turret
                     _baseDesignPos.x * data.Multiplayer,
                     _baseDesignPos.y * data.Multiplayer,
                     _baseDesignPos.z
-                );
+                );*/
 
-                baseRenderer.transform.localPosition = scaledDesignPos;
+                //baseRenderer.transform.localPosition = scaledDesignPos;
             }
 
             if (crystalRenderer != null)
             {
                 crystalRenderer.sprite = data.CrystalSprite;
-                crystalRenderer.transform.localScale = new Vector3(
+                /*crystalRenderer.transform.localScale = new Vector3(
                     _crystalDesignScale.x * data.Multiplayer,
                     _crystalDesignScale.y * data.Multiplayer,
                     1f
@@ -117,11 +119,14 @@ namespace TDPG.Templates.Turret
                     _crystalDesignPos.x * data.Multiplayer,
                     _crystalDesignPos.y * data.Multiplayer,
                     _crystalDesignPos.z
-                );
+                );*/
 
-                crystalRenderer.transform.localPosition = scaledDesignPos;
+                //crystalRenderer.transform.localPosition = scaledDesignPos;
 
             }
+            
+            transform.position = transform.position + new Vector3(data.Offset.x, data.Offset.y, 0); 
+            
         }
 
         /// <summary>
