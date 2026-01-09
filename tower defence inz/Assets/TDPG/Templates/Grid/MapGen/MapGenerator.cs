@@ -131,7 +131,7 @@ namespace TDPG.Templates.Grid.MapGen
             ulong seedVal = seed.GetBaseValue();
             string seedStr = seedVal.ToString();
 
-            // Use first 5 digits of seed for noise parameters
+            // Use first 6 digits of seed for noise parameters
             int d0 = int.Parse(seedStr[0].ToString());
             int d1 = int.Parse(seedStr[1].ToString());
             int d2 = int.Parse(seedStr[2].ToString());
@@ -161,7 +161,7 @@ namespace TDPG.Templates.Grid.MapGen
             float gain = 0.3f + (d3 / 9f) * (0.7f - 0.3f);
             float weightedStrength = d4 / 9f;
 
-            Debug.Log($"[Map Generator]: Seed = {seedVal}");
+            Debug.Log($"[Map Generator]: Seed = {seedVal}, d0 = {d0}");
 
             // Configure per map type
             switch (mapType)
@@ -458,9 +458,9 @@ namespace TDPG.Templates.Grid.MapGen
             int[][] directions = new int[][]
             {
                 new[]{ 1, 0 },   // right
-                new[]{ 0, 1 },   // up
+                new[]{ 0,-1 },    // down
                 new[]{ -1,0 },   // left
-                new[]{ 0,-1 }    // down
+                new[]{ 0, 1 }   // up
             };
 
             int x = cx;
