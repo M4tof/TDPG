@@ -84,6 +84,12 @@ namespace TDPG.AudioModulation
         [ContextMenu("Generate and Play")]
         public void GenerateAndPlay()
         {
+            Generate();
+            Play();
+        }
+
+        public void Generate()
+        {
             EnsureDependencies();
 
             if (mode == GenerationMode.Procedural)
@@ -101,8 +107,6 @@ namespace TDPG.AudioModulation
 #endif
                 return;
             }
-
-            Play();
         }
         
         void Awake()
@@ -133,7 +137,7 @@ namespace TDPG.AudioModulation
         /// <summary>
         /// Uses the Selection Seed to pick a clip and modifiers from the provided SO lists.
         /// </summary>
-        private void ApplyProceduralSelection()
+        public void ApplyProceduralSelection()
         {
             if (clipPool == null || modifierPool == null)
             {
@@ -150,6 +154,11 @@ namespace TDPG.AudioModulation
             {
                 int clipIndex = prng.Next(clipPool.audioClips.Count);
                 _source.clip = clipPool.audioClips[clipIndex];
+                Debug.Log($"[ProceduralAudioController] source should have been set to {clipPool.audioClips[clipIndex].name}");
+            }
+            else
+            {
+                Debug.Log("clipPool is empty");
             }
 
             // 2. Select Modifiers
@@ -161,6 +170,7 @@ namespace TDPG.AudioModulation
                 {
                     int modIndex = prng.Next(modifierPool.allowedMods.Count);
                     modifiers.Add(modifierPool.allowedMods[modIndex]);
+                    Debug.Log($"[ProceduralAudioController] Mods should have been set to {modifierPool.allowedMods[modIndex].name}");
                 }
             }
         }
@@ -192,7 +202,7 @@ namespace TDPG.AudioModulation
             if (_source.clip == null)
             {
                 Debug.LogWarning($"[ProceduralAudioController] Play called on {gameObject.name} but no AudioClip is assigned!");
-                return;
+                Generate();
             }
 
             // Reset to inspector defaults before applying new modifiers

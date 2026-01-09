@@ -195,6 +195,8 @@ public class EnemysSpawner : MonoBehaviour
         var ac = go.GetComponentInChildren<ProceduralAudioController>();
         ac.selectionSeed = GameManager.Instance.ACSeed1.GetBaseValue();
         ac.modulationSeed = GameManager.Instance.ACSeed2.GetBaseValue();
+        ac.GenerateAndPlay();
+        // ac.Play(GameManager.Instance.ACSeed1.GetBaseValue(), GameManager.Instance.ACSeed2.GetBaseValue());
 
         // Register
         EnemyCompendium.Instance.RegisterEnemy(logic);

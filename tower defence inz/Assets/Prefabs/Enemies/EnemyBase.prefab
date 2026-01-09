@@ -154,7 +154,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   colorPalette: {fileID: 0}
-  screamSound: {fileID: 8300000, guid: 2d8b8d7e553fe89abb9625c9e6f55a12, type: 3}
+  screamSound: {fileID: 0}
   hpBarVisualiation: {fileID: 7173736762047941142}
 --- !u!114 &6232245201612764742
 MonoBehaviour:
@@ -345,9 +345,9 @@ MonoBehaviour:
   selectionSeed: 987654321
   clipPool: {fileID: 11400000, guid: c87874a39450382ecb20af06508d421c, type: 2}
   modifierPool: {fileID: 11400000, guid: c5686148d02289dce857ac12341b2658, type: 2}
-  maxModifiersToPick: 2
+  maxModifiersToPick: 4
   modifiers:
-  - {fileID: 0}
+  - {fileID: 11400000, guid: 412b513d38ef6618fb5ae9849fa566a1, type: 2}
   playOnStart: 0
 --- !u!1 &7491530692921553115
 GameObject:
