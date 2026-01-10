@@ -12,14 +12,19 @@ namespace TDPG.Templates.Turret
         
         public float rangeMultiplayer = 1;
         public int ResourceCost = 0;
+        public string elementName = "";
 
         public string TextInfo()
         {
             Debug.Log($"CARD {damageMultiplayer} {hpMultiplayer} {rangeMultiplayer}");
             string text = "";
+            if (elementName != "")
+            {
+                text += "\nElement: " + elementName;
+            }
             if (damageMultiplayer != 1)
             {
-                text += "\ndamage: " + ToPercent(damageMultiplayer);
+                text += "\nDamage: " + ToPercent(damageMultiplayer);
             }
             if (fireRateMultiplayer != 1)
             {
@@ -33,25 +38,14 @@ namespace TDPG.Templates.Turret
             {
                 text += "\nRange: " + ToPercent(rangeMultiplayer);
             }
-            text += "\nAdditional Cost: " + ResourceCost;
+            if (ResourceCost > 0)
+            {
+                text += "\nAdditional Cost: " + ResourceCost;  
+            }
 
             return text;
         }
-
-        /*private string ToPercent(float value)
-        {
-            if (value <= 0)
-            {
-                return "0";
-            }
-            if (value > 1)
-            {
-                //return "+" + ((value * 100)%100).ToString();
-                return "+" + (value * 100)%100;
-            }
-            //return "-" + (((1 - value)*100)%100).ToString();
-            return "-" + (1 - value)*100%100;
-        }*/
+        
         private string ToPercent(float value)
         {
             if (value <= 0) return "0%";

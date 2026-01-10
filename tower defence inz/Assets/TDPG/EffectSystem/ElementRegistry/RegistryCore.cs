@@ -51,8 +51,12 @@ namespace TDPG.EffectSystem.ElementRegistry
             // Directed Graph (true) allows edges to have a direction (Parent -> Child)
             registryGraph = new BidirectionalGraph<Element, Edge<Element>>(true);
 
+            var dmg = new HealthDown(1f);
+            var RootEffects = new List<Effect> { dmg };
+            
             // Create a fake root element (ID = 0)
-            rootElement = new Element("Root", 0, new Seed(0, -1, "Root"));
+            rootElement = new Element("Root", 0, RootEffects);
+            //rootElement = new Element("Root", 0, new Seed(0, -1, "Root"));
 
             // Add root element as the base of the registry
             registryGraph.AddVertex(rootElement);

@@ -179,6 +179,7 @@ public class CardSelectionMenu : MonoBehaviour
         float ToDamage = 1;
         float ToHP = 1;
         float ToRange = 1;
+        string ToElement = "";
 
         Debug.Log($"SEED: {digits}\n DNA: {DNA.GetBaseValue()}");
 
@@ -197,19 +198,30 @@ public class CardSelectionMenu : MonoBehaviour
             ToHP = baseStatScale + int.Parse(digits.Substring(3, 2)) / seedNormalizer; //1.01 - 2.0
         }
 
-        if (DNA.IsBitSet(2))
+        if (DNA.IsBitSet(2) && DNA.IsBitSet(3))
         {
             ToRange = baseStatScale + (int.Parse(digits.Substring(5, 2)) / seedNormalizer) / secondaryStatDivisor; //1.01 - 2.0
+        }
+        //TODO USUNĄĆ || true
+        //Set New Element
+        if (DNA.IsBitSet(4) && DNA.IsBitSet(5))
+        {
+            int elementId = int.Parse(digits.Substring(8, 1));
+            string parentList = digits.Substring(9, 2);
+            ToElement = RegistryManager.Instance.GetNewElementById(elementId, parentList).Name;
         }
 
         if (ToDamage == 1 && ToRange == 1 && ToHP == 1)
         {
             ToDamage = baseStatScale + (int.Parse(digits.Substring(7, 2)) / seedNormalizer) / secondaryStatDivisor; //1.01 - 2.0
         }
+        
+        //0982489024882349043980432980
 
         cardData.damageMultiplayer = ToDamage;
         cardData.hpMultiplayer = ToHP;
         cardData.rangeMultiplayer = ToRange;
+        cardData.elementName = ToElement;
 
         Debug.Log($"STATS: {ToDamage} {ToHP} {ToRange}");
         return cardData;

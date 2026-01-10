@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using TDPG.EffectSystem.ElementLogic;
 using TDPG.EffectSystem.ElementPlanner;
 using TDPG.EffectSystem.ElementRegistry;
@@ -38,21 +39,94 @@ public class RegistryManager : MonoBehaviour
         registry = new Registry();
         
         var slow = new TempSlowDown(0.75f,1f);
-        var burn = new HealthDown(3f);
+        var dmg = new HealthDown(3f);
         var dota = new HealthDrain(1, 3, 1);
-        var effects = new List<Effect> { slow, burn, dota };
+        var DmgEffect = new HealthDown(1f);
+        var FireEffects = new List<Effect> { dmg, dota };
+        var WaterEffects = new List<Effect> { dmg, slow };
+        var PoisonEffects = new List<Effect> { dota };
 
-        var element = new Element("Fire", 1, effects);
-        var other_element = new Element("Water", 2, effects);
+        var FireElement = new Element("Fire", 1, FireEffects);
+        var WaterElement = new Element("Water", 2, WaterEffects);
+        var PoisonElement =  new Element("Poison", 3, PoisonEffects);
 
-        registry.PutPreMadeElement(new List<int> { 0 }, element);
-        registry.PutPreMadeElement(new List<int> { 1 }, other_element);
+        registry.PutPreMadeElement(new List<int> { 0 }, FireElement);
+        registry.PutPreMadeElement(new List<int> { 0 }, WaterElement);
+        registry.PutPreMadeElement(new List<int> { 0 }, PoisonElement);
     }
 
-    // Update is called once per frame
-    void Update()
+    public Element GetNewElementById(int elementId, string parentDNA)
     {
+        Element element = registry.GetElement(elementId);
+        if (element != null && elementId != 0)
+        {
+            return element;
+        }
         
+        int registrySize = registry.GetAllElements().Count();
+        int firstParent = int.Parse(parentDNA.Substring(0, 1)) % ( registrySize - 1 ) + 1;
+        int secondParent = int.Parse(parentDNA.Substring(1, 1)) % ( registrySize - 1 ) + 1;
+
+        if (firstParent == secondParent)
+        {
+            secondParent = (secondParent + 1) % ( registrySize - 1 ) + 1;
+        }
+        
+        List<int> parentList = new List<int> { firstParent, secondParent };
+
+        if (!registry.HasElementWithSameNonRootParents(new HashSet<int>(parentList)))
+        {
+            return registry.GenerateChildElementFromParents_Recombine(parentList);
+        }
+        List<Element> elementList = new List<Element> { registry.GetElement(firstParent), registry.GetElement(secondParent) };
+        return registry.GetElement(elementList);
+
+
+        /*Seed seed = GameManager.Instance.GSeed.NextSubSeed("Generate Element" + parentDNA);
+        seed.IsBitBased = false;
+        seed.NormalizeSeedValue();
+        ulong seedVal = seed.GetBaseValue();
+        string digits = seedVal.ToString();
+
+        int startDigit = 0;
+        while (true)
+        {
+            string newParentDNA = digits.Substring(startDigit, 2);
+            element = getNewElementFromParents(newParentDNA, registrySize);
+            if (element != null)
+            {
+                break;
+            }
+
+            if (digits.Length < startDigit + 2)
+            {
+                seed = Genetic.MutateSeed(seed,MutateTypes.Random,30);
+                seed.NormalizeSeedValue();
+                seedVal = seed.GetBaseValue();
+                digits = seedVal.ToString();
+            }
+
+            startDigit += 1;
+        }
+        return element;*/
+    }
+
+    private Element getNewElementFromParents(string parentDNA, int registrySize)
+    {
+        int firstParent = int.Parse(parentDNA.Substring(0, 1)) % ( registrySize - 1 ) + 1;
+        int secondParent = int.Parse(parentDNA.Substring(1, 1)) % ( registrySize - 1 ) + 1;
+
+        if (firstParent == secondParent)
+        {
+            secondParent = (secondParent + 1) % ( registrySize - 1 ) + 1;
+        }
+        
+        List<int> parentList = new List<int> { firstParent, secondParent };
+        if (registry.HasElementWithSameNonRootParents(new HashSet<int>(parentList)))
+        {
+            return registry.GenerateChildElementFromParents_Recombine(parentList);
+        }
+        return null;
     }
 
     public Registry GetRegistry()

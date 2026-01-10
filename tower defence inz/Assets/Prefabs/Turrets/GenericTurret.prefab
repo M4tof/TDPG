@@ -96,7 +96,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Data: {fileID: 0}
-  playerCardApplied: []
+  playerCardApplied:
+  - id: -1
+    damageMultiplayer: 1
+    fireRateMultiplayer: 1
+    hpMultiplayer: 1
+    rangeMultiplayer: 1
+    ResourceCost: 0
+    elementName: Root
   baseRenderer: {fileID: 7497580190081476895}
   crystalRenderer: {fileID: 2755026248290899470}
   turretDestroyed:

@@ -24,6 +24,13 @@ MonoBehaviour:
   Damage: 10
   FireRate: 2
   MaxHP: 10
-  modifierList: []
-  ProjectilePrefab: {fileID: 1195895545647384619, guid: 54f1a2241ea8b704390fa0976c4ece48, type: 3}
+  modifierList:
+  - id: -1
+    damageMultiplayer: 1
+    fireRateMultiplayer: 1
+    hpMultiplayer: 1
+    rangeMultiplayer: 1
+    ResourceCost: 0
+    elementName: Root
+  ProjectilePrefab: {fileID: 1195895545647384619, guid: b1fab52a54f5c3f4e9b9df79c84498a1, type: 3}
   PatternGenerator: {fileID: 0}

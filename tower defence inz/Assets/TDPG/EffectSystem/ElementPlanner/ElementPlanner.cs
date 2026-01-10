@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using TDPG.EffectSystem.ElementLogic;
 using TDPG.EffectSystem.ElementRegistry;
+using UnityEngine;
 
 namespace TDPG.EffectSystem.ElementPlanner
 {
@@ -24,6 +25,7 @@ namespace TDPG.EffectSystem.ElementPlanner
             var el = registry.GetElement(elementName); //todo: look up id
             if (el == null) throw new Exception($"Element '{elementName}' not found.");
             activeElements.Add(el);
+            Debug.Log("Registered Element: " + el.Name);
         }
 
         public void BuildPlan()
@@ -47,10 +49,13 @@ namespace TDPG.EffectSystem.ElementPlanner
 
         public void ExecutePlan(EffectContext context)
         {
+            Debug.Log($"Execute Plan: {plannedActions.Count.ToString()}");
             foreach (var action in plannedActions)
             {
+                Debug.Log($"Execute Plan: {action.Name}");
                 action.Execute(context);
             }
+            Debug.Log("End Execute Plan");
         }
 
         public IReadOnlyList<IEffectAction> GetPlannedActions()

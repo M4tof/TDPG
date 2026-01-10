@@ -120,6 +120,16 @@ namespace TDPG.Templates.Turret
 
             GameObject bulletGo = Instantiate(Data.ProjectilePrefab, spawnPos, bulletRotation);
 
+            Projectile projectile = bulletGo.GetComponent<Projectile>();
+            if (projectile != null)
+            {
+                foreach(CardData element in GetPlayerCardApplied())
+                {
+                    projectile.AddElement(element.elementName);
+                }
+            }
+            
+            
             // OPCJONALNIE: Przekazanie statystyk z Patternu do pocisku
             // var projectileScript = bulletGo.GetComponent<BasicProjectile>();
             // if(projectileScript != null) {
@@ -214,7 +224,16 @@ namespace TDPG.Templates.Turret
             //Vector3 spawnPos = transform.position + (Vector3)(Data.TileSize * 0.5f);
             Vector3 spawnPos = shootPosition.position;
 
-            Instantiate(Data.ProjectilePrefab, spawnPos, bulletRotation);
+            GameObject projectileObject = Instantiate(Data.ProjectilePrefab, spawnPos, bulletRotation);
+
+            Projectile projectile = projectileObject.GetComponent<Projectile>();
+            if (projectile != null)
+            {
+                foreach(CardData element in GetPlayerCardApplied())
+                {
+                    projectile.AddElement(element.elementName);
+                }
+            }
 
             // Note: We stop here. 
             // The BasicProjectile script takes over movement via its FixedUpdate.

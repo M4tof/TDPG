@@ -6,7 +6,6 @@ using UnityEngine;
 
 public class EffectProjectile : BasicProjectile
 {
-    [SerializeField] private ElementPlanner planner;
     private EffectContext effectContext;
     private ProceduralAudioController _audioController; 
     private bool hasHit = false;
@@ -16,9 +15,12 @@ public class EffectProjectile : BasicProjectile
         base.Start();
         //TODO Zmienić aby nie hard codować elementów :) :] 
         //elements.Add(RegistryManager.Instance.GetRegistry().GetElement("Fire"));
-        planner = new ElementPlanner(RegistryManager.Instance.GetRegistry());
-        planner.RegisterElement("Fire");
-        planner.BuildPlan();
+        if (GetPlanner() == null)
+        {
+            SetPlanner(new ElementPlanner(RegistryManager.Instance.GetRegistry()));
+        }
+        //planner.RegisterElement("Fire");
+        //planner.BuildPlan();
         
         _audioController = GetComponent<ProceduralAudioController>();
         if (_audioController != null)
@@ -27,10 +29,10 @@ public class EffectProjectile : BasicProjectile
         }
     }
     
-    private void OnTriggerEnter2D(Collider2D other)
+    public override void OnTriggerEnter2D(Collider2D other)
     {
+        Debug.Log("TRIGGER ENTER: EFFECT");
         if (hasHit) return;
-        
         if (other.GetComponent<EnemyBehavior>() != null)
         {
             hasHit = true;
@@ -40,10 +42,9 @@ public class EffectProjectile : BasicProjectile
             {
                 projectileCollider.enabled = false;
             }
-            
             effectContext = new EffectContext();
             effectContext.Target = other.gameObject;
-            planner.ExecutePlan(effectContext);
+            GetPlanner().ExecutePlan(effectContext);
         
             Destroy(gameObject);
         }
@@ -64,8 +65,18 @@ public class EffectProjectile : BasicProjectile
         }
         Destroy(gameObject);*/
     }
+    
+    public override void AddElement(string ElementName)
+    {
+        if (GetPlanner() == null)
+        {
+            SetPlanner(new ElementPlanner(RegistryManager.Instance.GetRegistry()));
+        }
+        base.AddElement(ElementName);
+        
+    }
 
-    public void addElement(string ElementName)
+    /*public void addElement(string ElementName)
     {
         planner.RegisterElement(ElementName);
         planner.BuildPlan();
@@ -75,5 +86,5 @@ public class EffectProjectile : BasicProjectile
     {
         //TODO zrobić po ID
         //planner.RegisterElement(ElementName);
-    }
+    }*/
 }

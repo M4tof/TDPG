@@ -20,7 +20,7 @@ namespace TDPG.EffectSystem.ElementPlanner
     /// </summary>
     public class SlowDownAction : IEffectAction
     {
-        private readonly float factor;
+        private float factor;
 
         /// <summary>
         /// Creates a permanent slow action.
@@ -43,6 +43,11 @@ namespace TDPG.EffectSystem.ElementPlanner
         /// <param name="context">Must contain a Target with <see cref="EnemyBaseBehaviour"/>.</param>
         public void Execute(EffectContext context)
         {
+            if (factor > 1)
+            {
+                factor = 1 / factor;
+            }
+            
             if (context.Target == null) return;
 
             if (context.Target.TryGetComponent<EnemyBaseBehaviour>(out var behaviour))
@@ -64,7 +69,7 @@ namespace TDPG.EffectSystem.ElementPlanner
     /// </summary>
     public class TempSlowDownAction : IEffectAction
     {
-        private readonly float factor;
+        private float factor;
         private readonly float duration;
 
         /// <summary>
@@ -86,6 +91,11 @@ namespace TDPG.EffectSystem.ElementPlanner
         /// </summary>
         public void Execute(EffectContext context)
         {
+            if (factor > 1)
+            {
+                factor = 1 / factor;
+            }
+            
             if (context.Target == null) return;
 
             if (context.Target.TryGetComponent<EnemyBaseBehaviour>(out var behaviour))
@@ -143,7 +153,7 @@ namespace TDPG.EffectSystem.ElementPlanner
             if (context.Target.TryGetComponent<EnemyBaseBehaviour>(out var behaviour))
             {
                 behaviour.ApplyOrExtendIterableEffect("dota", 
-                    (iteration) => behaviour.DealDamage((int) healthPerDrain), 
+                    (iteration) => behaviour.DealDamage(Mathf.CeilToInt(healthPerDrain)), 
                     drainCount, 
                     idleTime);
                 Debug.Log("BURN!!");
@@ -272,11 +282,11 @@ namespace TDPG.EffectSystem.ElementPlanner
         public void Execute(EffectContext context)
         {
             if (context.Target == null) return;
-
             if (context.Target.TryGetComponent<EnemyBaseBehaviour>(out var behaviour))
             {
                 //behaviour.Logic.CurrentHealth += amount; // amount < 0
-                behaviour.DealDamage((int) -amount);
+                Debug.Log($"DAMAGE: {amount}");
+                behaviour.DealDamage(-Mathf.CeilToInt(amount));
                 Debug.Log(behaviour.Logic.CurrentHealth);
             }
             else

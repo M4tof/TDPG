@@ -135,7 +135,6 @@ namespace TDPG.Templates.Turret
         /// <param name="damage">Amount of damage to apply.</param>
         public void DealDamage(int damage)
         {
-            Debug.Log($"TURRET Dealing damage {damage}");
             currentHealth -= damage;
             HealthChanged.Invoke();
             if (currentHealth <= 0)
@@ -184,9 +183,8 @@ namespace TDPG.Templates.Turret
             foreach (CardData modifier in modifiers)
             {
                 ApplyModifier(modifier);
+                playerCardApplied.Add(modifier);
             }
-
-            playerCardApplied = modifiers;
         }
         
         /// <summary>
@@ -242,6 +240,11 @@ namespace TDPG.Templates.Turret
         public string GetTurretId()
         {
             return Data.TurretID;
+        }
+
+        public List<CardData> GetPlayerCardApplied()
+        {
+            return playerCardApplied;
         }
         
         void OnDrawGizmosSelected()

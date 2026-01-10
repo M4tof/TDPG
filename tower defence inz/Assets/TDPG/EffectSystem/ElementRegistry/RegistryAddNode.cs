@@ -323,7 +323,7 @@ namespace TDPG.EffectSystem.ElementRegistry
         /// <br/>
         /// Returns true if a non-root element already exists with the exact same parent set.
         /// </summary>
-        private bool HasElementWithSameNonRootParents(HashSet<int> parentIds)
+        public bool HasElementWithSameNonRootParents(HashSet<int> parentIds)
         {
             // Allow duplicates if parents == { root }
             if (parentIds.Count == 1 && parentIds.Contains(rootElement.Id))
