@@ -40,6 +40,8 @@ namespace TDPG.Templates.Enemies
         /// The logical position of the enemy (Grid coordinates or 2D World coords).
         /// </summary>
         public Vector2 Position { get; set; }
+
+        public float DynamicMaxHealth { get; set;}
         
         /// <summary>
         /// Initializes the logical model with base stats from the provided data asset.

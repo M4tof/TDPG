@@ -2,6 +2,7 @@ using TDPG.Generators.Seed;
 using System.Collections.Generic;
 using UnityEngine;
 using TDPG.Templates.Grid;
+using TDPG.Templates.Enemies;
 
 [System.Serializable]
 public struct Vec3
@@ -60,6 +61,7 @@ public class EnemySaveData
     public Vec3 Position;    // (10.5, 2.0)
     // public int PathIndex;       // Optimization: Where on the path they are
     // Add overrides if needed
+    public EnemyStatsOverride Ov;
 }
 [System.Serializable]
 public class GridSaveData

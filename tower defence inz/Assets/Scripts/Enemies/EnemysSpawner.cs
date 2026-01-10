@@ -156,7 +156,7 @@ public class EnemysSpawner : MonoBehaviour
 
         // Create Logic manually
         // Note: You might need to handle Seed/Overrides differently here for loading
-        var logic = new Enemy(data, EnemyStatsOverride.Default);
+        var logic = new Enemy(data, save.Ov);
         logic.CurrentHealth = save.Health;
         logic.CurrentDamage = save.Damage;
         logic.CurrentAttackSpeed = save.AttackSpeed;
