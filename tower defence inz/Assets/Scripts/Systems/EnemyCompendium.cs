@@ -43,7 +43,8 @@ public class EnemyCompendium : MonoBehaviour
                     Health = enemy.CurrentHealth,
                     Damage = enemy.CurrentDamage,
                     AttackSpeed = enemy.CurrentAttackSpeed,
-                    Position = enemy.Position
+                    Position = enemy.Position,
+                    Ov = enemy.Overrides
                 });
             }
         }

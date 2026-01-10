@@ -29,6 +29,7 @@ public class Enemy : EnemyBase
         SetCurrentSpeed(baseData.Speed * overrides.SpeedMultiplier);
         SetCurrentDamage(baseData.Damage);
         SetCurrentAttackSpeed(baseData.AttackSpeed);
+        DynamicMaxHealth = baseData.MaxHealth * overrides.HealthMultiplier;
     }
 
     // Called after loading from JSON to reconnect the SO
