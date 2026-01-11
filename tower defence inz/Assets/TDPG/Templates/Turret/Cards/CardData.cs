@@ -1,4 +1,5 @@
 using UnityEngine;
+using TDPG.Generators.AttackPatterns;
 
 namespace TDPG.Templates.Turret
 {
@@ -13,6 +14,7 @@ namespace TDPG.Templates.Turret
         public float rangeMultiplayer = 1;
         public int ResourceCost = 0;
         public string elementName = "";
+        public AbstractAttackPatternGenerator PatternGenerator;
 
         public string TextInfo()
         {
@@ -37,6 +39,10 @@ namespace TDPG.Templates.Turret
             if (rangeMultiplayer != 1)
             {
                 text += "\nRange: " + ToPercent(rangeMultiplayer);
+            }
+            if (PatternGenerator != null)
+            {
+                text += "\nPattern: " + PatternGenerator.patternName;
             }
             if (ResourceCost > 0)
             {

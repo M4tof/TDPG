@@ -28,6 +28,15 @@ namespace TDPG.EffectSystem.ElementPlanner
             Debug.Log("Registered Element: " + el.Name);
         }
 
+        public void RegisterElement(string elementName, float[] values, bool overwrite_values = false)
+        {
+            var el = registry.GetElement(elementName); //todo: look up id
+            if (el == null) throw new Exception($"Element '{elementName}' not found.");
+            el.effects[0].Values = values;
+            activeElements.Add(el);
+            Debug.Log("Registered Element: " + el.Name);
+        }
+
         public void BuildPlan()
         {
             plannedActions.Clear();

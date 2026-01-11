@@ -17,7 +17,8 @@ namespace TDPG.Generators.AttackPatterns
         /// <br/>Useful for tracking active patterns in an Entity Component System or Dictionary.
         /// </summary>
         public string id;
-        
+
+
         /// <summary>
         /// The total duration of the pattern in seconds.
         /// <br/>This is often the lifespan of the "caster" state or the cooldown before the next pattern begins.

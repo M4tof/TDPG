@@ -123,9 +123,13 @@ namespace TDPG.Templates.Turret
             Projectile projectile = bulletGo.GetComponent<Projectile>();
             if (projectile != null)
             {
+                projectile.damage = Data.Damage;
                 foreach(CardData element in GetPlayerCardApplied())
                 {
-                    projectile.AddElement(element.elementName);
+                    if (element.elementName != "")
+                    {
+                        projectile.AddElement(element.elementName);
+                    }
                 }
             }
             
@@ -229,9 +233,13 @@ namespace TDPG.Templates.Turret
             Projectile projectile = projectileObject.GetComponent<Projectile>();
             if (projectile != null)
             {
-                foreach(CardData element in GetPlayerCardApplied())
+                projectile.damage = Data.Damage;
+                foreach (CardData element in GetPlayerCardApplied())
                 {
-                    projectile.AddElement(element.elementName);
+                    if (element.elementName != "")
+                    {
+                        projectile.AddElement(element.elementName);
+                    }
                 }
             }
 

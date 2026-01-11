@@ -1,4 +1,5 @@
-﻿using TDPG.EffectSystem.ElementPlanner;
+﻿using System.Collections.Generic;
+using TDPG.EffectSystem.ElementPlanner;
 using UnityEngine;
 
 namespace TDPG.Templates.Turret
@@ -9,6 +10,7 @@ namespace TDPG.Templates.Turret
     {
         [SerializeField] private float speed = 10;
         [SerializeField] private float lifeTime = 2;
+        public int damage = 1;
         private ElementPlanner planner;
         
         
@@ -38,7 +40,14 @@ namespace TDPG.Templates.Turret
         
         public virtual void AddElement(string ElementName)
         {
-            planner.RegisterElement(ElementName);
+            if (ElementName != "Root")
+            {
+                planner.RegisterElement(ElementName);
+            }
+            else
+            {
+                planner.RegisterElement(ElementName, new float[] {damage}, true);
+            }   
             planner.BuildPlan();
         }
         

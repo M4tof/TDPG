@@ -29,7 +29,7 @@ namespace TDPG.EffectSystem.ElementLogic
         /// <summary>
         /// The list of active gameplay effects derived from the Seed.
         /// </summary>
-        private readonly List<Effect> effects = new();
+        public List<Effect> effects = new();
         
         /// <summary>
         /// Additional debug or lore information (e.g., the string representation of the seed).
