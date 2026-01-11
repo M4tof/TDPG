@@ -120,6 +120,7 @@ public class HoverManager : MonoBehaviour
     private void ShowRangeIndicator(TurretBase turret)
     {
         if (_currentRangeIndicator == null) return;
+        if (turret == null || turret.Data == null) return; // Safety check
 
         _currentRangeIndicator.gameObject.SetActive(true);
         _currentRangeIndicator.position = turret.transform.position;

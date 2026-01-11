@@ -19,7 +19,7 @@ public class TurretSpawner : MonoBehaviour
     private string _selectedTurretID;
     private bool _canSpawnTurret;
     private TurretData data;
-    private List<CardData> modifiersList = new List<CardData>();
+    public List<CardData> modifiersList = new List<CardData>();
 
     // Renamed back to Set... for consistency
     public void SetTurretToSpawn(string turretID, List<CardData> modifiers = null)
@@ -133,10 +133,23 @@ public class TurretSpawner : MonoBehaviour
 
     public void ForceSpawnTurret(string turretID, Vector3 worldPosition)
     {
+        // 1. Validate Dependencies
+        if (GenericTurretPrefab == null)
+        {
+            Debug.LogError("[TurretSpawner] CRITICAL: GenericTurretPrefab is NULL! Assign it in the Inspector.");
+            return;
+        }
+        if (TurretBox == null)
+        {
+            Debug.LogError("[TurretSpawner] TurretBox is NULL! Assign it in the Inspector.");
+            // We can continue without parenting, but it's messy
+        }
+
+        // 2. Look up Data
         TurretData data = TurretRegistry.Instance.Get(turretID);
         if (data == null)
         {
-            Debug.LogError($"[Load] Unknown Turret ID: {turretID}");
+            Debug.LogError($"[TurretSpawner] Unknown Turret ID: {turretID}");
             return;
         }
 

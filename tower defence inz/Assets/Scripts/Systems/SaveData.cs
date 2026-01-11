@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using TDPG.Templates.Grid;
 using TDPG.Templates.Enemies;
+using TDPG.Templates.Turret;
 
 [System.Serializable]
 public struct Vec3
@@ -47,6 +48,7 @@ public class TurretSaveData
     public int GridX;
     public int GridY;
     // Add Cooldown/Rotation if you want to save exact frame state
+    public List<CardData> Upgrades; 
 }
 
 
@@ -79,14 +81,15 @@ public class GridSaveData
 }
 
 [System.Serializable]
-public class WaveData
+public class WaveSaveData
 {
-    int CWaveNum;
-    float CDPeriod;
-    float SSDelay;
-
-    int WStepup;
-    // int 
+    public int CurrentWaveNumber;
+    public float CooldownTimer;
+    public bool IsWaveActive;
+    public bool IsSpawning;
+    
+    // Critical: If saved mid-spawn, we need to remember who hasn't spawned yet
+    public Queue<string> RemainingEnemyQueue = new Queue<string>(); 
 }
 
 // The master data class that holds all saved data
@@ -108,4 +111,5 @@ public class GameSaveData
     public List<EnemySaveData> Enemies;
     public GridSaveData GData;
     public int CardNextId;
+    public WaveSaveData WaveState;
 }

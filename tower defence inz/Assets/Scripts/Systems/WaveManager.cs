@@ -21,7 +21,7 @@ public class WaveManager : MonoBehaviour
     [SerializeField] private float WaveRewardMultiplier = 5;
     [SerializeField] private bool UpgradesOnEndWave = true;
     [SerializeField] private int numberOfUpgrades = 3;
-    
+
 
     [Header("References")]
     // [SerializeField] private EnemyRegistry enemyRegistry;
@@ -166,7 +166,7 @@ public class WaveManager : MonoBehaviour
         {
             cardSelectionMenu.GetNewCard(numberOfUpgrades);
         }
-        
+
         Debug.Log($"Wave {currentWaveNumber} cleared. Cooldown started.");
     }
 
@@ -238,12 +238,79 @@ public class WaveManager : MonoBehaviour
     }
 
     #endregion
-    
+
     void OnValidate()
     {
         if (cardSelectionMenu == null)
         {
             Debug.LogWarning("cardSelectionMenu is null", this);
+        }
+    }
+
+    public WaveSaveData GetSaveData()
+    {
+        WaveSaveData data = new WaveSaveData
+        {
+            CurrentWaveNumber = currentWaveNumber,
+            CooldownTimer = _cooldownTimer,
+            IsWaveActive = _isWaveActive,
+            IsSpawning = _isSpawning,
+            RemainingEnemyQueue = new Queue<string>()
+        };
+
+        // Serialize the Queue
+        if (enemyIdsToSpawn != null && enemyIdsToSpawn.Count > 0)
+        {
+            data.RemainingEnemyQueue = new Queue<string>(enemyIdsToSpawn);
+        }
+
+        return data;
+    }
+
+    public void LoadFromData(WaveSaveData data)
+    {
+        // 1. Restore Scalars
+        currentWaveNumber = data.CurrentWaveNumber;
+        _cooldownTimer = data.CooldownTimer;
+        _isWaveActive = data.IsWaveActive;
+        // We handle _isSpawning logic below
+        
+        Debug.Log($"[WaveManager] Restored Wave {currentWaveNumber}. Timer: {_cooldownTimer:F1}s. Active: {_isWaveActive}");
+
+        // 2. Restore Queue
+        if (data.RemainingEnemyQueue != null)
+        {
+            enemyIdsToSpawn = new Queue<string>(data.RemainingEnemyQueue);
+        }
+        else
+        {
+            enemyIdsToSpawn = new Queue<string>();
+        }
+
+        // 3. Restore State Logic
+        // Case A: We were in the middle of spawning enemies
+        if (data.IsWaveActive && data.IsSpawning && enemyIdsToSpawn.Count > 0)
+        {
+            Debug.Log("[WaveManager] Resuming mid-wave spawn routine...");
+            StartCoroutine(SpawnWaveRoutine(enemyIdsToSpawn));
+        }
+        // Case B: Wave is active, but spawning finished (Waiting for player to kill enemies)
+        else if (data.IsWaveActive)
+        {
+            _isSpawning = false; // Ensure flag is correct
+            // Update() loop will naturally check AreEnemiesAlive()
+        }
+        // Case C: Cooldown phase
+        else
+        {
+            _isSpawning = false;
+            // Update() loop will naturally decrement _cooldownTimer
+        }
+        
+        // Ensure Spawners are cached (in case Load happened before Start)
+        if (spawners == null || spawners.Count == 0)
+        {
+            spawners = new List<EnemysSpawner>(FindObjectsByType<EnemysSpawner>(FindObjectsSortMode.None));
         }
     }
 }

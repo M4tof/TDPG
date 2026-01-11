@@ -81,7 +81,7 @@ public class GameManager : MonoBehaviour
 
     void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        if (this != Instance) return; 
+        if (this != Instance) return;
         if (scene.name == "MainGame")
         {
             Debug.Log($"[GameManager] OnSceneLoaded fired for {scene.name}. Config: {(PendingMapConfig != null ? "Yes" : "No")}, Save: {(PendingLoadPath != null ? "Yes" : "No")}");
@@ -183,7 +183,8 @@ public class GameManager : MonoBehaviour
                             {
                                 TurretID = tb.Data.TurretID,
                                 GridX = x,
-                                GridY = y
+                                GridY = y,
+                                Upgrades = tb.GetPlayerCardApplied()
                             });
                         }
                     }
@@ -218,6 +219,12 @@ public class GameManager : MonoBehaviour
 
         int CNextId = FindFirstObjectByType<CardSelectionMenu>().nextId;
 
+        WaveSaveData waveData = new WaveSaveData();
+        if (WaveManager.Instance != null)
+        {
+            waveData = WaveManager.Instance.GetSaveData();
+        }
+
         GameSaveData data = new GameSaveData
         {
             // SlotNumber = Slot,
@@ -239,7 +246,8 @@ public class GameManager : MonoBehaviour
                 DestY = dY,
                 SpawnerPositions = savedSpawners
             },
-            CardNextId = CNextId
+            CardNextId = CNextId,
+            WaveState = waveData
         };
 
         string json = JsonConvert.SerializeObject(data, Formatting.Indented);
@@ -314,66 +322,85 @@ public class GameManager : MonoBehaviour
                     G = new TDPG.Templates.Grid.Grid(data.GData.Width, data.GData.Height, data.GData.CellSize);
                     G.grid = data.GData.Grid;
                     G.typeGrid = data.GData.TypeGrid;
-                }
-                // G.turretId = data.GData.BuildingGrid;
-                if (GridManager.Instance != null)
-                {
-                    GridManager.Instance.SetCurrentGrid(G);
-                    GridManager.Instance.SetLoadedDestination(data.GData.DestX, data.GData.DestY);
-
-                    if (data.GData.SpawnerPositions != null)
+                    if (GridManager.Instance != null)
                     {
-                        List<Vector3Int> positions = new List<Vector3Int>();
-                        foreach (var vec in data.GData.SpawnerPositions)
+                        GridManager.Instance.SetCurrentGrid(G);
+                        GridManager.Instance.SetLoadedDestination(data.GData.DestX, data.GData.DestY);
+
+                        if (data.GData.SpawnerPositions != null)
                         {
-                            positions.Add(new Vector3Int((int)vec.x, (int)vec.y, (int)vec.z));
+                            List<Vector3Int> positions = new List<Vector3Int>();
+                            foreach (var vec in data.GData.SpawnerPositions)
+                            {
+                                positions.Add(new Vector3Int((int)vec.x, (int)vec.y, (int)vec.z));
+                            }
+                            GridManager.Instance.SetLoadedSpawners(positions);
                         }
-                        GridManager.Instance.SetLoadedSpawners(positions);
-                    }
-                    GridManager.Instance.ClearMap();
+                        GridManager.Instance.ClearMap();
 
-                    for (int x = 0; x < G.width; x++)
-                    {
-                        for (int y = 0; y < G.height; y++)
+                        for (int x = 0; x < G.width; x++)
                         {
-                            GridManager.Instance.UpdateTileVisual(x, y, G.GetTileType(x, y));
+                            for (int y = 0; y < G.height; y++)
+                            {
+                                GridManager.Instance.UpdateTileVisual(x, y, G.GetTileType(x, y));
+                            }
                         }
-                    }
 
-                    var spawner = FindFirstObjectByType<TurretSpawner>();
-                    if (spawner != null)
-                    {
-                        foreach (var tData in data.Turrets)
+                        // var spawner = FindFirstObjectByType<TurretSpawner>();
+                        // if (spawner != null)
+                        // {
+                        //     foreach (var tData in data.Turrets)
+                        //     {
+                        //         // Convert Grid X,Y to World Position for the Spawner
+                        //         // (Or update ForceSpawnTurret to take Grid Coordinates as discussed in TODO)
+                        //         Vector3 worldPos = GridManager.Instance.GridToWorld(tData.GridX, tData.GridY);
+
+                        //         // Spawner handles instantiation AND calling GridManager.PlaceTurret
+                        //         spawner.modifiersList = tData.Upgrades;
+                        //         spawner.ForceSpawnTurret(tData.TurretID, worldPos);
+
+                        //         // if (tData.Upgrades != null && tData.Upgrades.Count > 0)
+                        //         // {
+                        //         //     // Retrieve the instance from the grid
+                        //         //     GameObject spawnedObj = GridManager.Instance.GetBuildingAtIndices(tData.GridX, tData.GridY);
+                        //         //     if (spawnedObj != null)
+                        //         //     {
+                        //         //         var tb = spawnedObj.GetComponent<TDPG.Templates.Turret.TurretBase>();
+                        //         //         if (tb != null)
+                        //         //         {
+                        //         //             // NEW: Use the method you provided
+                        //         //             tb.ApplyModifiers(tData.Upgrades);
+                        //         //         }
+                        //         //     }
+                        //         // }
+                        //     }
+                        // }
+                        // else
+                        // {
+                        //     Debug.LogWarning("TurretSpawner not found. Turrets will not be placed.");
+                        // }
+
+                        GridManager.Instance.ForceRebuildScene();
+
+                        GameObject virtualBase = new GameObject("Base_Destination");
+                        // virtualBase.tag = "Base";
+                        virtualBase.transform.position = GridManager.Instance.GetDestinationWorldPosition();
+
+                        // Find ALL spawners
+                        var allSpawners = FindObjectsByType<EnemysSpawner>(FindObjectsSortMode.None);
+                        foreach (var s in allSpawners)
                         {
-                            // Convert Grid X,Y to World Position for the Spawner
-                            // (Or update ForceSpawnTurret to take Grid Coordinates as discussed in TODO)
-                            Vector3 worldPos = GridManager.Instance.GridToWorld(tData.GridX, tData.GridY);
-
-                            // Spawner handles instantiation AND calling GridManager.PlaceTurret
-                            spawner.ForceSpawnTurret(tData.TurretID, worldPos);
+                            s.SetEndPoint(virtualBase.transform);
                         }
                     }
                     else
                     {
-                        Debug.LogWarning("TurretSpawner not found. Turrets will not be placed.");
-                    }
-
-                    GridManager.Instance.ForceRebuildScene();
-
-                    GameObject virtualBase = new GameObject("Base_Destination");
-                    // virtualBase.tag = "Base";
-                    virtualBase.transform.position = GridManager.Instance.GetDestinationWorldPosition();
-
-                    // Find ALL spawners
-                    var allSpawners = FindObjectsByType<EnemysSpawner>(FindObjectsSortMode.None);
-                    foreach (var s in allSpawners)
-                    {
-                        s.SetEndPoint(virtualBase.transform);
+                        Debug.LogError("GridManager.Instance is NULL!");
                     }
                 }
                 else
                 {
-                    Debug.LogError("GridManager.Instance is NULL!");
+                    Debug.Log("[GameManager] no grid in save data?????");
                 }
 
                 if (EnemyCompendium.Instance != null)
@@ -383,6 +410,11 @@ public class GameManager : MonoBehaviour
 
                 FindFirstObjectByType<CardSelectionMenu>().nextId = data.CardNextId;
                 Debug.Log($"Game Loaded successfully. Version: {data.SaveVersion}");
+
+                if (WaveManager.Instance != null && data.WaveState != null)
+                {
+                    WaveManager.Instance.LoadFromData(data.WaveState);
+                }
             }
         }
         catch (System.Exception e)
