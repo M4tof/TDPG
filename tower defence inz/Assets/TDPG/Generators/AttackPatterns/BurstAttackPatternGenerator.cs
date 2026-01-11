@@ -16,6 +16,8 @@ namespace TDPG.Generators.AttackPatterns
     [CreateAssetMenu(fileName = "New Burst Pattern", menuName = "TDPG/Patterns/Burst")]
     public class BurstAttackPatternGenerator : AbstractAttackPatternGenerator
     {
+        
+
         /// <summary>
         /// Generates the specific start time for each projectile relative to the pattern start.
         /// <br/>For bursts, these values are typically very small (close to 0.0).
@@ -57,6 +59,7 @@ namespace TDPG.Generators.AttackPatterns
         public BurstAttackPatternGenerator()
         {
             // sensible defaults
+            patternName = "Burst";
             DurationGenerator = new FloatGenerator { mode = FloatGenerator.Mode.Uniform, min = 0.5f, max = 3f };
             EventCountGenerator = new IntGenerator { min = 1, max = 6 };
             TimeOffsetGenerator = new FloatGenerator { mode = FloatGenerator.Mode.Uniform, min = 0f, max = 0.3f };

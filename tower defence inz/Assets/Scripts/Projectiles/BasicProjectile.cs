@@ -6,7 +6,7 @@ using TDPG.Templates.Turret;
 [RequireComponent(typeof(Collider2D))]
 public class BasicProjectile : Projectile
 {
-    private int damage = 1;
+    
 
     
     private ProceduralAudioController _audioController; 

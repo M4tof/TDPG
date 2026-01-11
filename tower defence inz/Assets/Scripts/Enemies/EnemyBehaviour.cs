@@ -22,9 +22,9 @@ public class EnemyBehavior : EnemyBaseBehaviour
 
     public void Initialize(Enemy logic)
     {
-        base.Initialize(logic);
-
         logic.Data.MaxHealth = Mathf.CeilToInt(logic.Data.MaxHealth);
+        base.Initialize(logic);
+        
         Logic = logic;
         _renderer = GetComponent<SpriteRenderer>();
         _enemyPathFollower = GetComponent<EnemyPathFollower>();
@@ -108,7 +108,7 @@ public class EnemyBehavior : EnemyBaseBehaviour
         TurretBase turret = buildingToDestroy.GetComponent<TurretBase>();
         if (turret != null)
         {
-            turret.DealDamage(1);
+            turret.DealDamage(Logic.Data.Damage);
             return;
         }
         FinishDestroyingBuilding();

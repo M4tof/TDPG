@@ -23,7 +23,14 @@ namespace TDPG.Generators.AttackPatterns
         /// Generator responsible for determining how many individual events (projectiles/hitboxes) spawn.
         /// </summary>
         public IntGenerator EventCountGenerator { get; set; }
-        
+
+
+        /// <summary>
+        /// A unique name for this specific type of pattern.
+        /// <br/>Useful for displaying information concerning said pattern type during gameplay.
+        /// </summary>
+        public string patternName;
+
         /// <summary>
         /// Core generation logic to be implemented by concrete classes (e.g., Burst, Stream).
         /// </summary>

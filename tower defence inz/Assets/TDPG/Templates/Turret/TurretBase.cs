@@ -206,6 +206,10 @@ namespace TDPG.Templates.Turret
             {
                 Data.Range = Mathf.RoundToInt(Data.Range * modifier.rangeMultiplayer);
             }
+            if(modifier.PatternGenerator != null)
+            {
+                Data.PatternGenerator = modifier.PatternGenerator;
+            }
 
             Data.Cost += modifier.ResourceCost;
         }

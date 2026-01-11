@@ -1,4 +1,6 @@
+using QuikGraph.Algorithms.Search;
 using System.Collections.Generic;
+using TDPG.Generators.AttackPatterns;
 using TDPG.Generators.Seed;
 using TDPG.Templates.Turret;
 using UnityEngine;
@@ -179,6 +181,7 @@ public class CardSelectionMenu : MonoBehaviour
         float ToDamage = 1;
         float ToHP = 1;
         float ToRange = 1;
+        AbstractAttackPatternGenerator ToPattern = null;
         string ToElement = "";
 
         Debug.Log($"SEED: {digits}\n DNA: {DNA.GetBaseValue()}");
@@ -202,7 +205,6 @@ public class CardSelectionMenu : MonoBehaviour
         {
             ToRange = baseStatScale + (int.Parse(digits.Substring(5, 2)) / seedNormalizer) / secondaryStatDivisor; //1.01 - 2.0
         }
-        //TODO USUNĄĆ || true
         //Set New Element
         if (DNA.IsBitSet(4) && DNA.IsBitSet(5))
         {
@@ -210,18 +212,36 @@ public class CardSelectionMenu : MonoBehaviour
             string parentList = digits.Substring(9, 2);
             ToElement = RegistryManager.Instance.GetNewElementById(elementId, parentList).Name;
         }
+        if (DNA.IsBitSet(6) && DNA.IsBitSet(7) && DNA.IsBitSet(8))
+        {
+            int patternId = int.Parse(digits.Substring(11, 1));
+            patternId = patternId % 4;
+            switch (patternId) {
+                case 1:
+                    ToPattern = new BurstAttackPatternGenerator();
+                    break;
+                case 2:
+                    ToPattern = new BurstAttackPatternGenerator();
+                    break;
+                case 3:
+                    ToPattern = new BurstAttackPatternGenerator();
+                    break;
+                default:
+                    ToPattern = new BurstAttackPatternGenerator();
+                    break;
+            }
+        }
 
         if (ToDamage == 1 && ToRange == 1 && ToHP == 1)
         {
             ToDamage = baseStatScale + (int.Parse(digits.Substring(7, 2)) / seedNormalizer) / secondaryStatDivisor; //1.01 - 2.0
         }
-        
-        //0982489024882349043980432980
 
         cardData.damageMultiplayer = ToDamage;
         cardData.hpMultiplayer = ToHP;
         cardData.rangeMultiplayer = ToRange;
         cardData.elementName = ToElement;
+        cardData.PatternGenerator = ToPattern;
 
         Debug.Log($"STATS: {ToDamage} {ToHP} {ToRange}");
         return cardData;
