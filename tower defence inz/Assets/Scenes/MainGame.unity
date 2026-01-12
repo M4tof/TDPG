@@ -571,7 +571,19 @@ PrefabInstance:
       objectReference: {fileID: 2733203223708177109, guid: 8531730af3d316cf7a19bda5d4374f3a, type: 3}
     - target: {fileID: 5834338963547804755, guid: a3fd9e2b77aba7542becd0c031fdec11, type: 3}
       propertyPath: m_ExcludeLayers.m_Bits
-      value: 1
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5834338963547804755, guid: a3fd9e2b77aba7542becd0c031fdec11, type: 3}
+      propertyPath: m_IncludeLayers.m_Bits
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6310796073193834617, guid: a3fd9e2b77aba7542becd0c031fdec11, type: 3}
+      propertyPath: m_Constraints
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 6310796073193834617, guid: a3fd9e2b77aba7542becd0c031fdec11, type: 3}
+      propertyPath: m_IncludeLayers.m_Bits
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6413146351426944057, guid: a3fd9e2b77aba7542becd0c031fdec11, type: 3}
       propertyPath: speed

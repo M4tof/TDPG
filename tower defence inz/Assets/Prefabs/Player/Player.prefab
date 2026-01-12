@@ -463,3 +463,4 @@ MonoBehaviour:
   TurretBox: {fileID: 0}
   TurretVisualizer: {fileID: 0}
   GenericTurretPrefab: {fileID: 0}
+  modifiersList: []
