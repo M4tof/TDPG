@@ -169,6 +169,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   speed: 60
   lifeTime: 3
+  damage: 1
 --- !u!82 &521588670679896681
 AudioSource:
   m_ObjectHideFlags: 0
@@ -278,12 +279,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dccc8b294dd34f4691c86d68423ad184, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mode: 0
+  mode: 1
   modulationSeed: 1000100
   selectionSeed: 987654321
-  clipPool: {fileID: 0}
-  modifierPool: {fileID: 0}
-  maxModifiersToPick: 2
-  modifiers:
-  - {fileID: 11400000, guid: 1e5483233819a91f988be3a95c1757c2, type: 2}
+  clipPool: {fileID: 11400000, guid: a05b80ffa3107b346936f7830a201496, type: 2}
+  modifierPool: {fileID: 11400000, guid: 860f0989fd2214f548989e1c316f966d, type: 2}
+  maxModifiersToPick: 3
+  modifiers: []
   playOnStart: 0
