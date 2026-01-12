@@ -346,39 +346,39 @@ public class GameManager : MonoBehaviour
                             }
                         }
 
-                        // var spawner = FindFirstObjectByType<TurretSpawner>();
-                        // if (spawner != null)
-                        // {
-                        //     foreach (var tData in data.Turrets)
-                        //     {
-                        //         // Convert Grid X,Y to World Position for the Spawner
-                        //         // (Or update ForceSpawnTurret to take Grid Coordinates as discussed in TODO)
-                        //         Vector3 worldPos = GridManager.Instance.GridToWorld(tData.GridX, tData.GridY);
+                        var spawner = FindFirstObjectByType<TurretSpawner>();
+                        if (spawner != null)
+                        {
+                            foreach (var tData in data.Turrets)
+                            {
+                                // Convert Grid X,Y to World Position for the Spawner
+                                // (Or update ForceSpawnTurret to take Grid Coordinates as discussed in TODO)
+                                Vector3 worldPos = GridManager.Instance.GridToWorld(tData.GridX, tData.GridY);
 
-                        //         // Spawner handles instantiation AND calling GridManager.PlaceTurret
-                        //         spawner.modifiersList = tData.Upgrades;
-                        //         spawner.ForceSpawnTurret(tData.TurretID, worldPos);
+                                // Spawner handles instantiation AND calling GridManager.PlaceTurret
+                                spawner.modifiersList = tData.Upgrades;
+                                spawner.ForceSpawnTurret(tData.TurretID, worldPos);
 
-                        //         // if (tData.Upgrades != null && tData.Upgrades.Count > 0)
-                        //         // {
-                        //         //     // Retrieve the instance from the grid
-                        //         //     GameObject spawnedObj = GridManager.Instance.GetBuildingAtIndices(tData.GridX, tData.GridY);
-                        //         //     if (spawnedObj != null)
-                        //         //     {
-                        //         //         var tb = spawnedObj.GetComponent<TDPG.Templates.Turret.TurretBase>();
-                        //         //         if (tb != null)
-                        //         //         {
-                        //         //             // NEW: Use the method you provided
-                        //         //             tb.ApplyModifiers(tData.Upgrades);
-                        //         //         }
-                        //         //     }
-                        //         // }
-                        //     }
-                        // }
-                        // else
-                        // {
-                        //     Debug.LogWarning("TurretSpawner not found. Turrets will not be placed.");
-                        // }
+                                // if (tData.Upgrades != null && tData.Upgrades.Count > 0)
+                                // {
+                                //     // Retrieve the instance from the grid
+                                //     GameObject spawnedObj = GridManager.Instance.GetBuildingAtIndices(tData.GridX, tData.GridY);
+                                //     if (spawnedObj != null)
+                                //     {
+                                //         var tb = spawnedObj.GetComponent<TDPG.Templates.Turret.TurretBase>();
+                                //         if (tb != null)
+                                //         {
+                                //             // NEW: Use the method you provided
+                                //             tb.ApplyModifiers(tData.Upgrades);
+                                //         }
+                                //     }
+                                // }
+                            }
+                        }
+                        else
+                        {
+                            Debug.LogWarning("TurretSpawner not found. Turrets will not be placed.");
+                        }
 
                         GridManager.Instance.ForceRebuildScene();
 

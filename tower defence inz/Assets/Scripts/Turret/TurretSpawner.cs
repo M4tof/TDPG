@@ -133,6 +133,7 @@ public class TurretSpawner : MonoBehaviour
 
     public void ForceSpawnTurret(string turretID, Vector3 worldPosition)
     {
+        Debug.Log($"[ForceSpawnTurret] {turretID}, {worldPosition}, {GenericTurretPrefab}");
         // 1. Validate Dependencies
         if (GenericTurretPrefab == null)
         {
@@ -156,10 +157,22 @@ public class TurretSpawner : MonoBehaviour
         // Instantiate
         GameObject newTurret = Instantiate(GenericTurretPrefab, worldPosition, Quaternion.identity);
         
-        var ac = newTurret.GetComponentInChildren<ProceduralAudioController>();
-        ac.selectionSeed = GameManager.Instance.ACSeed1.GetBaseValue();
-        ac.modulationSeed = GameManager.Instance.ACSeed2.GetBaseValue();
+        // var ac = newTurret.GetComponentInChildren<ProceduralAudioController>();
+        // ac.selectionSeed = GameManager.Instance.ACSeed1.GetBaseValue();
+        // ac.modulationSeed = GameManager.Instance.ACSeed2.GetBaseValue();
         
+        // var ac = newTurret.GetComponentInChildren<TDPG.AudioModulation.ProceduralAudioController>();
+        // if (ac != null && GameManager.Instance != null)
+        // {
+        //     ac.selectionSeed = GameManager.Instance.ACSeed1.GetBaseValue();
+        //     ac.modulationSeed = GameManager.Instance.ACSeed2.GetBaseValue();
+        // }
+        // else if (ac == null)
+        // {
+        //     // Optional warning if you expect every turret to have audio
+        //     Debug.LogWarning($"Turret '{newTurret.name}' missing ProceduralAudioController.");
+        // }
+
         newTurret.SetActive(true);
         newTurret.transform.SetParent(TurretBox.transform);
 
