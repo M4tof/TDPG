@@ -199,6 +199,8 @@ public class GameManager : MonoBehaviour
                     savedSpawners.Add(new Vec3(pos.x, pos.y, pos.z));
                 }
             }
+
+
         }
 
         string regData = "";
@@ -225,6 +227,19 @@ public class GameManager : MonoBehaviour
             waveData = WaveManager.Instance.GetSaveData();
         }
 
+        MapBoundsData boundsData = new MapBoundsData();
+        var mapGen = FindFirstObjectByType<TDPG.Templates.Grid.MapGen.MapGenerator>();
+        if (mapGen != null)
+        {
+            // Use the 'out' parameters to get data safely
+            mapGen.GetBoundsValues(out int minX, out int maxX, out int minY, out int maxY);
+
+            boundsData.MinX = minX;
+            boundsData.MaxX = maxX;
+            boundsData.MinY = minY;
+            boundsData.MaxY = maxY;
+        }
+
         GameSaveData data = new GameSaveData
         {
             // SlotNumber = Slot,
@@ -244,7 +259,8 @@ public class GameManager : MonoBehaviour
                 // BuildingGrid = G.turretId
                 DestX = dX,
                 DestY = dY,
-                SpawnerPositions = savedSpawners
+                SpawnerPositions = savedSpawners,
+                MapBounds = boundsData
             },
             CardNextId = CNextId,
             WaveState = waveData
@@ -379,6 +395,15 @@ public class GameManager : MonoBehaviour
                         {
                             Debug.LogWarning("TurretSpawner not found. Turrets will not be placed.");
                         }
+                        
+                        
+                        var mapGen = FindFirstObjectByType<TDPG.Templates.Grid.MapGen.MapGenerator>();
+                        if (mapGen != null)
+                        {
+                            var b = data.GData.MapBounds;
+                            // Pass primitives to Lib
+                            mapGen.RestoreBoundsValues(b.MinX, b.MaxX, b.MinY, b.MaxY);
+                        }
 
                         GridManager.Instance.ForceRebuildScene();
 
@@ -397,6 +422,9 @@ public class GameManager : MonoBehaviour
                     {
                         Debug.LogError("GridManager.Instance is NULL!");
                     }
+
+
+
                 }
                 else
                 {

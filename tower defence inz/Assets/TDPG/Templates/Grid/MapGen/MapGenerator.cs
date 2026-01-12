@@ -695,6 +695,15 @@ namespace TDPG.Templates.Grid.MapGen
         /// </summary>
         public void CreateMapBounds()
         {
+            Transform oldBounds = transform.Find("MapBounds2D");
+            if (oldBounds != null)
+            {
+                if (Application.isPlaying) Destroy(oldBounds.gameObject);
+                else DestroyImmediate(oldBounds.gameObject);
+            }
+
+            if (_grid == null) return;
+            
             float cellSize = _grid.GetCellSize();
 
             // Convert grid bounds to world-space coordinates
@@ -794,6 +803,23 @@ namespace TDPG.Templates.Grid.MapGen
         {
             return _mapInit;
         }
+        public void GetBoundsValues(out int minX, out int maxX, out int minY, out int maxY)
+        {
+            minX = _boundsW0;
+            maxX = _boundsWX;
+            minY = _boundsH0;
+            maxY = _boundsHY;
+        }
+
+        // Set values directly using primitives
+        public void RestoreBoundsValues(int minX, int maxX, int minY, int maxY)
+        {
+            _boundsW0 = minX;
+            _boundsWX = maxX;
+            _boundsH0 = minY;
+            _boundsHY = maxY;
+        }
 
     }
+    
 }

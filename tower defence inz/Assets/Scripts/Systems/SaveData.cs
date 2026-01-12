@@ -65,6 +65,16 @@ public class EnemySaveData
     // Add overrides if needed
     public EnemyStatsOverride Ov;
 }
+
+[System.Serializable]
+public struct MapBoundsData
+{
+    public int MinX; // _boundsW0
+    public int MaxX; // _boundsWX
+    public int MinY; // _boundsH0
+    public int MaxY; // _boundsHY
+}
+
 [System.Serializable]
 public class GridSaveData
 {
@@ -78,6 +88,8 @@ public class GridSaveData
     public int DestY;
 
     public System.Collections.Generic.List<Vec3> SpawnerPositions = new System.Collections.Generic.List<Vec3>();
+
+    public MapBoundsData MapBounds;
 }
 
 [System.Serializable]
