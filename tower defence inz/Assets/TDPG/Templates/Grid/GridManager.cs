@@ -318,7 +318,7 @@ namespace TDPG.Templates.Grid
             }
         }
 
-        private void ApplyMapToGridWithTilemap(Grid.TileType[,] mapData)
+        public void ApplyMapToGridWithTilemap(Grid.TileType[,] mapData)
         {
             bool hasFog = false;
             if (tilemap == null)

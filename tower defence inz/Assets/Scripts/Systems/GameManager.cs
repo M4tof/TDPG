@@ -443,6 +443,7 @@ public class GameManager : MonoBehaviour
                 {
                     WaveManager.Instance.LoadFromData(data.WaveState);
                 }
+                GridManager.Instance.ApplyMapToGridWithTilemap(data.GData.TypeGrid);
             }
         }
         catch (System.Exception e)
