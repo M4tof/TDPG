@@ -26,7 +26,8 @@ namespace TDPG.Templates.Turret
         [Header("Building")]
         [Tooltip("Resource cost to place this turret.")] public float Cost = 50f;
         [Tooltip("The footprint of the turret in Grid Cells (Width x Height).")] public Vector2 TileSize = new Vector2(1, 1);
-        public Vector2 Offset;
+        public Vector2 BaseOffset;
+        public Vector2 CrystalOffset;
         [Tooltip("Visual Scale Multiplier (1.0 = Original Prefab Size).")] public float Scale = 1;
 
         [Header("Combat")]

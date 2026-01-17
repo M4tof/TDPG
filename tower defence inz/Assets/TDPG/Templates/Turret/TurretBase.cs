@@ -16,6 +16,7 @@ namespace TDPG.Templates.Turret
         [Header("Runtime State")]
         [Tooltip("The configuration data (Stats, Sprites, Size) driving this specific turret instance.")]
         public TurretData Data;
+
         [Tooltip("Modyficator for Turret")]
         [SerializeField] List<CardData> playerCardApplied = new List<CardData>();
 
@@ -29,6 +30,7 @@ namespace TDPG.Templates.Turret
         public UnityEvent turretDestroyed;
         public UnityEvent HealthChanged;
         
+        private TurretData BaseData;
         private Vector3 _baseDesignPos;
         private Vector3 _crystalDesignPos;
         private Vector3 _baseDesignScale;
@@ -75,58 +77,26 @@ namespace TDPG.Templates.Turret
         {
             EnsureOffsetsCached(); // Safety check
             
-            Data = Instantiate(data); //make copy of data
+            Data = Instantiate(data);           //make copy of data
+            SetTurretBaseData(data);            //Make copy of data to save Base stat
             currentHealth = data.MaxHP;
-            // Safety: Default to 1.0 if GridManager is missing (e.g. prefab mode)
-            float cellSize = (GridManager.Instance != null) ? GridManager.Instance.CellSize : 1.0f;
-
-            // Calculate the specific offset to center this turret on its tiles
-            // Vector3 gridCenterOffset = new Vector3(
-            //     data.TileSize.x * cellSize * 0.5f,
-            //     data.TileSize.y * cellSize * 0.5f,
-            //     0f
-            // );
-
+            SetOffset(data);
             transform.localScale = new Vector3(data.Scale, data.Scale, 0);
-                
-            // APPLY: Always set relative to the CLEAN Design Position
+        }
+
+        public void SetOffset(TurretData data)
+        {
             if (baseRenderer != null)
             {
                 baseRenderer.sprite = data.BaseSprite;
-                /*baseRenderer.transform.localScale = new Vector3(
-                    _baseDesignScale.x * data.Multiplayer,
-                    _baseDesignScale.y * data.Multiplayer,
-                    1f
-                );
-                Vector3 scaledDesignPos = new Vector3(
-                    _baseDesignPos.x * data.Multiplayer,
-                    _baseDesignPos.y * data.Multiplayer,
-                    _baseDesignPos.z
-                );*/
-
-                //baseRenderer.transform.localPosition = scaledDesignPos;
+                baseRenderer.transform.localPosition = data.BaseOffset;
             }
 
             if (crystalRenderer != null)
             {
                 crystalRenderer.sprite = data.CrystalSprite;
-                /*crystalRenderer.transform.localScale = new Vector3(
-                    _crystalDesignScale.x * data.Multiplayer,
-                    _crystalDesignScale.y * data.Multiplayer,
-                    1f
-                );
-                Vector3 scaledDesignPos = new Vector3(
-                    _crystalDesignPos.x * data.Multiplayer,
-                    _crystalDesignPos.y * data.Multiplayer,
-                    _crystalDesignPos.z
-                );*/
-
-                //crystalRenderer.transform.localPosition = scaledDesignPos;
-
+                crystalRenderer.transform.localPosition = data.CrystalOffset;
             }
-            
-            transform.position = transform.position + new Vector3(data.Offset.x, data.Offset.y, 0); 
-            
         }
 
         /// <summary>
@@ -135,6 +105,7 @@ namespace TDPG.Templates.Turret
         /// <param name="damage">Amount of damage to apply.</param>
         public void DealDamage(int damage)
         {
+            Debug.Log("ATTACK TURRET");
             currentHealth -= damage;
             HealthChanged.Invoke();
             if (currentHealth <= 0)
@@ -148,7 +119,15 @@ namespace TDPG.Templates.Turret
         /// </summary> 
         public void DestroyTurret()
         {
-            GridManager.Instance.SetTileType(transform.position,Grid.Grid.TileType.EMPTY);
+            float cellSize = GridManager.Instance.GetCellSize();
+            for (int i = 0; i < Data.TileSize.x; i++)
+            {
+                for (int j = 0; j < Data.TileSize.y; j++)
+                {
+                    GridManager.Instance.SetTileType(transform.position + new Vector3(i*cellSize,j*cellSize,0),Grid.Grid.TileType.EMPTY);
+                }
+            }
+            //GridManager.Instance.SetTileType(transform.position,Grid.Grid.TileType.EMPTY);
             turretDestroyed.Invoke();
             Destroy(gameObject);
         }
@@ -194,17 +173,17 @@ namespace TDPG.Templates.Turret
         {
             if (modifier.hpMultiplayer != 1)
             {
-                Data.MaxHP = Mathf.RoundToInt(Data.MaxHP * modifier.hpMultiplayer);
+                Data.MaxHP += Mathf.RoundToInt(BaseData.MaxHP * (modifier.hpMultiplayer-1));
                 currentHealth += Data.MaxHP - currentHealth;
                 HealthChanged.Invoke();
             }
             if (modifier.damageMultiplayer != 1)
             {
-                Data.Damage = Mathf.RoundToInt(Data.Damage * modifier.damageMultiplayer);
+                Data.Damage += Mathf.RoundToInt(BaseData.Damage * (modifier.damageMultiplayer-1));
             }
             if (modifier.rangeMultiplayer != 1)
             {
-                Data.Range = Mathf.RoundToInt(Data.Range * modifier.rangeMultiplayer);
+                Data.Range += Mathf.RoundToInt(BaseData.Range * (modifier.rangeMultiplayer-1));
             }
             if(modifier.PatternGenerator != null)
             {
@@ -244,6 +223,22 @@ namespace TDPG.Templates.Turret
         public string GetTurretId()
         {
             return Data.TurretID;
+        }
+        
+        /// <summary>
+        /// Set Copy of Data to BaseData
+        /// </summary>
+        public void SetTurretBaseData(TurretData data)
+        {
+            BaseData = Instantiate(data);
+        }
+        
+        /// <summary>
+        /// Get copy of BaseData
+        /// </summary>
+        public TurretData GetTurretBaseData()
+        {
+            return Instantiate(BaseData);
         }
 
         public List<CardData> GetPlayerCardApplied()
