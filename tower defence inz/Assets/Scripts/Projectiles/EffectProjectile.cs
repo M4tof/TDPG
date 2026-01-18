@@ -31,7 +31,16 @@ public class EffectProjectile : BasicProjectile
     
     public override void OnTriggerEnter2D(Collider2D other)
     {
+        /*public IReadOnlyList<IEffectAction> GetPlannedActions()
+        {
+            // Najbezpieczniej zwracać *read-only snapshot*
+            return plannedActions.AsReadOnly();
+        }*/
         Debug.Log("TRIGGER ENTER: EFFECT");
+        if (GetPlanner().GetPlannedActions().Count == 0)
+        {
+            AddElement("Root");
+        }
         if (hasHit) return;
         if (other.GetComponent<EnemyBehavior>() != null)
         {

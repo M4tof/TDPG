@@ -428,7 +428,7 @@ PrefabInstance:
     - target: {fileID: 2793783209248290579, guid: a3fd9e2b77aba7542becd0c031fdec11, type: 3}
       propertyPath: projectile
       value: 
-      objectReference: {fileID: 1195895545647384619, guid: b1fab52a54f5c3f4e9b9df79c84498a1, type: 3}
+      objectReference: {fileID: 1195895545647384619, guid: 35b1ad6cbd928414c983ab776371f08e, type: 3}
     - target: {fileID: 3755034284902648661, guid: a3fd9e2b77aba7542becd0c031fdec11, type: 3}
       propertyPath: m_ActionEvents.Array.size
       value: 6
@@ -1280,6 +1280,7 @@ MonoBehaviour:
   baseStatScale: 1.1
   seedNormalizer: 100
   secondaryStatDivisor: 2
+  turretSpawner: {fileID: 2044208078}
   nextId: 0
 --- !u!1 &396946541
 GameObject:
@@ -3445,6 +3446,7 @@ GameObject:
   - component: {fileID: 1066024757}
   - component: {fileID: 1066024758}
   - component: {fileID: 1066024759}
+  - component: {fileID: 1066024760}
   m_Layer: 0
   m_Name: ManaDisplay
   m_TagString: Untagged
@@ -3502,6 +3504,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6f30600ecab8517698e31f6ba0f69794, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1066024760
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1066024756}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f337ed12872d90e48ae400c77cb3877c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &1123943250
@@ -4815,7 +4829,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 20
+  orthographic size: 25
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -6015,6 +6029,7 @@ GameObject:
   - component: {fileID: 1925338638}
   - component: {fileID: 1925338640}
   - component: {fileID: 1925338639}
+  - component: {fileID: 1925338641}
   m_Layer: 5
   m_Name: ManaText
   m_TagString: Untagged
@@ -6140,6 +6155,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1925338637}
   m_CullTransparentMesh: 1
+--- !u!114 &1925338641
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1925338637}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f337ed12872d90e48ae400c77cb3877c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1940081234
 GameObject:
   m_ObjectHideFlags: 0

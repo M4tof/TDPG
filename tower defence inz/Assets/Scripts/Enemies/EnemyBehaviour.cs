@@ -90,7 +90,6 @@ public class EnemyBehavior : EnemyBaseBehaviour
 
     public override void DealDamage(int damage)
     {
-        Debug.Log("NEW DAMAGE");
         base.DealDamage(damage);
         hpBarVisualiation.SetValue(GetCurrentHealth());
     }

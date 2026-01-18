@@ -666,9 +666,6 @@ namespace TDPG.Templates.Grid
 
         private void SetDestination()
         {
-            //PlaceTurret(GetDestinationWorldPosition(), DestinationPrefab);
-            /*destinationObject = Instantiate(new GameObject(), GetDestinationWorldPosition(),
-                Quaternion.identity, gameObject.transform);*/
             
             destinationObject = Instantiate(DestinationPrefab, GetDestinationWorldPosition(), Quaternion.identity,TurretContainer.transform);
             // Initialize the new instance (It will calculate offset from its clean state)

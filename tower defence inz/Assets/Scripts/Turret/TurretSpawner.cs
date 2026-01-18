@@ -3,6 +3,8 @@ using UnityEngine;
 using TDPG.Templates.Grid;   // Lib
 using TDPG.Templates.Turret; // Lib
 using TDPG.AudioModulation;
+using UnityEngine.EventSystems;
+using UnityEngine.InputSystem;
 
 public class TurretSpawner : MonoBehaviour
 {
@@ -20,6 +22,7 @@ public class TurretSpawner : MonoBehaviour
     private bool _canSpawnTurret;
     private TurretData data;
     public List<CardData> modifiersList = new List<CardData>();
+    private bool blockSpawnTurret = false;
 
     // Renamed back to Set... for consistency
     public void SetTurretToSpawn(string turretID, List<CardData> modifiers = null)
@@ -55,26 +58,26 @@ public class TurretSpawner : MonoBehaviour
         return _selectedTurretID;
     }
 
-    private Vector3 CalculateTurretPosition(Vector3 mousePos, TurretData data)
+    private Vector3 CalculateTurretPosition(Vector3 mousePos)
     {
-        // 1. Get Anchor (Bottom-Left of the tile under mouse)
+        //Get Anchor (Bottom-Left of the tile under mouse)
         Vector3 gridBottomLeft = GridManager.Instance.GetGridWorldTilePosition(mousePos);
-
-        // 2. Calculate Center Offset based on Data size
-        float cellSize = GridManager.Instance.CellSize;
-        Vector3 centerOffset = new Vector3(
-            data.TileSize.x * cellSize * 0.5f,
-            data.TileSize.y * cellSize * 0.5f,
-            0f
-        );
-
-        // 3. Return Center
-        return gridBottomLeft + centerOffset;
+        
+        return gridBottomLeft;
     }
 
     public GameObject SpawnTurret(Vector3 worldPosition)
     {
+        if (blockSpawnTurret)
+        {
+            Debug.Log("Spawning Blocked!!!");
+            return null;
+        }
         if (string.IsNullOrEmpty(_selectedTurretID) || !_canSpawnTurret) { Debug.Log("ID not set"); return null; }
+        if (IsMouseOverUIToIgnore()) { 
+            Debug.Log("Mouse is over UI");
+            return null;
+        }
 
         TurretData data = TurretRegistry.Instance.Get(_selectedTurretID);
 
@@ -89,7 +92,7 @@ public class TurretSpawner : MonoBehaviour
             ResourceSystem.Instance.mana.Claim(data.Cost);
         }
 
-        Vector3 spawnPos = CalculateTurretPosition(worldPosition, data);
+        Vector3 spawnPos = CalculateTurretPosition(worldPosition);
 
         GameObject newTurret = Instantiate(GenericTurretPrefab, spawnPos, Quaternion.identity);
         newTurret.transform.SetParent(TurretBox.transform);
@@ -107,9 +110,9 @@ public class TurretSpawner : MonoBehaviour
 
     public void UpdateVisualizerPosition(Vector3 mousePosition)
     {
-        if (!string.IsNullOrEmpty(_selectedTurretID) && GridManager.Instance.IsOnGrid(mousePosition))
+        if (!string.IsNullOrEmpty(_selectedTurretID) && GridManager.Instance.IsOnGrid(mousePosition) && !IsMouseOverUIToIgnore() && !blockSpawnTurret)
         {
-            Vector3 centerPos = CalculateTurretPosition(mousePosition, data);
+            Vector3 centerPos = CalculateTurretPosition(mousePosition);
             TurretVisualizer.transform.position = centerPos;
             TurretVisualizer.gameObject.SetActive(true);
 
@@ -182,5 +185,35 @@ public class TurretSpawner : MonoBehaviour
 
         // Register in Grid
         GridManager.Instance.PlaceTurret(worldPosition, newTurret);
+    }
+
+    private bool IsMouseOverUI()
+    {
+        return EventSystem.current.IsPointerOverGameObject();
+    }
+    
+    private bool IsMouseOverUIToIgnore()
+    {
+        Vector2 mousePosition = Mouse.current.position.ReadValue();
+        
+        PointerEventData pointerEventData = new PointerEventData(EventSystem.current);
+        pointerEventData.position = mousePosition;
+
+        List<RaycastResult> raycastList = new List<RaycastResult>();
+        EventSystem.current.RaycastAll(pointerEventData, raycastList);
+        for (int i = 0; i <raycastList.Count; i++)
+        {
+            if (raycastList[i].gameObject.GetComponent<MouseIgnore>() != null)
+            {
+                raycastList.RemoveAt(i);
+                i -= 1;
+            }
+        }
+        return  raycastList.Count > 0;
+    }
+
+    public void SetBlockSpawnTurret(bool block)
+    {
+        blockSpawnTurret = block;
     }
 }

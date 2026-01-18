@@ -24,6 +24,9 @@ public class CardSelectionMenu : MonoBehaviour
     [SerializeField] private float seedNormalizer = 100.0f; // Keep 100.0f
     [SerializeField] private float secondaryStatDivisor = 2.0f; // Was 4.0f. Secondary stats were too weak.
 
+    [Header("References")]
+    [SerializeField][Tooltip("Used to Block spawning turret while window is on")] private TurretSpawner turretSpawner;
+
 
 
 
@@ -47,6 +50,7 @@ public class CardSelectionMenu : MonoBehaviour
         }
 
         //cards = new List<CardData>();
+        if(turretSpawner != null) { turretSpawner.SetBlockSpawnTurret(true); }
         SelectionBox.SetActive(true);
 
         CleanCards();
@@ -85,6 +89,7 @@ public class CardSelectionMenu : MonoBehaviour
         }
 
         lastUsedTurretSelection = turretSelection;
+        if(turretSpawner != null) { turretSpawner.SetBlockSpawnTurret(true); }
         SelectionBox.SetActive(true);
         CleanCards();
 
@@ -160,6 +165,7 @@ public class CardSelectionMenu : MonoBehaviour
 
     public void Close()
     {
+        if(turretSpawner != null) { turretSpawner.SetBlockSpawnTurret(false); }
         SelectionBox.SetActive(false);
     }
 

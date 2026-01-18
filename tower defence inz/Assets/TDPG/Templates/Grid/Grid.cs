@@ -160,6 +160,7 @@ namespace TDPG.Templates.Grid
         /// </summary>
         public void SetTileType(int x, int y, TileType value)
         {
+            Debug.Log($"NEW TILE: {x} {y}");
             if (x < 0 || x >= width || y < 0 || y >= height)
             {
                 return;
