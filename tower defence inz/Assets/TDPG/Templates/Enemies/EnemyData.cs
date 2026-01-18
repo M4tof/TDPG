@@ -34,8 +34,10 @@ namespace TDPG.Templates.Enemies
         [Header("Visuals")]
         [Tooltip("The sprite used by the SpriteRenderer.")]
         public Sprite EnemySprite;
-        
-        
-        
+
+        [Header("Enemy Type")]
+        [Tooltip("Default type is walking. Flying takes priority over swimming")]
+        public bool CanFly = false;
+        public bool CanSwim = false;
     }
 }

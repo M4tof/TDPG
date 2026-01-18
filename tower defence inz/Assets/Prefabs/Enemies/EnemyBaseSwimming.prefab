@@ -17,7 +17,7 @@ GameObject:
   - component: {fileID: -1579562534061655445}
   - component: {fileID: 4179352763543011116}
   m_Layer: 3
-  m_Name: EnemyBase
+  m_Name: EnemyBaseSwimming
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -224,7 +224,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gridManager: {fileID: 0}
   destinationObject: {fileID: 0}
-  canSwim: 0
+  canSwim: 1
   canFly: 0
   canDestroyBuildings: 1
   speed: 2

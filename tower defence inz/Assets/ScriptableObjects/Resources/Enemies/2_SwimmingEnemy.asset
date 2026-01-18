@@ -13,9 +13,12 @@ MonoBehaviour:
   m_Name: 2_SwimmingEnemy
   m_EditorClassIdentifier: 
   EnemyName: Swimmer
+  GenName: 
   MaxHealth: 25
   Speed: 6
   Damage: 0
   AttackSpeed: 0
   Reward: 10
   EnemySprite: {fileID: -2671257429481893525, guid: dd86c6f8e86b33149b88354368b60c90, type: 3}
+  CanFly: 0
+  CanSwim: 1

@@ -10,7 +10,9 @@ using System.Security.Cryptography;
 public class EnemysSpawner : MonoBehaviour
 {
     [Header("Configuration")]
-    public GameObject EnemyPrefab;
+    public GameObject EnemyPrefabWalking;
+    public GameObject EnemyPrefabFlying;
+    public GameObject EnemyPrefabSwimming;
     public Transform EndPoint;
 
     [Header("Runtime")]
@@ -120,13 +122,27 @@ public class EnemysSpawner : MonoBehaviour
 
         logicalEnemy.Position = transform.position;
 
+        GameObject Prefab;
+        if (data.CanFly)
+        {
+            Prefab = EnemyPrefabFlying;
+        }
+        else if (data.CanSwim)
+        {
+            Prefab = EnemyPrefabSwimming;
+        }
+        else
+        {
+            Prefab = EnemyPrefabWalking;
+        }
+
         // Debug 3: Check Compendium (Is object in scene?)
         if (EnemyCompendium.Instance == null) { Debug.LogError("❌ EnemyCompendium is NULL! Missing GameObject in scene?"); return; }
 
         EnemyCompendium.Instance.RegisterEnemy(logicalEnemy);
 
         // ... Visuals ...
-        GameObject go = Instantiate(EnemyPrefab, transform.position, Quaternion.identity);
+        GameObject go = Instantiate(Prefab, transform.position, Quaternion.identity);
         float cellSize = GridManager.Instance.CellSize;
         if (go.TryGetComponent(out BoxCollider2D col))
         {
@@ -153,7 +169,19 @@ public class EnemysSpawner : MonoBehaviour
     {
         EnemyData data = EnemyRegistry.Instance.Get(save.EnemyID);
         if (data == null) return;
-
+        GameObject Prefab;
+        if (data.CanFly)
+        {
+            Prefab = EnemyPrefabFlying;
+        }
+        else if (data.CanSwim)
+        {
+            Prefab = EnemyPrefabSwimming;
+        }
+        else
+        {
+            Prefab = EnemyPrefabWalking;
+        }
         // Create Logic manually
         // Note: You might need to handle Seed/Overrides differently here for loading
         var logic = new Enemy(data, save.Ov);
@@ -164,7 +192,7 @@ public class EnemysSpawner : MonoBehaviour
         Debug.Log($"[ForceSpawn] Restoring Enemy {save.EnemyID} at {save.Position}");
 
         // Create Visuals
-        GameObject go = Instantiate(EnemyPrefab, save.Position, Quaternion.identity);
+        GameObject go = Instantiate(Prefab, save.Position, Quaternion.identity);
 
         go.transform.position = save.Position;
 

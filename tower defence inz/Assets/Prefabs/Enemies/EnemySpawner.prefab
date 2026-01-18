@@ -44,5 +44,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 35c8e2fbc6ac48622a023f03ccca843e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  EnemyPrefab: {fileID: 2166723897330555132, guid: 1cb75b3e3575fc63991cd338e074aa97, type: 3}
+  EnemyPrefabWalking: {fileID: 2166723897330555132, guid: 1cb75b3e3575fc63991cd338e074aa97, type: 3}
+  EnemyPrefabFlying: {fileID: 2166723897330555132, guid: 3aa53a13295122e6eade3be0382c4c73, type: 3}
+  EnemyPrefabSwimming: {fileID: 2166723897330555132, guid: 409bee93ce673f10590415e2098f8f42, type: 3}
   EndPoint: {fileID: 0}

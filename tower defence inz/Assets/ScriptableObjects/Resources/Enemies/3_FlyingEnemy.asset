@@ -13,9 +13,12 @@ MonoBehaviour:
   m_Name: 3_FlyingEnemy
   m_EditorClassIdentifier: 
   EnemyName: Flyer
+  GenName: 
   MaxHealth: 10
   Speed: 15
   Damage: 0
   AttackSpeed: 0
   Reward: 10
   EnemySprite: {fileID: -3553440928420061528, guid: a370d2760ee566cf2b3ba802e3bb7708, type: 3}
+  CanFly: 1
+  CanSwim: 0
