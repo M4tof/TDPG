@@ -104,7 +104,10 @@ public class AStar
         if (buildingObj != null)
         {
             TurretBase turret = buildingObj.GetComponent<TurretBase>();
-            if (turret != null) return turret.GetCurrentHealth();
+            if (turret != null)
+            {
+                return turret.GetCurrentHealth() / (turret.GetTileSize().x * turret.GetTileSize().y);
+            }
         }
         return 0;
     }
