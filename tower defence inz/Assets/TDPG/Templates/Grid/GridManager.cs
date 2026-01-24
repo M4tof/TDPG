@@ -51,12 +51,14 @@ namespace TDPG.Templates.Grid
         [SerializeField] [Tooltip("Statistics for Target")] private TurretData data;
 
         [Header("Events")]
-        [SerializeField] [Tooltip("Event fired when the map is fully generated, visualized, and entities are spawned.")] private UnityEvent MapLoaded;
-
+        [SerializeField] [Tooltip("Event triggered when the map is fully generated, visualized, and entities are spawned.")] private UnityEvent MapLoaded;
+        [SerializeField] [Tooltip("Event triggered when Destination is destroyed")] private UnityEvent DestinationDestroyed;
+        
+        
         [Tooltip("Game Object which would be a parent for spawned EnemySpawners")]
         [SerializeField]
         private GameObject SpawnerContainer;
-
+        
         [Tooltip("Game Object which would be a parent for spawned target and turret")]
         [SerializeField] private GameObject TurretContainer;
 
@@ -664,6 +666,9 @@ namespace TDPG.Templates.Grid
             Player.transform.position = newPosition;
         }
 
+        /// <summary>
+        /// Creates and set parameters to target destination
+        /// </summary>
         private void SetDestination()
         {
             
@@ -671,8 +676,19 @@ namespace TDPG.Templates.Grid
             // Initialize the new instance (It will calculate offset from its clean state)
             var logic = destinationObject.GetComponent<Turret.Turret>();
             logic.Initialize(data);
-
+                
+            //Add listener so when destination would be destroyed it would trigger event set from inspector
+            logic.turretDestroyed.AddListener(OnDestinationDestroyed);
+            
             PlaceTurret(GetDestinationWorldPosition(), destinationObject);
+        }
+
+        /// <summary>
+        /// Triggers DestinationDestroyed Unity Event
+        /// </summary>
+        private void OnDestinationDestroyed()
+        {
+            DestinationDestroyed.Invoke();
         }
 
         /// <summary>

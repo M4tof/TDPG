@@ -27,7 +27,10 @@ public class CardSelectionMenu : MonoBehaviour
     [Header("References")]
     [SerializeField][Tooltip("Used to Block spawning turret while window is on")] private TurretSpawner turretSpawner;
 
-
+    private void Start()
+    {
+        Close();
+    }
 
 
     private List<CardData> playerCards = new List<CardData>();

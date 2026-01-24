@@ -51,7 +51,7 @@ namespace TDPG.Templates.Turret
         /// </summary>
         protected void EnsureOffsetsCached()
         {
-            if (_initializedOffsets) return;
+            /*if (_initializedOffsets) return;
 
             if (baseRenderer != null)
             {
@@ -64,7 +64,7 @@ namespace TDPG.Templates.Turret
                 _crystalDesignPos = crystalRenderer.transform.localPosition;
                 _crystalDesignScale = crystalRenderer.transform.localScale; // Capture Scale
             }
-            _initializedOffsets = true;
+            _initializedOffsets = true;*/
         }
         
         /// <summary>
@@ -96,7 +96,9 @@ namespace TDPG.Templates.Turret
             {
                 crystalRenderer.sprite = data.CrystalSprite;
                 crystalRenderer.transform.localPosition = data.CrystalOffset;
+                Debug.Log($"OFFSET CRYSTAL {data.CrystalOffset} vs {crystalRenderer.transform.localPosition}");
             }
+            Debug.Log("OFFSET END");
         }
 
         /// <summary>
