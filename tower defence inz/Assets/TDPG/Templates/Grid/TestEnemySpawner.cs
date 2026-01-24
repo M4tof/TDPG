@@ -9,7 +9,7 @@ namespace TDPG.Templates.Grid
     /// Responsible for injecting dependencies (Grid, Destination) and procedurally generating 
     /// unit capabilities (Swimming, Flying, Speed) upon spawn.
     /// </summary>
-    public class EnemySpawner : MonoBehaviour
+    public class TestEnemySpawner : MonoBehaviour
     {
         [Header("References")]
         [Tooltip("The enemy template to spawn. Must contain an EnemyPathFollowerMock component.")] public GameObject enemyPrefab;

@@ -25,7 +25,7 @@ public class WaveManager : MonoBehaviour
 
     [Header("References")]
     // [SerializeField] private EnemyRegistry enemyRegistry;
-    [SerializeField] private List<EnemysSpawner> spawners; // Assuming a script called EnemySpawner exists
+    [SerializeField] private List<EnemySpawner> spawners; // Assuming a script called EnemySpawner exists
     [SerializeField] private CardSelectionMenu cardSelectionMenu;
 
     private float _cooldownTimer;
@@ -62,7 +62,7 @@ public class WaveManager : MonoBehaviour
         _cooldownTimer = cooldownPeriod;
         WaveSeed = GameManager.Instance.GSeed.NextSubSeed(InitializerFromDate.QuickGenerate(GameManager.Instance.Slot).ToString());
         // Inside your WaveManager Start or Awake:
-        spawners = new List<EnemysSpawner>(FindObjectsByType<EnemysSpawner>(FindObjectsSortMode.None));
+        spawners = new List<EnemySpawner>(FindObjectsByType<EnemySpawner>(FindObjectsSortMode.None));
         if (enemyIdsToSpawn.Count > 0)
         {
             ForceEarlySpawn();
@@ -108,7 +108,7 @@ public class WaveManager : MonoBehaviour
         if (spawners.Count <= 0)
         {
             Debug.Log("[WaveManager] spawners empty. Searching again");
-            spawners = new List<EnemysSpawner>(FindObjectsByType<EnemysSpawner>(FindObjectsSortMode.None));
+            spawners = new List<EnemySpawner>(FindObjectsByType<EnemySpawner>(FindObjectsSortMode.None));
         }
         // Push the list to all registered spawners
         StartCoroutine(SpawnWaveRoutine(enemyIdsToSpawn));
@@ -310,7 +310,7 @@ public class WaveManager : MonoBehaviour
         // Ensure Spawners are cached (in case Load happened before Start)
         if (spawners == null || spawners.Count == 0)
         {
-            spawners = new List<EnemysSpawner>(FindObjectsByType<EnemysSpawner>(FindObjectsSortMode.None));
+            spawners = new List<EnemySpawner>(FindObjectsByType<EnemySpawner>(FindObjectsSortMode.None));
         }
     }
 }
