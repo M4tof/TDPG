@@ -313,4 +313,9 @@ public class WaveManager : MonoBehaviour
             spawners = new List<EnemysSpawner>(FindObjectsByType<EnemysSpawner>(FindObjectsSortMode.None));
         }
     }
+
+    public int GetCurrentWave()
+    {
+        return currentWaveNumber;
+    }
 }
