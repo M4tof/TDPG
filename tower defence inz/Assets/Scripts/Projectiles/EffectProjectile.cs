@@ -13,15 +13,10 @@ public class EffectProjectile : BasicProjectile
     void Start()
     {
         base.Start();
-        //TODO Zmienić aby nie hard codować elementów :) :] 
-        //elements.Add(RegistryManager.Instance.GetRegistry().GetElement("Fire"));
         if (GetPlanner() == null)
         {
             SetPlanner(new ElementPlanner(RegistryManager.Instance.GetRegistry()));
-        }
-        //planner.RegisterElement("Fire");
-        //planner.BuildPlan();
-        
+        }   
         _audioController = GetComponent<ProceduralAudioController>();
         if (_audioController != null)
         {
@@ -31,11 +26,6 @@ public class EffectProjectile : BasicProjectile
     
     public override void OnTriggerEnter2D(Collider2D other)
     {
-        /*public IReadOnlyList<IEffectAction> GetPlannedActions()
-        {
-            // Najbezpieczniej zwracać *read-only snapshot*
-            return plannedActions.AsReadOnly();
-        }*/
         Debug.Log("TRIGGER ENTER: EFFECT");
         if (GetPlanner().GetPlannedActions().Count == 0)
         {
@@ -57,22 +47,6 @@ public class EffectProjectile : BasicProjectile
         
             Destroy(gameObject);
         }
-        /*EnemyBehavior enemyBehavior = other.gameObject.GetComponent<EnemyBehavior>();
-        if (enemyBehavior != null)
-        {
-            //enemyBehavior.DealDamage(GetDamage());
-            
-            //Set Effect
-            if (enemyBehavior.GetCurrentHealth() > 0)
-            {
-                Debug.Log(planner.GetPlannedActions());
-                effectContext = new EffectContext();
-                effectContext.Target = other.gameObject;
-                planner.ExecutePlan(effectContext);
-            }
-             
-        }
-        Destroy(gameObject);*/
     }
     
     public override void AddElement(string ElementName)
@@ -84,16 +58,4 @@ public class EffectProjectile : BasicProjectile
         base.AddElement(ElementName);
         
     }
-
-    /*public void addElement(string ElementName)
-    {
-        planner.RegisterElement(ElementName);
-        planner.BuildPlan();
-    }
-    
-    public void addElement(int id)
-    {
-        //TODO zrobić po ID
-        //planner.RegisterElement(ElementName);
-    }*/
 }

@@ -4,7 +4,7 @@ using UnityEngine.InputSystem;
 using Grid = TDPG.Templates.Grid.Grid;
 
 [RequireComponent(typeof(Rigidbody2D))]
-[RequireComponent(typeof(BasicProjectileSpawner))]
+[RequireComponent(typeof(ProjectileSpawner))]
 [RequireComponent(typeof(TurretSpawner))]
 public class PlayerInput : MonoBehaviour
 {
@@ -24,7 +24,7 @@ public class PlayerInput : MonoBehaviour
     [SerializeField] private float buildingSpeedMultiplier = 0.8f;
 
     private Rigidbody2D rb;
-    private BasicProjectileSpawner projectileSpawner;
+    private ProjectileSpawner projectileSpawner;
     private TurretSpawner turretSpawner;
     
     private Vector3 moveDirection;
@@ -41,7 +41,7 @@ public class PlayerInput : MonoBehaviour
     {
         inMenu = false;
         rb = GetComponent<Rigidbody2D>();
-        projectileSpawner = GetComponent<BasicProjectileSpawner>();
+        projectileSpawner = GetComponent<ProjectileSpawner>();
         turretSpawner = GetComponent<TurretSpawner>();
         inMap = false;
     }
@@ -91,7 +91,7 @@ public class PlayerInput : MonoBehaviour
         moveDirection = context.ReadValue<Vector2>();
     }
 
-    //Shoot if player press shoot button
+    //Shoot if player presses shoot button
     public void onShoot(InputAction.CallbackContext context)
     {
         if (context.performed)
@@ -125,7 +125,7 @@ public class PlayerInput : MonoBehaviour
         
     }
 
-    //When Player press building button it switch building Panel
+    //When Player presses building button - switch building Panel
     public void onBuilding(InputAction.CallbackContext context)
     {
         if (context.performed)
