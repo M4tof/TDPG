@@ -20,9 +20,9 @@ public class CardSelectionMenu : MonoBehaviour
 
 
     [Header("Balancing - RNG")]
-    [SerializeField] private float baseStatScale = 1.10f; // Was 1.01f (1% -> 10% base boost)
-    [SerializeField] private float seedNormalizer = 100.0f; // Keep 100.0f
-    [SerializeField] private float secondaryStatDivisor = 2.0f; // Was 4.0f. Secondary stats were too weak.
+    [SerializeField] private float baseStatScale = 1.10f;
+    [SerializeField] private float seedNormalizer = 100.0f;
+    [SerializeField] private float secondaryStatDivisor = 2.0f;
 
     [Header("References")]
     [SerializeField][Tooltip("Used to Block spawning turret while window is on")] private TurretSpawner turretSpawner;
@@ -35,7 +35,7 @@ public class CardSelectionMenu : MonoBehaviour
 
     private List<CardData> playerCards = new List<CardData>();
 
-    public int nextId = 0; //TODO WAŻNE ABY BYŁO ZAPISYWANE I WCZYTYWANE
+    public int nextId = 0;
 
     private TurretSelection lastUsedTurretSelection;
 
@@ -52,7 +52,6 @@ public class CardSelectionMenu : MonoBehaviour
             return;
         }
 
-        //cards = new List<CardData>();
         if(turretSpawner != null) { turretSpawner.SetBlockSpawnTurret(true); }
         SelectionBox.SetActive(true);
 
@@ -202,12 +201,12 @@ public class CardSelectionMenu : MonoBehaviour
 
         if (DNA.IsBitSet(0))
         {
-            ToDamage = baseStatScale + int.Parse(digits.Substring(0, 2)) / seedNormalizer; //1.01 - 2.0
+            ToDamage = baseStatScale + int.Parse(digits.Substring(0, 2)) / seedNormalizer;
         }
 
         if (DNA.IsBitSet(1))
         {
-            ToHP = baseStatScale + int.Parse(digits.Substring(3, 2)) / seedNormalizer; //1.01 - 2.0
+            ToHP = baseStatScale + int.Parse(digits.Substring(3, 2)) / seedNormalizer;
         }
 
         if (DNA.IsBitSet(2) && DNA.IsBitSet(3))

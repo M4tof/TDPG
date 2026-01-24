@@ -6,5 +6,5 @@ using UnityEngine;
 /// </summary>
 public class MouseIgnore : MonoBehaviour
 {
-    //This Class is empty with purpose and DON'T REMOVE IT WHILE CLEANING CODE
+    //This Class is empty with purpose; DON'T REMOVE IT WHILE CLEANING CODE
 }

@@ -3,7 +3,6 @@ using TMPro;
 
 public class SaveLoadButton : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         TextMeshProUGUI tmpText = GetComponentInChildren<TextMeshProUGUI>();
@@ -20,7 +19,6 @@ public class SaveLoadButton : MonoBehaviour
         }
     }
 
-    // Update is called once per frame
     void Update()
     {
 

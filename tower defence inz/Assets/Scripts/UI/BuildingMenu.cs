@@ -12,7 +12,6 @@ public class BuildingMenu : MonoBehaviour
     [Header("Turret Selection")]
     [SerializeField] [Tooltip("List of paramaters of turrets")] private TurretData[] turretData;
     [SerializeField] [Tooltip("Prefab of button")] private GameObject turretButtonPrefab;
-    //TODO idk is it good solution
     [SerializeField] [Tooltip("Position of first button")] private Vector2 startPosition = new Vector2(-400, 0);
     [SerializeField] [Tooltip("Space between positions of buttons")] private float diffrenceBetweenButtons = 200;
     

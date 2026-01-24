@@ -21,7 +21,6 @@ public class HoverManager : MonoBehaviour
     void Start()
     {
         _cam = Camera.main;
-        // Default mask if not set
         if (hoverLayerMask.value == 0) hoverLayerMask = LayerMask.GetMask("Default", "Enemy");
         if (rangeIndicatorPrefab != null)
         {
@@ -36,7 +35,7 @@ public class HoverManager : MonoBehaviour
     {
         if (StatPanelUI.Instance == null) return;
 
-        // 1. Check for UI Blocking (Canvas)
+        // Check for UI Blocking (Canvas)
         if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject())
         {
             StatPanelUI.Instance.Hide();
@@ -45,7 +44,7 @@ public class HoverManager : MonoBehaviour
             return;
         }
 
-        // 2. Physics Raycast
+        // Physics Raycast
         Vector2 mousePos = Vector2.zero;
         if (Mouse.current != null) mousePos = Mouse.current.position.ReadValue();
         else if (Input.mousePresent) mousePos = Input.mousePosition; // Fallback
@@ -57,7 +56,7 @@ public class HoverManager : MonoBehaviour
         {
             GameObject hitObj = hit.collider.gameObject;
             
-            // 3. Identify and Update UI
+            // Identify and Update UI
             if (hitObj.TryGetComponent(out EnemyBehavior enemy))
             {
                 ShowEnemyStats(enemy);
@@ -66,7 +65,7 @@ public class HoverManager : MonoBehaviour
             else if (hitObj.TryGetComponent(out TurretBase turret))
             {
                 ShowTurretStats(turret);
-                ShowRangeIndicator(turret); // SHOW RING
+                ShowRangeIndicator(turret);
             }
             else
             {
@@ -88,12 +87,12 @@ public class HoverManager : MonoBehaviour
     {
         if (enemy.Logic == null || enemy.Logic.Data == null) return;
 
-        var data = enemy.Logic.Data; // SO
-        var logic = enemy.Logic;     // Runtime
+        var data = enemy.Logic.Data;
+        var logic = enemy.Logic;
 
         StatPanelUI.Instance.Show();
         StatPanelUI.Instance.UpdateStats(
-            data.EnemyName,
+            $"{data.GenName} the {data.EnemyName}",
             $"{Mathf.CeilToInt(logic.CurrentHealth)} / {Mathf.CeilToInt(logic.DynamicMaxHealth)}",
             logic.CurrentSpeed.ToString("F1"),
             data.Damage.ToString(),
@@ -110,8 +109,8 @@ public class HoverManager : MonoBehaviour
         StatPanelUI.Instance.Show();
         StatPanelUI.Instance.UpdateStats(
             data.TurretID,
-            $"{data.MaxHP}", // TODO: Add CurrentHP logic later
-            "-", // Speed N/A
+            $"{data.MaxHP}",
+            "-",
             data.Damage.ToString(),
             data.FireRate.ToString("F1")
         );
@@ -120,12 +119,12 @@ public class HoverManager : MonoBehaviour
     private void ShowRangeIndicator(TurretBase turret)
     {
         if (_currentRangeIndicator == null) return;
-        if (turret == null || turret.Data == null) return; // Safety check
+        if (turret == null || turret.Data == null) return;
 
         _currentRangeIndicator.gameObject.SetActive(true);
         _currentRangeIndicator.position = turret.transform.position;
 
-        // 1. Get Factors
+        // Get Factors
         float rangeInGridTiles = turret.Data.Range;
         float cellSize = 1.0f;
         
@@ -135,22 +134,17 @@ public class HoverManager : MonoBehaviour
             cellSize = TDPG.Templates.Grid.GridManager.Instance.CellSize;
         }
 
-        // 2. Calculate Target Diameter (World Space)
-        // Range is Radius, so Diameter = Radius * 2
+        // Calculate Target Diameter (World Space)
         float worldDiameter = rangeInGridTiles * cellSize * 2f;
 
-        // 3. Normalize Sprite Size
-        // If the sprite asset is 2.56 units wide (256px / 100ppu), we need to scale it down/up to match 1 unit first.
-        // We get the unscaled bounds from the SpriteRenderer.
+        // Normalize Sprite Size
         float currentSpriteSize = 1f;
         var sr = _currentRangeIndicator.GetComponent<SpriteRenderer>();
         if (sr != null && sr.sprite != null)
         {
-            // bounds.size gives the size in world units at scale (1,1,1)
             currentSpriteSize = sr.sprite.bounds.size.x;
         }
 
-        // 4. Final Scale Math
         // Desired / Actual = Scalar
         float finalScale = worldDiameter / currentSpriteSize;
 
