@@ -6,7 +6,7 @@ public class TurretHPBarManager : MonoBehaviour
 {
     [SerializeField] private HPBarVisualisation hpBarVisualiation;
     private Turret turret;
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+
     void Start()
     {
         turret = GetComponent<Turret>();

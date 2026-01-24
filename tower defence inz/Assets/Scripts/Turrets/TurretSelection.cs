@@ -51,7 +51,7 @@ namespace TDPG.Templates.Turret
 
         public void SetTurretName(string turretToSpawn)
         {
-            this.turretToSpawn = turretToSpawn;;
+            this.turretToSpawn = turretToSpawn;
         }
 
         public void SetTurretSpawner(TurretSpawner turretSpawner)

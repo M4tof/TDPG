@@ -2,7 +2,6 @@ using UnityEngine;
 using System.Collections.Generic;
 using TDPG.Templates.Turret;
 
-// Pure C# Singleton
 public class TurretRegistry
 {
     private static TurretRegistry _instance;
@@ -20,8 +19,6 @@ public class TurretRegistry
 
     private void LoadRegistry()
     {
-        // Unity searches ALL folders named "Resources" for the "Turrets" subfolder.
-        // Physical Path: Assets/TDPG/Templates/Turret/Resources/Turrets/
         var allTurrets = Resources.LoadAll<TurretData>("Turrets");
 
         foreach (var t in allTurrets)
