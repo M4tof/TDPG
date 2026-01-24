@@ -12,7 +12,6 @@ public struct Vec3
     
     public Vec3(float x, float y, float z) { this.x = x; this.y = y; this.z = z; }
     
-    // Magic to convert automatically between Unity Vector3 and Vec3
     public static implicit operator Vec3(Vector3 v) => new Vec3(v.x, v.y, v.z);
     public static implicit operator Vector3(Vec3 v) => new Vector3(v.x, v.y, v.z);
 
@@ -21,7 +20,6 @@ public struct Vec3
 }
 
 
-// Data collected from the ResourceSystem
 [System.Serializable]
 public class ResourceSaveData
 {
@@ -44,10 +42,9 @@ public class ElementSaveData
 [System.Serializable]
 public class TurretSaveData
 {
-    public string TurretID;     // "ArrowTurret"
+    public string TurretID;
     public int GridX;
     public int GridY;
-    // Add Cooldown/Rotation if you want to save exact frame state
     public List<CardData> Upgrades; 
 }
 
@@ -55,14 +52,11 @@ public class TurretSaveData
 [System.Serializable]
 public class EnemySaveData
 {
-    public string EnemyID;      // "Goblin"
-    public float Health;        // 50.0f
+    public string EnemyID;
+    public float Health;
     public int Damage;
     public float AttackSpeed;
-    // public float MaxHealth;
-    public Vec3 Position;    // (10.5, 2.0)
-    // public int PathIndex;       // Optimization: Where on the path they are
-    // Add overrides if needed
+    public Vec3 Position;
     public EnemyStatsOverride Ov;
 }
 
@@ -83,7 +77,6 @@ public class GridSaveData
     public float CellSize;
     public int[,] Grid;
     public TDPG.Templates.Grid.Grid.TileType[,] TypeGrid;
-    // public int[,] BuildingGrid;
     public int DestX;
     public int DestY;
 
@@ -99,17 +92,13 @@ public class WaveSaveData
     public float CooldownTimer;
     public bool IsWaveActive;
     public bool IsSpawning;
-    
-    // Critical: If saved mid-spawn, we need to remember who hasn't spawned yet
     public Queue<string> RemainingEnemyQueue = new Queue<string>(); 
 }
 
-// The master data class that holds all saved data
 [System.Serializable]
 public class GameSaveData
 {
-    public float SaveVersion = 0.3f; // Good practice for backwards compatibility
-    // public int SlotNumber;
+    public float SaveVersion = 0.4f;
     public System.DateTime SavedTime = System.DateTime.Now;
 
     public GlobalSeed GS;

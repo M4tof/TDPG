@@ -15,9 +15,6 @@ using TDPG.AudioModulation;
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance { get; private set; }
-    // public ResourceSystem RSInstance;
-    // public TurretCompendium TCInstance;
-    // public ElementCompendium ECInstance;
 
     public GlobalSeed GSeed;
 
@@ -33,17 +30,11 @@ public class GameManager : MonoBehaviour
     public Seed ACSeed1;
     public Seed ACSeed2;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        // RSInstance = ResourceSystem.Instance;
-        // TCInstance = TurretCompendium.Instance;
-        // ECInstance = ElementCompendium.Instance;
         Slot = 1;
         GSeed = new GlobalSeed(InitializerFromDate.QuickGenerate(Slot), "main", "Main global seed for this save slot");
     }
-
-    // Update is called once per frame
     void Update()
     {
 
@@ -51,18 +42,14 @@ public class GameManager : MonoBehaviour
 
     void Awake()
     {
-        // Singleton pattern to ensure only one instance exists
         if (Instance != null && Instance != this)
         {
-            // If another GameManager already exists, destroy this one
             Destroy(gameObject);
             Debug.LogWarning("Duplicate GameManager destroyed. Only one instance allowed.");
         }
         else
         {
-            // If this is the first GameManager, make it the instance
             Instance = this;
-            // Prevents the GameObject from being destroyed when reloading a scene
             DontDestroyOnLoad(gameObject);
             Debug.Log("GameManager created and set to not destroy on load.");
 
@@ -94,7 +81,6 @@ public class GameManager : MonoBehaviour
                 foreach (var cs in ColorSwappers)
                 {
                     cs.SetSeed(CSSeed);
-                    // cs.UpdateShaderProperties();
                 }
 
                 ACSeed1 = GSeed.NextSubSeed(InitializerFromDate.QuickGenerate(Slot).ToString());
@@ -108,12 +94,9 @@ public class GameManager : MonoBehaviour
                 }
 
                 // PRIORITY 1: LOADING A SAVE
-                // If we have a save file pending, we MUST load it and IGNORE the new game config.
                 if (!string.IsNullOrEmpty(PendingLoadPath))
                 {
                     Debug.Log($"[GameManager] Loading Save from: {PendingLoadPath}");
-
-                    // Clear any lingering New Game config so it doesn't interfere
                     PendingMapConfig = null;
 
                     SetSlot(PendingLoadSlot);
@@ -123,7 +106,6 @@ public class GameManager : MonoBehaviour
                     PendingLoadSlot = 0;
                 }
                 // PRIORITY 2: NEW GAME CONFIG
-                // Only use this if we are NOT loading a save
                 else if (PendingMapConfig != null)
                 {
                     Debug.Log($"[GameManager] Generating New Map via Config.");
@@ -131,13 +113,9 @@ public class GameManager : MonoBehaviour
                     if (GridManager.Instance != null)
                     {
                         GridManager.Instance.ConfigureMap(PendingMapConfig);
-                        Debug.Log(GSeed.Serialize());
-                        // RegenSeed();
-                        Debug.Log(GSeed.Serialize());
                         GridManager.Instance.globalSeed = GameManager.Instance.GSeed;
-                        // GridManager.Instance.DoStuff();
                     }
-                    PendingMapConfig = null; // Consume
+                    PendingMapConfig = null;
                 }
             }
         }
@@ -231,7 +209,6 @@ public class GameManager : MonoBehaviour
         var mapGen = FindFirstObjectByType<TDPG.Templates.Grid.MapGen.MapGenerator>();
         if (mapGen != null)
         {
-            // Use the 'out' parameters to get data safely
             mapGen.GetBoundsValues(out int minX, out int maxX, out int minY, out int maxY);
 
             boundsData.MinX = minX;
@@ -242,7 +219,6 @@ public class GameManager : MonoBehaviour
 
         GameSaveData data = new GameSaveData
         {
-            // SlotNumber = Slot,
             GS = GSeed,
             Resources = ResourceSystem.Instance.GetData(),
             Elements = new ElementSaveData { },
@@ -256,7 +232,6 @@ public class GameManager : MonoBehaviour
                 CellSize = G.cellSize,
                 Grid = G.grid,
                 TypeGrid = G.typeGrid,
-                // BuildingGrid = G.turretId
                 DestX = dX,
                 DestY = dY,
                 SpawnerPositions = savedSpawners,
@@ -284,21 +259,13 @@ public class GameManager : MonoBehaviour
 
         try
         {
-            // 1. Read from File
             string json = File.ReadAllText(path, Encoding.UTF8);
-
-            // 2. Deserialize using Newtonsoft.Json
             GameSaveData data = JsonConvert.DeserializeObject<GameSaveData>(json);
 
-            // 3. Apply Data to all systems
             if (data != null)
             {
-                // Slot = data.SlotNumber;
-
-                // Seed
                 GSeed = data.GS;
 
-                //  ResourceSystem
                 if (ResourceSystem.Instance != null && data.Resources != null)
                 {
                     ResourceSystem.Instance.LoadData(data.Resources);
@@ -311,16 +278,13 @@ public class GameManager : MonoBehaviour
                 // Registry
                 if (!string.IsNullOrEmpty(data.SerializedRegistry))
                 {
-                    // Use Registry's static method to handle the custom converters
                     var loadedRegistry = TDPG.EffectSystem.ElementRegistry.Registry.Deserialize(data.SerializedRegistry);
 
-                    // 2. Inject into Manager
                     if (RegistryManager.Instance != null)
                     {
                         RegistryManager.Instance.LoadRegistry(loadedRegistry);
                     }
 
-                    // 3. Refresh Cache (Important!)
                     if (ElementCompendium.Instance != null)
                     {
                         ElementCompendium.Instance.RefreshCache();
@@ -332,7 +296,6 @@ public class GameManager : MonoBehaviour
                 }
 
 
-                // TODO: implement rest of the systems
                 if (data.GData != null)
                 {
                     G = new TDPG.Templates.Grid.Grid(data.GData.Width, data.GData.Height, data.GData.CellSize);
@@ -367,51 +330,30 @@ public class GameManager : MonoBehaviour
                         {
                             foreach (var tData in data.Turrets)
                             {
-                                // Convert Grid X,Y to World Position for the Spawner
-                                // (Or update ForceSpawnTurret to take Grid Coordinates as discussed in TODO)
                                 Vector3 worldPos = GridManager.Instance.GridToWorld(tData.GridX, tData.GridY);
 
-                                // Spawner handles instantiation AND calling GridManager.PlaceTurret
                                 spawner.modifiersList = tData.Upgrades;
                                 spawner.ForceSpawnTurret(tData.TurretID, worldPos);
-
-                                // if (tData.Upgrades != null && tData.Upgrades.Count > 0)
-                                // {
-                                //     // Retrieve the instance from the grid
-                                //     GameObject spawnedObj = GridManager.Instance.GetBuildingAtIndices(tData.GridX, tData.GridY);
-                                //     if (spawnedObj != null)
-                                //     {
-                                //         var tb = spawnedObj.GetComponent<TDPG.Templates.Turret.TurretBase>();
-                                //         if (tb != null)
-                                //         {
-                                //             // NEW: Use the method you provided
-                                //             tb.ApplyModifiers(tData.Upgrades);
-                                //         }
-                                //     }
-                                // }
                             }
                         }
                         else
                         {
                             Debug.LogWarning("TurretSpawner not found. Turrets will not be placed.");
                         }
-                        
-                        
+
+
                         var mapGen = FindFirstObjectByType<TDPG.Templates.Grid.MapGen.MapGenerator>();
                         if (mapGen != null)
                         {
                             var b = data.GData.MapBounds;
-                            // Pass primitives to Lib
                             mapGen.RestoreBoundsValues(b.MinX, b.MaxX, b.MinY, b.MaxY);
                         }
 
                         GridManager.Instance.ForceRebuildScene();
 
                         GameObject virtualBase = new GameObject("Base_Destination");
-                        // virtualBase.tag = "Base";
                         virtualBase.transform.position = GridManager.Instance.GetDestinationWorldPosition();
 
-                        // Find ALL spawners
                         var allSpawners = FindObjectsByType<EnemySpawner>(FindObjectsSortMode.None);
                         foreach (var s in allSpawners)
                         {
@@ -422,9 +364,6 @@ public class GameManager : MonoBehaviour
                     {
                         Debug.LogError("GridManager.Instance is NULL!");
                     }
-
-
-
                 }
                 else
                 {
@@ -462,11 +401,9 @@ public class GameManager : MonoBehaviour
     {
         PendingLoadPath = null;
         Debug.Log($"[GameManager.StartNewGame(): config]: \n{Newtonsoft.Json.JsonConvert.SerializeObject(config, Newtonsoft.Json.Formatting.Indented)}");
-        // Debug.Break();
-        // 1. Set Active Slot
+
         SetSlot(slotIndex);
 
-        // 2. Wipe Save File
         string path = System.IO.Path.Combine(Application.persistentDataPath, $"SaveSlot{slotIndex}.json");
         if (System.IO.File.Exists(path))
         {
@@ -474,13 +411,10 @@ public class GameManager : MonoBehaviour
             Debug.Log($"[GameManager] Wiped save slot {slotIndex}");
         }
 
-        // 3. Regenerate Global Seed
         RegenSeed();
 
-        // 4. Store Config for GridManager
         PendingMapConfig = config;
         Debug.Log($"[GameManager.StartNewGame(): PendingMapConfig]: \n{Newtonsoft.Json.JsonConvert.SerializeObject(PendingMapConfig, Newtonsoft.Json.Formatting.Indented)}");
-        // 5. Load the Game Scene
         UnityEngine.SceneManagement.SceneManager.LoadScene("MainGame");
     }
 }

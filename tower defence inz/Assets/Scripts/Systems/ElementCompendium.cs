@@ -54,9 +54,8 @@ public class ElementCompendium : MonoBehaviour
     public Element GetElement(string name)
         => cachedElements.FirstOrDefault(e => e.Name == name);
 
-    // --- NOWE: to czego potrzebuje GraphMenu ---
     public IEnumerable<Element> GetAllNodes()
-        => registry.GetAllElements(); // bez cache!
+        => registry.GetAllElements(); // without cache
 
     public IEnumerable<Edge<Element>> GetAllEdges()
         => registry.GetEdges();

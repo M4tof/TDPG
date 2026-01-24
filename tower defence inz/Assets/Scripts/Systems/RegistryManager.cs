@@ -1,9 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using TDPG.EffectSystem.ElementLogic;
-using TDPG.EffectSystem.ElementPlanner;
 using TDPG.EffectSystem.ElementRegistry;
-using TDPG.Generators.Seed;
 using UnityEngine;
 
 public class RegistryManager : MonoBehaviour
@@ -32,8 +30,7 @@ public class RegistryManager : MonoBehaviour
         }
     }
     
-    
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+
     void Start()
     {
         registry = new Registry();
@@ -80,35 +77,6 @@ public class RegistryManager : MonoBehaviour
         }
         List<Element> elementList = new List<Element> { registry.GetElement(firstParent), registry.GetElement(secondParent) };
         return registry.GetElement(elementList);
-
-
-        /*Seed seed = GameManager.Instance.GSeed.NextSubSeed("Generate Element" + parentDNA);
-        seed.IsBitBased = false;
-        seed.NormalizeSeedValue();
-        ulong seedVal = seed.GetBaseValue();
-        string digits = seedVal.ToString();
-
-        int startDigit = 0;
-        while (true)
-        {
-            string newParentDNA = digits.Substring(startDigit, 2);
-            element = getNewElementFromParents(newParentDNA, registrySize);
-            if (element != null)
-            {
-                break;
-            }
-
-            if (digits.Length < startDigit + 2)
-            {
-                seed = Genetic.MutateSeed(seed,MutateTypes.Random,30);
-                seed.NormalizeSeedValue();
-                seedVal = seed.GetBaseValue();
-                digits = seedVal.ToString();
-            }
-
-            startDigit += 1;
-        }
-        return element;*/
     }
 
     private Element getNewElementFromParents(string parentDNA, int registrySize)

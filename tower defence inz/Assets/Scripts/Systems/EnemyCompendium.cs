@@ -4,8 +4,6 @@ using UnityEngine;
 public class EnemyCompendium : MonoBehaviour
 {
     public static EnemyCompendium Instance { get; private set; }
-
-    // This list is the "Source of Truth" for the Save System
     public List<Enemy> ActiveEnemies = new List<Enemy>();
 
     void Awake()
@@ -53,15 +51,9 @@ public class EnemyCompendium : MonoBehaviour
 
     public void LoadFromData(List<EnemySaveData> data)
     {
-        // 1. Clear existing
-        foreach (var enemy in ActiveEnemies)
-        {
-            // Destroy View/GameObject linked to this enemy? 
-            // We need a reference to the View to destroy it, or clear the scene beforehand.
-        }
         ActiveEnemies.Clear();
 
-        // 2. Find Spawner
+        // Find Spawner
         var spawner = FindFirstObjectByType<EnemySpawner>(); 
         
         if (spawner == null)
@@ -70,7 +62,7 @@ public class EnemyCompendium : MonoBehaviour
             return;
         }
 
-        // 3. Respawn
+        // Respawn
         if (data != null)
         {
             foreach (var save in data)

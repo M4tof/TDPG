@@ -26,7 +26,6 @@ public class ResourceSystem : MonoBehaviour
         // On success reduces value and returns True; else returns False
         public bool Claim(float amount)
         {
-            //Debug.Log($"Claim for: {amount}, capacity: {value}");
             float compTarget = canGoIntoDebt ? 0.0f : amount;
 
             if (value < compTarget)
@@ -99,14 +98,10 @@ public class ResourceSystem : MonoBehaviour
 
     public static event Action<float> onMoneyChange;
     public static event Action<float> onManaChange;
-
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
 
     }
-
-    // Update is called once per frame
     void Update()
     {
         foreach (var res in updateList)
@@ -118,23 +113,19 @@ public class ResourceSystem : MonoBehaviour
 
     void Awake()
     {
-        // Singleton pattern to ensure only one instance exists
         if (Instance != null && Instance != this)
         {
-            // If another GameManager already exists, destroy this one
             Destroy(gameObject);
             Debug.LogWarning("Duplicate ResourceSystem destroyed. Only one instance allowed.");
         }
         else
         {
-            // If this is the first GameManager, make it the instance
             Instance = this;
-            // Prevents the GameObject from being destroyed when reloading a scene
             DontDestroyOnLoad(gameObject);
             Debug.Log("ResourceSystem created and set to not destroy on load.");
 
             money = new Resource(200f, maxValue, 2f, false, onMoneyChange);
-            mana = new Resource(400f, maxValue, 0.0f, true, onManaChange);
+            mana = new Resource(400f, maxValue, 0.0f, false, onManaChange);
             updateList = new List<Resource>();
             updateList.Add(money);
             updateList.Add(mana);
