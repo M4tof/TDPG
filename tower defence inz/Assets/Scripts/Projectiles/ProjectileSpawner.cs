@@ -1,6 +1,6 @@
 using UnityEngine;
 using TDPG.AudioModulation;
-public class BasicProjectileSpawner : MonoBehaviour
+public class ProjectileSpawner : MonoBehaviour
 {
     [SerializeField] private int projectileDamage = 1;
     [SerializeField] private float fireRate = 1f;

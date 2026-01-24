@@ -1,14 +1,13 @@
 using System.Collections.Generic;
 using UnityEngine;
-using TDPG.Templates.Grid;   // Lib
-using TDPG.Templates.Turret; // Lib
+using TDPG.Templates.Grid; 
+using TDPG.Templates.Turret;
 using TDPG.AudioModulation;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 
 public class TurretSpawner : MonoBehaviour
 {
-    // [SerializeField] private GridManager gridManager;
     [SerializeField] private GameObject TurretBox;
 
     [Header("References")]
@@ -24,7 +23,6 @@ public class TurretSpawner : MonoBehaviour
     public List<CardData> modifiersList = new List<CardData>();
     private bool blockSpawnTurret = false;
 
-    // Renamed back to Set... for consistency
     public void SetTurretToSpawn(string turretID, List<CardData> modifiers = null)
     {
         _selectedTurretID = turretID;
@@ -35,7 +33,6 @@ public class TurretSpawner : MonoBehaviour
             return;
         }
 
-        // Access Registry (Game Side)
         data = TurretRegistry.Instance.Get(turretID);
         if (data == null)
         {
@@ -81,7 +78,7 @@ public class TurretSpawner : MonoBehaviour
 
         TurretData data = TurretRegistry.Instance.Get(_selectedTurretID);
 
-        // Access ResourceSystem (Game Side) - No errors now!
+        // Access ResourceSystem
         if (ResourceSystem.Instance != null)
         {
             if (!ResourceSystem.Instance.mana.CanAfford(data.Cost))
@@ -97,7 +94,6 @@ public class TurretSpawner : MonoBehaviour
         GameObject newTurret = Instantiate(GenericTurretPrefab, spawnPos, Quaternion.identity);
         newTurret.transform.SetParent(TurretBox.transform);
 
-        // Initialize the new instance (It will calculate offset from its clean state)
         var logic = newTurret.GetComponent<Turret>();
         logic.Initialize(data);
         logic.ApplyModifiers(modifiersList);
@@ -120,14 +116,11 @@ public class TurretSpawner : MonoBehaviour
             {
                 _canSpawnTurret = true;
                 TurretVisualizer.SetPlacementValid(true);
-                // Visual feedback (requires sprite renderer access)
-                // logic...
             }
             else
             {
                 _canSpawnTurret = false;
                 TurretVisualizer.SetPlacementValid(false);
-                // logic...
             }
             return;
         }
@@ -137,7 +130,7 @@ public class TurretSpawner : MonoBehaviour
     public void ForceSpawnTurret(string turretID, Vector3 worldPosition)
     {
         Debug.Log($"[ForceSpawnTurret] {turretID}, {worldPosition}, {GenericTurretPrefab}");
-        // 1. Validate Dependencies
+        // Validate Dependencies
         if (GenericTurretPrefab == null)
         {
             Debug.LogError("[TurretSpawner] CRITICAL: GenericTurretPrefab is NULL! Assign it in the Inspector.");
@@ -146,10 +139,9 @@ public class TurretSpawner : MonoBehaviour
         if (TurretBox == null)
         {
             Debug.LogError("[TurretSpawner] TurretBox is NULL! Assign it in the Inspector.");
-            // We can continue without parenting, but it's messy
         }
 
-        // 2. Look up Data
+        // Look up Data
         TurretData data = TurretRegistry.Instance.Get(turretID);
         if (data == null)
         {
@@ -160,22 +152,6 @@ public class TurretSpawner : MonoBehaviour
         // Instantiate
         GameObject newTurret = Instantiate(GenericTurretPrefab, worldPosition, Quaternion.identity);
         
-        // var ac = newTurret.GetComponentInChildren<ProceduralAudioController>();
-        // ac.selectionSeed = GameManager.Instance.ACSeed1.GetBaseValue();
-        // ac.modulationSeed = GameManager.Instance.ACSeed2.GetBaseValue();
-        
-        // var ac = newTurret.GetComponentInChildren<TDPG.AudioModulation.ProceduralAudioController>();
-        // if (ac != null && GameManager.Instance != null)
-        // {
-        //     ac.selectionSeed = GameManager.Instance.ACSeed1.GetBaseValue();
-        //     ac.modulationSeed = GameManager.Instance.ACSeed2.GetBaseValue();
-        // }
-        // else if (ac == null)
-        // {
-        //     // Optional warning if you expect every turret to have audio
-        //     Debug.LogWarning($"Turret '{newTurret.name}' missing ProceduralAudioController.");
-        // }
-
         newTurret.SetActive(true);
         newTurret.transform.SetParent(TurretBox.transform);
 

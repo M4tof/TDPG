@@ -412,7 +412,7 @@ public class GameManager : MonoBehaviour
                         virtualBase.transform.position = GridManager.Instance.GetDestinationWorldPosition();
 
                         // Find ALL spawners
-                        var allSpawners = FindObjectsByType<EnemysSpawner>(FindObjectsSortMode.None);
+                        var allSpawners = FindObjectsByType<EnemySpawner>(FindObjectsSortMode.None);
                         foreach (var s in allSpawners)
                         {
                             s.SetEndPoint(virtualBase.transform);

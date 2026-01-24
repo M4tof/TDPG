@@ -6,44 +6,20 @@ using TDPG.Templates.Turret;
 [RequireComponent(typeof(Collider2D))]
 public class BasicProjectile : Projectile
 {
-    
-
-    
-    private ProceduralAudioController _audioController; 
+    private ProceduralAudioController _audioController;
     private float timeRemaining = 0f;
 
     public void Start()
     {
         base.Start();
-        
+
         _audioController = GetComponent<ProceduralAudioController>();
-        
+
         if (_audioController != null)
         {
             _audioController.Play();
         }
     }
-    
-    /*void FixedUpdate()
-    {
-        MoveProjectile();
-        timeRemaining -= Time.deltaTime;
-        if (timeRemaining <= 0)
-        {
-            OnDestroy();
-        }
-    }
-
-    public void MoveProjectile()
-    {
-        rb.linearVelocity = transform.right * speed;
-    }
-
-    public void OnDestroy()
-    {
-        Destroy(gameObject);
-    }*/
-    
     public override void OnTriggerEnter2D(Collider2D other)
     {
         Debug.Log("TRIGGER ENTER: BASIC");
@@ -59,7 +35,7 @@ public class BasicProjectile : Projectile
     {
         this.damage = damage;
     }
-    
+
     public int GetDamage()
     {
         return damage;

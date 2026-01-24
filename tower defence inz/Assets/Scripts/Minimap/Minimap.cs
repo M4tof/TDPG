@@ -10,8 +10,6 @@ public class Minimap : MonoBehaviour
     private GridManager gridManager;
     private Camera minimapCamera;
     
-    
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         minimapCamera = GetComponent<Camera>();

@@ -62,7 +62,7 @@ public class EnemyCompendium : MonoBehaviour
         ActiveEnemies.Clear();
 
         // 2. Find Spawner
-        var spawner = FindFirstObjectByType<EnemysSpawner>(); 
+        var spawner = FindFirstObjectByType<EnemySpawner>(); 
         
         if (spawner == null)
         {
