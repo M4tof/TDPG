@@ -18,7 +18,7 @@ MonoBehaviour:
   Cost: 0
   TileSize: {x: 1, y: 1}
   BaseOffset: {x: 0, y: -0.85}
-  CrystalOffset: {x: 2.5, y: 5}
+  CrystalOffset: {x: 0.4, y: 5}
   Scale: 1
   CanShoot: 0
   Range: 0
