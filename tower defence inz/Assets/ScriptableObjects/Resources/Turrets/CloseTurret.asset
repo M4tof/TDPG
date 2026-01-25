@@ -15,15 +15,15 @@ MonoBehaviour:
   TurretID: Close
   BaseSprite: {fileID: -1515134823594722529, guid: ccaa28a09cade8dda8cd7fdb786d0609, type: 3}
   CrystalSprite: {fileID: 4498254706538010417, guid: 71acbc7519fc62b4192c07d648f52b4b, type: 3}
-  Cost: 200
+  Cost: 150
   TileSize: {x: 1, y: 1}
   BaseOffset: {x: 2.5, y: 1.5}
   CrystalOffset: {x: 2.5, y: 5}
   Scale: 1
   CanShoot: 1
   Range: 2
-  Damage: 10
-  FireRate: 0.5
+  Damage: 8
+  FireRate: 0.75
   MaxHP: 20
   modifierList:
   - id: -1

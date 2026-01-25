@@ -22,6 +22,7 @@ public class GameOverPanel : MonoBehaviour
     public void GoToMainMenu()
     {
         SceneManager.LoadScene("MainMenu");
+        ResourceSystem.Instance.ResetResources();
     }
     private void WriteMessage()
     {

@@ -91,7 +91,7 @@ public class ResourceSystem : MonoBehaviour
     }
 
     [SerializeField] private float maxValue = 4000f;
-    
+
     public Resource money;
     public Resource mana;
     List<Resource> updateList;
@@ -123,12 +123,8 @@ public class ResourceSystem : MonoBehaviour
             Instance = this;
             DontDestroyOnLoad(gameObject);
             Debug.Log("ResourceSystem created and set to not destroy on load.");
+            ResetResources();
 
-            money = new Resource(200f, maxValue, 2f, false, onMoneyChange);
-            mana = new Resource(400f, maxValue, 0.0f, false, onManaChange);
-            updateList = new List<Resource>();
-            updateList.Add(money);
-            updateList.Add(mana);
         }
     }
 
@@ -152,6 +148,15 @@ public class ResourceSystem : MonoBehaviour
         updateList = new List<Resource>();
         money = new Resource(data.MoneyValue, data.MoneyMax, data.MoneyRegen, data.MoneyDebt, onMoneyChange);
         mana = new Resource(data.ManaValue, data.ManaMax, data.ManaRegen, data.ManaDebt, onManaChange);
+        updateList.Add(money);
+        updateList.Add(mana);
+    }
+
+    public void ResetResources()
+    {
+        money = new Resource(200f, maxValue, 2f, false, onMoneyChange);
+        mana = new Resource(400f, maxValue, 0.0f, false, onManaChange);
+        updateList = new List<Resource>();
         updateList.Add(money);
         updateList.Add(mana);
     }

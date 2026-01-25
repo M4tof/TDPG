@@ -52,17 +52,19 @@ public class HoverManager : MonoBehaviour
         Vector2 worldPoint = _cam.ScreenToWorldPoint(mousePos);
         RaycastHit2D hit = Physics2D.Raycast(worldPoint, Vector2.zero, Mathf.Infinity, hoverLayerMask);
 
+        TurretBase turret = null;
+
         if (hit.collider != null)
         {
             GameObject hitObj = hit.collider.gameObject;
-            
+
             // Identify and Update UI
             if (hitObj.TryGetComponent(out EnemyBehavior enemy))
             {
                 ShowEnemyStats(enemy);
                 HideRangeIndicator();
             }
-            else if (hitObj.TryGetComponent(out TurretBase turret))
+            else if ((turret = hitObj.GetComponentInParent<TurretBase>()) != null)
             {
                 ShowTurretStats(turret);
                 ShowRangeIndicator(turret);
@@ -92,7 +94,7 @@ public class HoverManager : MonoBehaviour
 
         StatPanelUI.Instance.Show();
         StatPanelUI.Instance.UpdateStats(
-            $"{data.GenName} the {data.EnemyName}",
+            $"{logic.GeneratedName} the {data.EnemyName}",
             $"{Mathf.CeilToInt(logic.CurrentHealth)} / {Mathf.CeilToInt(logic.DynamicMaxHealth)}",
             logic.CurrentSpeed.ToString("F1"),
             data.Damage.ToString(),
@@ -121,13 +123,25 @@ public class HoverManager : MonoBehaviour
         if (_currentRangeIndicator == null) return;
         if (turret == null || turret.Data == null) return;
 
+        SpriteRenderer baseSprite = turret.GetComponentInChildren<SpriteRenderer>();
+
         _currentRangeIndicator.gameObject.SetActive(true);
-        _currentRangeIndicator.position = turret.transform.position;
+        // _currentRangeIndicator.position = turret.transform.position;
+
+
+        if (baseSprite != null)
+        {
+            _currentRangeIndicator.position = baseSprite.transform.position;
+        }
+        else
+        {
+            _currentRangeIndicator.position = turret.transform.position;
+        }
 
         // Get Factors
         float rangeInGridTiles = turret.Data.Range;
         float cellSize = 1.0f;
-        
+
         // Safety check for GridManager
         if (TDPG.Templates.Grid.GridManager.Instance != null)
         {
