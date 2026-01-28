@@ -47,6 +47,7 @@ public class TurretSpawner : MonoBehaviour
 
         // Setup Visualizer
         TurretVisualizer.gameObject.SetActive(true);
+        Debug.Log("Turret Visualizer");
         TurretVisualizer.Initialize(data);
     }
 

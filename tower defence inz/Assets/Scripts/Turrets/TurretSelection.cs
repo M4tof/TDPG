@@ -16,7 +16,8 @@ namespace TDPG.Templates.Turret
         [SerializeField] [Tooltip("Menu which show cards to select")] CardSelectionMenu cardSelectionMenu;
 
         [Header("UI")] 
-        [SerializeField] [Tooltip("Component used to spawn turrets")] private TMP_Text upgradeCount;
+        [SerializeField] [Tooltip("Text with the number of upgrades")] private TMP_Text upgradeCount;
+        [SerializeField] [Tooltip("Text with turret cost")] private TMP_Text cost;
         
         
 
@@ -31,7 +32,12 @@ namespace TDPG.Templates.Turret
         public void AddUpgrade(CardData upgrade)
         {
             turretCards.Add(upgrade);
-            upgradeCount.text = GetTurretUpgrades().ToString();
+            upgradeCount.text = "Upgrades: " + GetTurretUpgrades();
+        }
+
+        public void SetCost(float costValue)
+        {
+            this.cost.text = "Cost: " + costValue;
         }
 
         public void OpenCardSelectionMenu()
