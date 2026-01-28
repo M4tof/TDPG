@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using TDPG.Templates.Grid;
 using UnityEngine.Events;
-using static TDPG.Templates.Pathfinding.PathfindingEvents;
 
 namespace TDPG.Templates.Pathfinding
 {
@@ -44,7 +43,7 @@ namespace TDPG.Templates.Pathfinding
 
             half = gridManager.CellSize * 0.5f;
 
-            // If grid is already ready, initialize immediately, otherwise wait.
+            // If the grid is already ready, initialize immediately, otherwise wait
             if (gridManager.GetGrid() != null)
             {
                 InitPathfinderAndCompute();
@@ -68,7 +67,7 @@ namespace TDPG.Templates.Pathfinding
             while (gridManager != null && gridManager.GetGrid() == null)
                 yield return null;
 
-            // small safeguard
+            // Small safeguard
             if (gridManager == null || gridManager.GetGrid() == null)
             {
                 Debug.LogError("Grid never became available for EnemyPathFollower on " + gameObject.name);
@@ -117,7 +116,7 @@ namespace TDPG.Templates.Pathfinding
             if (path == null || path.Count == 0 || index >= path.Count || gridManager == null)
                 return transform.position;
             
-            //If Destroying Building
+            // If Destroying Building
             if (isDestroyingBuilding)
             {
                 return transform.position;
@@ -148,7 +147,7 @@ namespace TDPG.Templates.Pathfinding
                 {
                     return transform.position;
                 }
-                index++; //move to next point in path
+                index++; // Move to next point in path
                 // Check if we've reached the final destination
                 if (index >= path.Count)
                 {
@@ -274,7 +273,7 @@ namespace TDPG.Templates.Pathfinding
                 Gizmos.DrawSphere(current, 0.12f);
                 Gizmos.DrawLine(current, next);
             }
-            // last node
+            // Last node
             Vector3 lastNode = (path[path.Count - 1] * gridManager.CellSize) + new Vector3(half, half, 0);
             Gizmos.DrawSphere(lastNode, 0.12f);
         }
@@ -291,7 +290,7 @@ namespace TDPG.Templates.Pathfinding
         /// </summary>
         private void OnGridChanged()
         {
-            // Recompute path when grid changes (unless we've reached destination)
+            // Recompute the path when grid changes (unless we've reached the destination)
             if (!hasReachedDestination)
             {
                 ComputeNewPath();

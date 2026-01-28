@@ -54,11 +54,11 @@ namespace TDPG.Templates.Turret
 
             if (_currentTarget != null)
             {
-                // Sprawdzamy, czy mamy generator wzorc�w
+                // Check if the pattern generator is set
                 if (Data.PatternGenerator != null)
                 {
-                    // Odpalamy wzorzec tylko je�li poprzedni si� sko�czy� 
-                    // lub zgodnie z FireRate (tutaj: FireRate jako odst�p mi�dzy wzorcami)
+                    // Start only if the previous pattern is over
+                    // or according to the FireRate
                     if (_cooldownTimer <= 0)
                     {
                         ExecutePattern(_currentTarget);
@@ -67,7 +67,7 @@ namespace TDPG.Templates.Turret
                 }
                 else
                 {
-                    // Standardowy strza�
+                    // A typical shot
                     Shoot(_currentTarget);
                     _cooldownTimer = 1f / Data.FireRate;
                 }
@@ -76,7 +76,7 @@ namespace TDPG.Templates.Turret
 
         private void ExecutePattern(Transform target)
         {
-            // Generujemy nowy wzorzec (u�ywaj�c np. czasu jako seedu dla unikalno�ci)
+            // Generate a new pattern (using eg. the time as the seed for the uniqueness)
             var pattern = Data.PatternGenerator.Preview((ulong)(Time.time * 1000));
             StartCoroutine(PatternRoutine(pattern, target));
         }
@@ -86,7 +86,7 @@ namespace TDPG.Templates.Turret
             float startTime = Time.time;
             int eventIndex = 0;
 
-            // Sortujemy zdarzenia po czasie, aby mie� pewno�� chronologii
+            // Sort by the time, so as not to confuse the chronology
             pattern.events.Sort((a, b) => a.timeOffset.CompareTo(b.timeOffset));
 
             while (eventIndex < pattern.events.Count)
@@ -98,7 +98,7 @@ namespace TDPG.Templates.Turret
                     SpawnProjectileFromEvent(pattern.events[eventIndex], target);
                     eventIndex++;
                 }
-                yield return null; // Czekaj do nast�pnej klatki
+                yield return null; // Wait until the following frame
             }
         }
 
@@ -106,16 +106,14 @@ namespace TDPG.Templates.Turret
         {
             if (Data.ProjectilePrefab == null) return;
 
-            // 1. Oblicz bazow� rotacj� w stron� celu (jak w starym kodzie)
+            // 1. Calculate the base rotation towards the target
             Vector3 targetDir = (target != null) ? (target.position - transform.position).normalized : transform.right;
             float baseRotZ = Mathf.Atan2(targetDir.y, targetDir.x) * Mathf.Rad2Deg;
 
-            // 2. Dodaj modyfikatory z wzorca (Spread i Direction z generatora)
-            // Je�li wzorzec podaje w�asny kierunek, u�ywamy go, je�li nie - u�ywamy kierunku na cel
+            // 2. Apply pattern modificators
             float finalRotZ = baseRotZ + ev.spreadAngle;
             Quaternion bulletRotation = Quaternion.Euler(0f, 0f, finalRotZ);
 
-            //Vector3 spawnPos = transform.position + (Vector3)(Data.TileSize * 0.5f);
             Vector3 spawnPos = shootPosition.position;
 
             GameObject bulletGo = Instantiate(Data.ProjectilePrefab, spawnPos, bulletRotation);
@@ -132,14 +130,6 @@ namespace TDPG.Templates.Turret
                     }
                 }
             }
-            
-            
-            // OPCJONALNIE: Przekazanie statystyk z Patternu do pocisku
-            // var projectileScript = bulletGo.GetComponent<BasicProjectile>();
-            // if(projectileScript != null) {
-            //    projectileScript.Speed = ev.speed;
-            //    projectileScript.Damage = ev.damage;
-            // }
         }
 
         /// <summary>
@@ -154,27 +144,13 @@ namespace TDPG.Templates.Turret
 
             float cellSize = (GridManager.Instance != null) ? GridManager.Instance.CellSize : 1.0f;
 
-            // A. Range Check (Physics)
             Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, Data.Range * cellSize, _enemyLayerMask);
 
             foreach (var hit in hits)
             {
-                // B. Line of Sight Check (Optional/Placeholder)
-                // If you add walls later, perform a Raycast here.
-                if (CheckLineOfSight(hit.transform))
-                {
-                    validTargets.Add(hit.transform);
-                }
+                validTargets.Add(hit.transform);
             }
             return validTargets;
-        }
-
-        private bool CheckLineOfSight(Transform target)
-        {
-            // Placeholder: Simply return true for now.
-            // Future implementation: Raycast from Turret center to Target center. 
-            // If it hits "Wall" layer before "Enemy", return false.
-            return true;
         }
 
         /// <summary>
@@ -187,9 +163,6 @@ namespace TDPG.Templates.Turret
         private Transform SelectTarget(List<Transform> candidates)
         {
             if (candidates.Count == 0) return null;
-
-            // Strategy: CLOSEST (Default)
-            // TODO: Refactor this into a Strategy Pattern (e.g., ITargetingStrategy)
 
             Transform bestTarget = null;
             float closestDistSqr = Mathf.Infinity;
@@ -218,14 +191,12 @@ namespace TDPG.Templates.Turret
         {
             if (Data.ProjectilePrefab == null) return;
 
-            // Calculate rotation towards target
+            // Calculate the base rotation towards the target
             Vector3 direction = (target.position - transform.position).normalized;
             float rotZ = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
             Quaternion bulletRotation = Quaternion.Euler(0f, 0f, rotZ);
 
             // Spawn Projectile
-            // Use center of tile (transform.position) + offset if needed
-            //Vector3 spawnPos = transform.position + (Vector3)(Data.TileSize * 0.5f);
             Vector3 spawnPos = shootPosition.position;
 
             GameObject projectileObject = Instantiate(Data.ProjectilePrefab, spawnPos, bulletRotation);
@@ -242,13 +213,6 @@ namespace TDPG.Templates.Turret
                     }
                 }
             }
-
-            // Note: We stop here. 
-            // The BasicProjectile script takes over movement via its FixedUpdate.
-            // Damage application is handled by the projectile's collision logic (not implemented here).
         }
-
-
-
     }
 }

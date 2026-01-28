@@ -62,7 +62,7 @@ namespace TDPG.Templates.Turret
                 return $"-{percent}%";
             }
     
-            // value >= 1
+            // Value >= 1
             int percentIncrease = Mathf.RoundToInt((value - 1) * 100);
             return $"+{percentIncrease}%";
         }

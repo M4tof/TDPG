@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace TDPG.EffectSystem.ElementPlanner
+﻿namespace TDPG.EffectSystem.ElementPlanner
 {
     /// <summary>
     /// Defines a concrete, executable command derived from an abstract Effect.

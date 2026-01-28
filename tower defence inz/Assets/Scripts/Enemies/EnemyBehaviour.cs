@@ -6,7 +6,7 @@ using UnityEngine;
 [RequireComponent(typeof(EnemyPathFollower))]
 public class EnemyBehavior : EnemyBaseBehaviour
 {
-    public Enemy Logic { get; private set; }
+    new public Enemy Logic { get; private set; }
     [SerializeField] private HPBarVisualisation hpBarVisualiation;
     
     private SpriteRenderer _renderer;

@@ -137,12 +137,12 @@ namespace TDPG.Generators.Scalars
         // Box-Muller
         private static float Normal(IRandomSource source, float mean, float stdDev, float min, float max)
         {
-            // generate approximate normal via Box-Muller
+            // Generate approximate normal via Box-Muller
             double u1 = source.NextFloat();
             double u2 = source.NextFloat();
             double z0 = Math.Sqrt(-2.0 * Math.Log(Math.Max(1e-12, u1))) * Math.Cos(2.0 * Math.PI * u2);
             double val = mean + z0 * stdDev;
-            // clamp
+            // Clamp
             if (val < min) val = min;
             if (val > max) val = max;
             return (float)val;

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using QuikGraph;
 using TDPG.EffectSystem.ElementLogic;
-using TDPG.Generators.Seed;
 using UnityEngine;
 
 namespace TDPG.EffectSystem.ElementRegistry
@@ -113,7 +112,7 @@ namespace TDPG.EffectSystem.ElementRegistry
         public void ClearRegistry()
         {
             registryGraph = new BidirectionalGraph<Element, Edge<Element>>(true);
-            // re-add rootElement so API behaviour is consistent (root always present)
+            // Re-add rootElement so API behaviour is consistent (root always present)
             if (rootElement != null)
                 registryGraph.AddVertex(rootElement);
         }

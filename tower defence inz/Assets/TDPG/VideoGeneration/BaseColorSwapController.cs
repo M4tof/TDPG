@@ -153,8 +153,6 @@ namespace TDPG.VideoGeneration
 
         /// <summary> Implemented by children to handle their specific list structures. </summary>
         protected abstract void OnUpdateBlock(MaterialPropertyBlock block, List<Color> resolvedTargets, bool forceWhite);
-
-        // TODO: add summary
         public void SetSeed(Seed s)
         {
             paletteSelector.seed = s;

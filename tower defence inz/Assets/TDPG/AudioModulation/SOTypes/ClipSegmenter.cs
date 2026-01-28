@@ -35,7 +35,7 @@ namespace TDPG.AudioModulation.SOTypes
             _startTime = Mathf.Lerp(0, maxStartTime, (float)randStart);
             _endTime = _startTime + duration;
 
-            // FORCE position update
+            // Force position update
             ctx.Source.time = _startTime;
         }
 
@@ -43,7 +43,7 @@ namespace TDPG.AudioModulation.SOTypes
         {
             if (!_hasClip) return;
             
-            // If we are essentially at 0 (start of clip) but our segment intends to start at 5.0s,
+            // If we are essentially at 0 (start of the clip), but our segment intends to start at 5.0s,
             // we force the jump.
             if (ctx.Source.time < _startTime - 0.05f) 
             {

@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using TDPG.EffectSystem.ElementPlanner;
+﻿using TDPG.EffectSystem.ElementPlanner;
 using UnityEngine;
 
 namespace TDPG.Templates.Turret

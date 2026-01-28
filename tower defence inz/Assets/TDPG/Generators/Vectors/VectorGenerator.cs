@@ -53,7 +53,7 @@ namespace TDPG.Generators.Vectors
             var list = new List<TScalar>(Dimension);
             for (int i = 0; i < Dimension; i++)
             {
-                // scalar generator may use the same source; to avoid correlation, clone the source for each component
+                // Scalar generator may use the same source; to avoid correlation, clone the source for each component
                 list.Add(ScalarGenerator.Generate(source));
             }
             return list;

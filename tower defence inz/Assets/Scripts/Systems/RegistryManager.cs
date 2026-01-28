@@ -10,6 +10,7 @@ public class RegistryManager : MonoBehaviour
     [SerializeField] private Registry registry;
     
     private static RegistryManager _instance;
+
     
     public static RegistryManager Instance
     {
@@ -17,7 +18,8 @@ public class RegistryManager : MonoBehaviour
         {
             if (_instance == null)
             {
-                _instance = FindObjectOfType<RegistryManager>();
+
+                _instance = FindFirstObjectByType<RegistryManager>();
                 
                 if (_instance == null)
                 {

@@ -52,7 +52,7 @@ namespace TDPG.EffectSystem.ElementLogic
             if (input.Length >= needed)
                 return input;
 
-            // repeat pattern until we reach needed count
+            // Repeat pattern until we reach needed count
             List<float> extended = new List<float>(input);
             while (extended.Count < needed)
                 extended.AddRange(input);
@@ -111,7 +111,6 @@ namespace TDPG.EffectSystem.ElementLogic
                     return new Scale(v[0]);
                 }
             }
-            //TODO: LONG TERM FILL HERE
         };
         
         /// <summary>
@@ -145,7 +144,6 @@ namespace TDPG.EffectSystem.ElementLogic
             MetaData = new List<string> { dna.ToString() };
         }
         
-        //TODO: LONG TERM FILL HERE
         // --- Reverse lookup map (bit -> effect type) ---
         /// <summary>
         /// Reverse registry mapping Index -> Type. Used when reconstructing a Seed from a list of effects.

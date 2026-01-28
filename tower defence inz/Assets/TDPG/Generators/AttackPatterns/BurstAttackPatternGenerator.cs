@@ -58,7 +58,7 @@ namespace TDPG.Generators.AttackPatterns
         /// </summary>
         public BurstAttackPatternGenerator()
         {
-            // sensible defaults
+            // Sensible default values
             patternName = "Burst";
             DurationGenerator = new FloatGenerator { mode = FloatGenerator.Mode.Uniform, min = 0.5f, max = 3f };
             EventCountGenerator = new IntGenerator { min = 1, max = 6 };

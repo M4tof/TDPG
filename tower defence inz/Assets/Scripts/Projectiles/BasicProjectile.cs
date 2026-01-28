@@ -9,7 +9,7 @@ public class BasicProjectile : Projectile
     private ProceduralAudioController _audioController;
     private float timeRemaining = 0f;
 
-    public void Start()
+    new public void Start()
     {
         base.Start();
 

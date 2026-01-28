@@ -1,10 +1,8 @@
-using Codice.Utils;
 using QuikGraph;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using TDPG.EffectSystem.ElementLogic;
-using TDPG.Generators.Scalars;
 using TDPG.Generators.Seed;
 using TDPG.TextGeneration;
 using TDPG.TextGeneration.TrainingFiles;
@@ -15,7 +13,6 @@ namespace TDPG.EffectSystem.ElementRegistry
 {
     public partial class Registry
     { 
-    //Add elements to registry
     
         /// <summary>
         /// Registers a pre-existing element into the graph under specific parents.
@@ -52,7 +49,7 @@ namespace TDPG.EffectSystem.ElementRegistry
 
             var requestedParentSet = parentElements.Select(p => p.Id).ToHashSet();
             
-            // Detect element already exists
+            // Detect if the element already exists
             Element existingElement = registryGraph.Vertices
                 .FirstOrDefault(v => v.Id == newElement.Id);
 
@@ -91,7 +88,7 @@ namespace TDPG.EffectSystem.ElementRegistry
             }
 
             if (newElement.Id == 0)
-                newElement.Id = CountElements(); // only auto-assign if ID not set (RECOMMENDED NOT TO SET MANUALLY)
+                newElement.Id = CountElements(); // only auto-assign if ID not set (NOT RECOMMENDED TO SET MANUALLY)
 
             // Add new element if it's not already in the graph
             if (!registryGraph.ContainsVertex(newElement))
@@ -127,7 +124,7 @@ namespace TDPG.EffectSystem.ElementRegistry
         public Element GenerateChildElementFromParents_Recombine(List<int> parentsId)
         {
             return GenerateChildElementFromParentsCore(parentsId, 
-                combineSeeds: (seed, parentSeed) => seed ^ parentSeed,     // returns combined Seed
+                combineSeeds: (seed, parentSeed) => seed ^ parentSeed,     // Returns combined Seed
                 fallbackEffectSelector: effects => effects.First(),
                 finalEffectSelectorMode: (mode, effects) =>
                 {
@@ -158,7 +155,7 @@ namespace TDPG.EffectSystem.ElementRegistry
         public Element GenerateChildElementFromParents_Addition(List<int> parentsId)
         {
             return GenerateChildElementFromParentsCore(parentsId, 
-                combineSeeds: (seed, parentSeed) => seed + parentSeed,    // returns combined Seed
+                combineSeeds: (seed, parentSeed) => seed + parentSeed,    // Returns combined Seed
                 fallbackEffectSelector: effects => effects.Last(),
                 finalEffectSelectorMode: (mode, effects) =>
                 {
@@ -217,7 +214,7 @@ namespace TDPG.EffectSystem.ElementRegistry
     
             foreach (Element parent in parentElements)
             {
-                newSeed = combineSeeds(newSeed, parent.GetDna());   // <-- assign returned Seed
+                newSeed = combineSeeds(newSeed, parent.GetDna());   // <-- Assign returned Seed
                 Debug.Log($"{operationLabel}: After combining with parent {parent.Name} (dna={parent.GetDna().Value}) -> newSeed={newSeed.Value}");
 
                 List<Effect> parentEffects = parent.GetEffects();
@@ -226,7 +223,7 @@ namespace TDPG.EffectSystem.ElementRegistry
             }
 
 
-            // 3. mutate and normalize
+            // 3. Mutate and normalize
             newSeed = MutateSeed(newSeed, mutateType);
             ulong baseValue = newSeed.GetBaseValue();
             
@@ -299,7 +296,7 @@ namespace TDPG.EffectSystem.ElementRegistry
             if (operationLabel == "crossing over")
                 ApplySeedBoosts(childEffects, baseValue);
 
-            //7. Generate a name for a new element
+            // 7. Generate a name for a new element
             int length = (int)newSeed.GetBaseValue() % 4 + 5;
             MarkovChain markov = new MarkovChain(length);
             markov.Train(TrainingData.DataElements);

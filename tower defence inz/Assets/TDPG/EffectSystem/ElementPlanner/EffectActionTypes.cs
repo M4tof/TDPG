@@ -1,15 +1,5 @@
 ﻿using TDPG.Templates.Enemies;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Numerics;
-using System.Text;
-using System.Threading.Tasks;
-using TDPG.EffectSystem.ElementPlanner;
-using TDPG.Templates.Enemies;
 using UnityEngine;
-using static UnityEngine.EventSystems.EventTrigger;
 
 namespace TDPG.EffectSystem.ElementPlanner
 { 
@@ -52,7 +42,6 @@ namespace TDPG.EffectSystem.ElementPlanner
 
             if (context.Target.TryGetComponent<EnemyBaseBehaviour>(out var behaviour))
             {
-                Debug.Log($"BEHAVIOUR {behaviour},LOGIC {behaviour.Logic}, FACTOR {factor}");
                 behaviour.Logic.CurrentSpeed *= (1f - factor);
             }
             else
@@ -145,7 +134,6 @@ namespace TDPG.EffectSystem.ElementPlanner
         /// </summary>
         public void Execute(EffectContext context)
         {
-            Debug.Log("DOTA");
             if (context.Target == null) return;
 
             if (drainCount <= 0) return; //meaningful drainCount is positive only
@@ -156,7 +144,6 @@ namespace TDPG.EffectSystem.ElementPlanner
                     (iteration) => behaviour.DealDamage(Mathf.CeilToInt(healthPerDrain)), 
                     drainCount, 
                     idleTime);
-                Debug.Log("BURN!!");
             }
             else
             {
@@ -199,13 +186,6 @@ namespace TDPG.EffectSystem.ElementPlanner
                 Debug.LogWarning("StunAction: Target has no CurrentSpeed.");
             }
         }
-
-        /*private IEnumerator ApplyRoutine(EnemyBase logic)
-        {
-            logic.CurrentSpeed *= (1f - factor);
-            yield return new WaitForSeconds(duration);
-            logic.CurrentSpeed /= (1f - factor);
-        }*/
     }
 
     /// <summary>
@@ -243,12 +223,6 @@ namespace TDPG.EffectSystem.ElementPlanner
             }
         }
 
-        /*private IEnumerator ApplyRoutine(EnemyBase logic)
-        {
-            logic.CurrentSpeed *= (1f - factor);
-            yield return new WaitForSeconds(duration);
-            logic.CurrentSpeed /= (1f - factor);
-        }*/
     }
 
     /// <summary>
@@ -284,10 +258,7 @@ namespace TDPG.EffectSystem.ElementPlanner
             if (context.Target == null) return;
             if (context.Target.TryGetComponent<EnemyBaseBehaviour>(out var behaviour))
             {
-                //behaviour.Logic.CurrentHealth += amount; // amount < 0
-                Debug.Log($"DAMAGE: {amount}");
                 behaviour.DealDamage(-Mathf.CeilToInt(amount));
-                Debug.Log(behaviour.Logic.CurrentHealth);
             }
             else
             {
@@ -332,6 +303,5 @@ namespace TDPG.EffectSystem.ElementPlanner
             }
         }
     }
-    //TODO: long-term + change initial ones
 
 }

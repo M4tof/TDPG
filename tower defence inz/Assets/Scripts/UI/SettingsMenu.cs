@@ -31,6 +31,7 @@ public class SettingsMenu : MonoBehaviour
         }
     }
 
+#nullable enable
     public void OpenMenu(GameObject? caller)
     {
         if (caller != null)

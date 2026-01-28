@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 using TDPG.Templates.Grid;
-using static TDPG.Templates.Pathfinding.PathfindingEvents;
 
 //!! MOCK used for pathfinding testing, not actually useful anymore. !!
 
@@ -56,7 +55,7 @@ namespace TDPG.Templates.Pathfinding
             while (gridManager != null && gridManager.GetGrid() == null)
                 yield return null;
 
-            // small safeguard
+            // Small safeguard
             if (gridManager == null || gridManager.GetGrid() == null)
             {
                 Debug.LogError("Grid never became available for EnemyPathFollower on " + gameObject.name);
@@ -109,7 +108,7 @@ namespace TDPG.Templates.Pathfinding
                 }
                 else
                 {
-                    index++; //move to next point in path
+                    index++; // Move to next point in path
                     
                     // Check if we've reached the final destination
                     if (index >= path.Count)
@@ -144,7 +143,7 @@ namespace TDPG.Templates.Pathfinding
             // Destroy the building
             gridManager.SetTileType(buildingPosition, Grid.Grid.TileType.EMPTY);
             
-            //signal others to recalculate
+            // Signal others to recalculate
             PathfindingEvents.TriggerGridChanged();
             
             // Recompute path now that the building is gone
@@ -189,7 +188,7 @@ namespace TDPG.Templates.Pathfinding
                 Gizmos.DrawSphere(current, 0.12f);
                 Gizmos.DrawLine(current, next);
             }
-            // last node
+            // Last node
             Vector3 lastNode = (path[path.Count - 1] * gridManager.CellSize) + new Vector3(half, half, 0);
             Gizmos.DrawSphere(lastNode, 0.12f);
         }
@@ -201,7 +200,7 @@ namespace TDPG.Templates.Pathfinding
         
         private void OnGridChanged()
         {
-            // Recompute path when grid changes (unless we've reached destination)
+            // Recompute the path when grid changes (unless we've reached the destination)
             if (!hasReachedDestination)
             {
                 ComputeNewPath();

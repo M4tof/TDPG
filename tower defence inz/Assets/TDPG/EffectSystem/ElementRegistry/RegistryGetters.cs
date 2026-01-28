@@ -8,7 +8,6 @@ namespace TDPG.EffectSystem.ElementRegistry
 {
     public partial class Registry
     {
-        //Access Elements in registry
         
         /// <summary>
         /// Retrieves a registered element by its display name (Case-Insensitive).

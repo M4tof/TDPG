@@ -10,7 +10,6 @@ namespace TDPG.AudioModulation.SOTypes
     [CreateAssetMenu(menuName = "TDPG/Audio/Mod/Reverb Roulette")]
     public class ReverbRoulette : AudioModifier
     {
-        //It randomly assigns a physical space characteristic to the sound using Unity's AudioReverbFilter.
         [Tooltip("If TRUE, Reverb is only applied if the trigger bit is 1. If FALSE, Reverb is always applied.")]
         public bool useBitwiseCheck = true;
         [Tooltip("Only apply reverb if this bit (0-63) is set in the seed.")]
@@ -22,7 +21,7 @@ namespace TDPG.AudioModulation.SOTypes
             if (useBitwiseCheck)
             {
                 bool active = (ctx.SeedValue & (1UL << triggerBit)) != 0;
-                if (!active) return; // Exit if gene is missing
+                if (!active) return; // Exit if a gene is missing
             }
 
             // 2. Add Component

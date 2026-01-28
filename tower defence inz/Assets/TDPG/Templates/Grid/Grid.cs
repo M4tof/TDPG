@@ -86,9 +86,7 @@ namespace TDPG.Templates.Grid
                 for (int y = 0; y < grid.GetLength(1); y++)
                 {
                     typeGrid[x,y] = TileType.EMPTY;
-                    
-                    //buildingsGrid[x, y] = null;
-                    // Debug.Log(x+":"+y);
+
                     Debug.DrawLine(GetWorldPosition(x,y),GetWorldPosition(x,y+1),Color.yellow,100f);
                     Debug.DrawLine(GetWorldPosition(x,y),GetWorldPosition(x+1,y),Color.yellow,100f);
                 }
@@ -118,8 +116,7 @@ namespace TDPG.Templates.Grid
             position = GetXY(worldPosition);
             SetValue(position.x, position.y, value);
         }
-    
-        //return value of tile
+
         /// <summary>
         /// Retrieves the raw integer value at the specified World Position.
         /// </summary>
@@ -128,8 +125,7 @@ namespace TDPG.Templates.Grid
             Vector2Int position =  GetXY(worldPosition);
             return grid[position.x, position.y];
         }
-    
-        //Set value of given tile 
+
         /// <summary>
         /// Sets a raw integer value at specific Grid Coordinates (Indices).
         /// </summary>
@@ -155,7 +151,7 @@ namespace TDPG.Templates.Grid
             SetTileType(position.x, position.y, value);
         }
     
-                /// <summary>
+        /// <summary>
         /// Sets the <see cref="TileType"/> at specific Grid Coordinates.
         /// </summary>
         public void SetTileType(int x, int y, TileType value)
@@ -167,8 +163,7 @@ namespace TDPG.Templates.Grid
             }
             typeGrid[x, y] = value;
         }
-    
-        //return type of tile based on world position
+
         /// <summary>
         /// Retrieves the <see cref="TileType"/> at the specified World Position.
         /// </summary>
@@ -177,8 +172,7 @@ namespace TDPG.Templates.Grid
             Vector2Int position =  GetXY(worldPosition);
             return GetTileType(position.x, position.y);
         }
-    
-        //return type of tile based of tile type
+
         /// <summary>
         /// Retrieves the <see cref="TileType"/> at specific Grid Coordinates.
         /// </summary>
@@ -191,8 +185,7 @@ namespace TDPG.Templates.Grid
             }
             return typeGrid[x, y];
         }
-    
-        //Get Tile based on given position
+
         /// <summary>
         /// Converts a World Position (Vector3) to Grid Indices (x, y).
         /// </summary>
@@ -203,8 +196,7 @@ namespace TDPG.Templates.Grid
         {
             return new Vector2Int(Mathf.FloorToInt(worldPosition.x/cellSize), Mathf.FloorToInt(worldPosition.y/cellSize));
         }
-    
-        //convert grid to position into world (real) position 
+
         /// <summary>
         /// Converts Grid Indices (x, y) to the World Position of the cell's bottom-left corner.
         /// </summary>
@@ -212,8 +204,7 @@ namespace TDPG.Templates.Grid
         {
             return new Vector3(x, y) * cellSize;
         }
-    
-        //Print in console grid tile on given position
+
         /// <summary>
         /// Logs debug information about the cell at the given World Position.
         /// </summary>
@@ -293,8 +284,8 @@ namespace TDPG.Templates.Grid
                 TileType tile = typeGrid[nx, ny];
 
                 // WALKABLE logic:
-                // EMPTY always OK
-                // WATER only OK if canSwim
+                // EMPTY is always OK
+                // WATER is only OK if canSwim
                 if (tile == TileType.EMPTY ||
                     (tile == TileType.WATER && canSwim) ||
                     canFly||
@@ -330,7 +321,8 @@ namespace TDPG.Templates.Grid
                         return new Vector3Int(x, y, 0);
                 }
             }
-            return new Vector3Int(0, 0, 0); // fallback
+            // Fallback
+            return new Vector3Int(0, 0, 0);
         }
 
         private Vector3 FindLastWalkableCell()
@@ -343,7 +335,8 @@ namespace TDPG.Templates.Grid
                         return new Vector3Int(x, y, 0);
                 }
             }
-            return new Vector3Int(0, 0, 0); // fallback
+            // Fallback
+            return new Vector3Int(0, 0, 0);
         }
 
         /// <summary>
@@ -353,7 +346,5 @@ namespace TDPG.Templates.Grid
         {
             return cellSize;
         }
-    
     }
 }
-

@@ -10,7 +10,7 @@ public class EffectProjectile : BasicProjectile
     private ProceduralAudioController _audioController; 
     private bool hasHit = false;
     
-    void Start()
+    new void Start()
     {
         base.Start();
         if (GetPlanner() == null)

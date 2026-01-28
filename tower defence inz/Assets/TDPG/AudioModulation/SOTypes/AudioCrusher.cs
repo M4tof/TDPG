@@ -27,7 +27,7 @@ namespace TDPG.AudioModulation.SOTypes
             if (useBitwiseCheck)
             {
                 bool active = (ctx.SeedValue & (1UL << triggerBit)) != 0;
-                if (!active) return; // Exit if gene is missing, leaving sound clean
+                if (!active) return; // Exit if the gene is missing, leaving sound clean
             }
 
             // 2. Add Component

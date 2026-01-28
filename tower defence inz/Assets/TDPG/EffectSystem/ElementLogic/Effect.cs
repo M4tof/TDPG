@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using UnityEngine;
 
 namespace TDPG.EffectSystem.ElementLogic
 {
@@ -40,8 +39,6 @@ namespace TDPG.EffectSystem.ElementLogic
             Values = values;
             Description = description;
         }
-
-        // Transfer structured data
         
         /// <summary>
         /// Converts the raw <see cref="Values"/> array into a semantic Dictionary.

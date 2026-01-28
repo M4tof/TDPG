@@ -10,6 +10,7 @@ namespace TDPG.Templates.Enemies
     [CreateAssetMenu(fileName = "EnemyData", menuName = "EnemyData", order = 0)]
     public class EnemyData : ScriptableObject
     {
+#nullable enable
         [Header("Basic Stats")]
         [Tooltip("The display name of the enemy.")]
         public string EnemyName;

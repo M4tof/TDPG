@@ -62,7 +62,7 @@ namespace TDPG.Templates.Grid.MapGen
             wallLevel.floatValue =
                 EditorGUILayout.Slider("Wall Level", wallLevel.floatValue, minWall, maxWall);
 
-            // Draw all other fields
+            // Draw all the other fields
             DrawPropertiesExcluding(serializedObject, "mapType", "waterLevel", "wallLevel", "m_Script");
 
             serializedObject.ApplyModifiedProperties();

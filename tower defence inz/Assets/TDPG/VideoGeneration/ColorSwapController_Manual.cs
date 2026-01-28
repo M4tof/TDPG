@@ -54,7 +54,9 @@ namespace TDPG.VideoGeneration
                 packedOrig.a = entry.tolerance;
 
                 // Selection Priority: 
-                // 1. Force White (Blink), 2. Resolved Palette (Seed/SO/Runtime), 3. Manual Entry Target
+                // 1. Force White (Blink),
+                // 2. Resolved Palette (Seed/SO/Runtime),
+                // 3. Manual Entry Target
                 Color target;
                 if (forceWhite) target = Color.white;
                 else if (resolvedTargets != null && i < resolvedTargets.Count) target = resolvedTargets[i];

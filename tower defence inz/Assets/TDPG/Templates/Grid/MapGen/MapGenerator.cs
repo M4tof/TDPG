@@ -51,10 +51,10 @@ namespace TDPG.Templates.Grid.MapGen
 
         private const int Minsize = 20;
         private const int Fogland = 5;
-        private int _boundsW0; // playable start X
-        private int _boundsH0; // playable start Y
-        private int _boundsWX; // playable end X
-        private int _boundsHY; // playable end Y;
+        private int _boundsW0; // Playable start X
+        private int _boundsH0; // Playable start Y
+        private int _boundsWX; // Playable end X
+        private int _boundsHY; // Playable end Y;
         public float WaterLevel { get => waterLevel; set => waterLevel = value; }
         public float WallLevel { get => wallLevel; set => wallLevel = value; }
         public int MinimalDistance { get => minimalDistance; set => minimalDistance = value; }
@@ -79,7 +79,7 @@ namespace TDPG.Templates.Grid.MapGen
             int playableWidth = width;
             int playableHeight = height;
 
-            // padding is at max FOGLAND, or 20% of size
+            // Padding is at max FOGLAND, or 20% of size
             int padX = Mathf.Max((int)(playableWidth * 0.20f), Fogland);
             int padY = Mathf.Max((int)(playableHeight * 0.20f), Fogland);
 
@@ -87,11 +87,11 @@ namespace TDPG.Templates.Grid.MapGen
             width = playableWidth + padX * 2;
             height = playableHeight + padY * 2;
 
-            // playable bounds inside the expanded map
-            _boundsW0 = padX;                     // start X
-            _boundsH0 = padY;                     // start Y
-            _boundsWX = padX + playableWidth;     // end X
-            _boundsHY = padY + playableHeight;    // end Y
+            // Playable bounds inside the expanded map
+            _boundsW0 = padX;                     // Start X
+            _boundsH0 = padY;                     // Start Y
+            _boundsWX = padX + playableWidth;     // End X
+            _boundsHY = padY + playableHeight;    // End Y
 
             Debug.Log($"[Map Generator]: Actual size = 0-{width} x 0-{height}, " +
                       $"Playable area = {_boundsW0}-{_boundsWX} x {_boundsH0}-{_boundsHY}");
@@ -117,13 +117,6 @@ namespace TDPG.Templates.Grid.MapGen
             _mapInit = new TileType[width, height];
             bool skipGeneration = false;
 
-            // TODO: fix if needed
-            
-            // if (providedSeed != null)
-            // {
-            //     seed = providedSeed.GetNextSeed();
-            // }
-
             seed ??= new Seed(240_11_8, -1, "missingSeedInMapGen", false);
 
             seed.IsBitBased = false;
@@ -131,7 +124,7 @@ namespace TDPG.Templates.Grid.MapGen
             ulong seedVal = seed.GetBaseValue();
             string seedStr = seedVal.ToString();
 
-            // Use first 6 digits of seed for noise parameters
+            // Use the first 6 digits of seed for noise parameters
             int d0 = int.Parse(seedStr[0].ToString());
             int d1 = int.Parse(seedStr[1].ToString());
             int d2 = int.Parse(seedStr[2].ToString());
@@ -139,7 +132,7 @@ namespace TDPG.Templates.Grid.MapGen
             int d3 = int.Parse(seedStr[3].ToString());
             int d4 = int.Parse(seedStr[4].ToString());
 
-            //used in deciding destination point
+            // Used in deciding destination point
             int d5 = int.Parse(seedStr[5].ToString());
 
             // Initialize FastNoise
@@ -354,7 +347,7 @@ namespace TDPG.Templates.Grid.MapGen
                         queue.Enqueue(new Vector2Int(nx, ny));
 
                         // We count "Usable Map" as actual land we can stand on.
-                        // If we swam here, the water tile itself isn't "land", but it allows us to reach more land.
+                        // If we swim here, the water tile itself isn't "land", but it allows us to reach more land.
                         if (t == TileType.EMPTY)
                             reachableLandCount++;
                     }
@@ -656,7 +649,7 @@ namespace TDPG.Templates.Grid.MapGen
         /// Selects the best N positions for spawners from the reachable list.
         /// <br/>
         /// Prioritizes furthest distance and ensures minimal spacing between spawners.
-        /// Will select as manny as possible, caped by count and world availability.
+        /// Will select as many as possible, caped by count and world availability.
         /// </summary>
         public Vector3Int[] SelectSpawnerPositions(int count)
         {
@@ -712,8 +705,8 @@ namespace TDPG.Templates.Grid.MapGen
             float bottom = _boundsH0 * cellSize;
             float top = _boundsHY * cellSize;
 
-            float thickness = cellSize * 2f;   // wall thickness
-            float overlap = thickness;  // extension to avoid all gaps
+            float thickness = cellSize * 2f;   // Wall thickness
+            float overlap = thickness;  // Extension to avoid all gaps
 
             // Create parent object for organization
             GameObject wallsParent = new GameObject("MapBounds2D");

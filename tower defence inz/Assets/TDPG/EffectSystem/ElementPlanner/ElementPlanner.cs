@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using TDPG.EffectSystem.ElementLogic;
 using TDPG.EffectSystem.ElementRegistry;
 using UnityEngine;
@@ -22,7 +19,7 @@ namespace TDPG.EffectSystem.ElementPlanner
 
         public void RegisterElement(string elementName)
         {
-            var el = registry.GetElement(elementName); //todo: look up id
+            var el = registry.GetElement(elementName);
             if (el == null) throw new Exception($"Element '{elementName}' not found.");
             activeElements.Add(el);
             Debug.Log("Registered Element: " + el.Name);
@@ -30,7 +27,7 @@ namespace TDPG.EffectSystem.ElementPlanner
 
         public void RegisterElement(string elementName, float[] values, bool overwrite_values = false)
         {
-            var el = registry.GetElement(elementName); //todo: look up id
+            var el = registry.GetElement(elementName);
             if (el == null) throw new Exception($"Element '{elementName}' not found.");
             el.effects[0].Values = values;
             activeElements.Add(el);
@@ -58,18 +55,14 @@ namespace TDPG.EffectSystem.ElementPlanner
 
         public void ExecutePlan(EffectContext context)
         {
-            Debug.Log($"Execute Plan: {plannedActions.Count.ToString()}");
             foreach (var action in plannedActions)
             {
-                Debug.Log($"Execute Plan: {action.Name}");
                 action.Execute(context);
             }
-            Debug.Log("End Execute Plan");
         }
 
         public IReadOnlyList<IEffectAction> GetPlannedActions()
         {
-            // Najbezpieczniej zwracać *read-only snapshot*
             return plannedActions.AsReadOnly();
         }
 

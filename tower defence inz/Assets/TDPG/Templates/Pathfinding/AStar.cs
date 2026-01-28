@@ -146,6 +146,4 @@ public class AStar
         path.Reverse();
         return path;
     }
-    
-    
 }

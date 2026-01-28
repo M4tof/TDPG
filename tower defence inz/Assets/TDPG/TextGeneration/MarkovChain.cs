@@ -222,7 +222,7 @@ namespace TDPG.TextGeneration
 
                 result += next.Value;
 
-                // slide window using original order
+                // Slide window using original order
                 currentPrefix = result.Substring(result.Length - order, order);
             }
 
@@ -282,7 +282,7 @@ namespace TDPG.TextGeneration
             {
                 string sub = start.Substring(0, len);
     
-                // look for any chain key that starts with sub
+                // Look for any chain key that starts with sub
                 foreach (var key in chain.Keys)
                 {
                     if (key.StartsWith(sub))
@@ -292,8 +292,7 @@ namespace TDPG.TextGeneration
                 }
             }
     
-            // fallback: random key
-            Debug.Log($"    no sub found");
+            // Fallback: random key
             return GetRandomPrefix(new Random());
         }
         
@@ -333,7 +332,7 @@ namespace TDPG.TextGeneration
 
             foreach (string bad in blacklist)
             {
-                if (lower.Contains(bad))     // contains
+                if (lower.Contains(bad))
                     return true;
             }
             return false;
@@ -368,7 +367,7 @@ namespace TDPG.TextGeneration
                     return o;
             }
 
-            return options.Last(); // fallback
+            return options.Last(); // Fallback
         }
         
         // -------------------------

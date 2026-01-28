@@ -58,12 +58,11 @@ namespace TDPG.Templates.Grid
         /// </remarks>
         private void SpawnSingleEnemy()
         {
-            float half = 0.50f;
         
             Grid grid = gridManager.GetGrid();
             if (grid == null)
             {
-                Debug.LogError("Grid not ready yet!");
+                Debug.LogError("Grid is not ready yet!");
                 return;
             }
 
@@ -154,7 +153,7 @@ namespace TDPG.Templates.Grid
                     return new Vector2Int(x, y);
             }
 
-            // fallback if somehow no empty spaces
+            // Fallback if somehow there are no empty spaces
             return new Vector2Int(0, 0);
         }
     }

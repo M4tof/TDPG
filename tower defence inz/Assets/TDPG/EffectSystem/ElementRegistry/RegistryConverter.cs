@@ -52,7 +52,7 @@ public class RegistryConverter : JsonConverter<Registry>
             {
                 if (el.Id == 0 && el.Name == "Root")
                 {
-                    registry.OverrideRootElement(el); // replace default root from constructor
+                    registry.OverrideRootElement(el); // Replace default root from constructor
                 }
                 else
                 {

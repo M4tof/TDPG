@@ -2,7 +2,6 @@ using UnityEngine;
 using TDPG.Generators.Seed;
 using TDPG.Templates.Grid.MapGen;
 using TDPG.Templates.Turret;
-using static TDPG.Generators.Scalars.InitializerFromDate;
 using UnityEngine.InputSystem;
 using UnityEngine.Tilemaps;
 using UnityEngine.Events;
@@ -113,7 +112,6 @@ namespace TDPG.Templates.Grid
         void Start()
         {
             DoStuff();
-            //Set Camera
         }
 
         public void DoStuff()
@@ -147,10 +145,8 @@ namespace TDPG.Templates.Grid
                 {
                     Debug.Log("Map generation initializing");
 
-                    // TODO: fix this
 
-
-                    const int MaxFullRegenerations = 5;   // how many reseeded attempts allowed
+                    const int MaxFullRegenerations = 5;   // How many reseeded attempts allowed
                     bool success = false;
 
                     for (int attempt = 0; attempt < MaxFullRegenerations; attempt++)
@@ -163,7 +159,7 @@ namespace TDPG.Templates.Grid
                             break;
                         }
 
-                        // fallback failed → try full regeneration with new subseed
+                        // Fallback failed -> try full regeneration with new subseed
                         Debug.LogWarning("Regenerating with new seed...");
                     }
 
@@ -173,7 +169,7 @@ namespace TDPG.Templates.Grid
                         return;
                     }
 
-                    // If we reach here, map is valid
+                    // If we reach here, the map is valid
                     spawnerPositions = mapGenerator.SelectSpawnerPositions(numOfEnemySpawners);
                     destpos = mapGenerator.GetDestinationPosition();
                     mapGenerated = true;
@@ -499,13 +495,11 @@ namespace TDPG.Templates.Grid
                     Vector3Int tile = new Vector3Int(firstTile.x + x, firstTile.y + y, 0);
                     if (!IsTileOnGrid(tile))
                     {
-                        //Debug.Log($"Tile {tile} Out of Grid");
                         return false;
                     }
 
                     if (grid.GetTileType(tile.x, tile.y) != Templates.Grid.Grid.TileType.EMPTY)
                     {
-                        //Debug.Log($"Tile Blocked");
                         return false;
                     }
                 }
@@ -530,21 +524,21 @@ namespace TDPG.Templates.Grid
 
             Vector2Int firstTile = grid.GetXY(worldPosition);
             Vector2 turretSize = turretBase.GetTileSize();
-            //Validation
+            
+            // Validation
             if (!CanPlaceTurret(worldPosition, turretSize))
             {
                 Debug.Log("Can't Place Turrets");
                 return;
             }
 
-            //Placing turret on grid
+            // Placing turret on grid
             for (int x = 0; x < turretSize.x; x++)
             {
                 for (int y = 0; y < turretSize.y; y++)
                 {
                     Vector2Int tile = new Vector2Int(firstTile.x + x, firstTile.y + y);
                     buildingsGrid[tile.x, tile.y] = turret;
-                    //grid.SetBuilding(tile.x,tile.y,turret);
                     grid.SetTileType(tile.x, tile.y, Grid.TileType.BUILDING);
                 }
             }
@@ -618,7 +612,6 @@ namespace TDPG.Templates.Grid
             }
         }
 
-        //Set Building based on world position
         /// <summary>
         /// Registers a building object at the specified position.
         /// </summary>
@@ -629,7 +622,6 @@ namespace TDPG.Templates.Grid
             SetBuilding(position.x, position.y, building);
         }
 
-        //Set Building based on tile position
         /// <summary>
         /// Registers a building object at specific grid coordinates.
         /// </summary>
@@ -638,7 +630,6 @@ namespace TDPG.Templates.Grid
             buildingsGrid[x, y] = building;
         }
 
-        //return building
         /// <summary>
         /// Retrieves the building object at the given world position, if any.
         /// </summary>
@@ -700,8 +691,8 @@ namespace TDPG.Templates.Grid
         /// <returns>True if a valid map was generated, False if all attempts failed.</returns>
         private bool TryGenerateMapWithFallback(GlobalSeed globalSeed)
         {
-            const int MaxFallbackPasses = 4;     // how many times fallback widens
-            const int CarveStep = 2;             // widen radius each pass
+            const int MaxFallbackPasses = 4;     // How many times fallback widens
+            const int CarveStep = 2;             // Widen radius each pass
 
             //Generate the initial map
             Debug.Log(globalSeed.Serialize());
@@ -713,13 +704,13 @@ namespace TDPG.Templates.Grid
             mapGenerator.setGrid(grid);
             mapGenerator.BuildValidSpawnerCandidates();
 
-            //If OK, done
+            // If OK, done
             if (mapGenerator.ReachableCandidatesCount() > 0)
                 return true;
 
             Debug.LogWarning("No reachable spawner candidates. Starting fallback recovery.");
 
-            //Attempt local fallback recovery
+            // Attempt local fallback recovery
             int radius = 2;
             for (int pass = 0; pass < MaxFallbackPasses; pass++)
             {
@@ -738,7 +729,6 @@ namespace TDPG.Templates.Grid
 
                 if (mapGenerator.ReachableCandidatesCount() > 0)
                 {
-                    Debug.Log("Fallback succeeded!");
                     return true;
                 }
 
@@ -746,7 +736,7 @@ namespace TDPG.Templates.Grid
             }
 
             Debug.LogError("Fallback failed. Map is unsalvageable.");
-            return false; // fallback failed
+            return false;
         }
 
 
@@ -754,7 +744,6 @@ namespace TDPG.Templates.Grid
         {
             foreach (Vector3Int pos in spawnerPositions)
             {
-                //Debug.Log($"SPAWNER POSITION {GridToWorld(pos.x, pos.y)} == {pos}");
                 Instantiate(EnemySpawnerPrefab, GridToWorld(pos.x, pos.y), Quaternion.identity, SpawnerContainer.transform);
             }
         }

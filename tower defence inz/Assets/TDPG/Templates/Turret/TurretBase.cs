@@ -51,7 +51,7 @@ namespace TDPG.Templates.Turret
         /// </summary>
         protected void EnsureOffsetsCached()
         {
-            /*if (_initializedOffsets) return;
+            if (_initializedOffsets) return;
 
             if (baseRenderer != null)
             {
@@ -64,7 +64,7 @@ namespace TDPG.Templates.Turret
                 _crystalDesignPos = crystalRenderer.transform.localPosition;
                 _crystalDesignScale = crystalRenderer.transform.localScale; // Capture Scale
             }
-            _initializedOffsets = true;*/
+            _initializedOffsets = true;
         }
         
         /// <summary>
@@ -75,10 +75,12 @@ namespace TDPG.Templates.Turret
         /// <param name="data">The data container defining this turret's properties.</param>
         public virtual void Initialize(TurretData data)
         {
-            EnsureOffsetsCached(); // Safety check
-            
-            Data = Instantiate(data);           //make copy of data
-            SetTurretBaseData(data);            //Make copy of data to save Base stat
+            // Safety check
+            EnsureOffsetsCached();
+
+            // Make a copy of data to save Base stat
+            Data = Instantiate(data);
+            SetTurretBaseData(data);
             currentHealth = data.MaxHP;
             SetOffset(data);
             transform.localScale = new Vector3(data.Scale, data.Scale, 0);
@@ -96,9 +98,7 @@ namespace TDPG.Templates.Turret
             {
                 crystalRenderer.sprite = data.CrystalSprite;
                 crystalRenderer.transform.localPosition = data.CrystalOffset;
-                Debug.Log($"OFFSET CRYSTAL {data.CrystalOffset} vs {crystalRenderer.transform.localPosition}");
             }
-            Debug.Log("OFFSET END");
         }
 
         /// <summary>
@@ -107,7 +107,6 @@ namespace TDPG.Templates.Turret
         /// <param name="damage">Amount of damage to apply.</param>
         public void DealDamage(int damage)
         {
-            Debug.Log("ATTACK TURRET");
             currentHealth -= damage;
             HealthChanged.Invoke();
             if (currentHealth <= 0)
@@ -129,7 +128,6 @@ namespace TDPG.Templates.Turret
                     GridManager.Instance.SetTileType(transform.position + new Vector3(i*cellSize,j*cellSize,0),Grid.Grid.TileType.EMPTY);
                 }
             }
-            //GridManager.Instance.SetTileType(transform.position,Grid.Grid.TileType.EMPTY);
             turretDestroyed.Invoke();
             Destroy(gameObject);
         }
@@ -157,10 +155,8 @@ namespace TDPG.Templates.Turret
         {
             if (modifiers == null || modifiers.Count == 0)
             {
-                Debug.Log("SET Modifier are EMPTY!!!");
                 return;
-            } 
-            Debug.Log("SET Modifier");
+            }
             foreach (CardData modifier in modifiers)
             {
                 ApplyModifier(modifier);
@@ -201,7 +197,6 @@ namespace TDPG.Templates.Turret
         /// </summary>
         public void AddAndApplyModifier(CardData modifier)
         {
-            Debug.Log("SET Modifier");
             if (modifier == null) 
             {
                 return;

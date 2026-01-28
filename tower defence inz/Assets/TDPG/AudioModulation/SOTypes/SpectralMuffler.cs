@@ -11,22 +11,22 @@ namespace TDPG.AudioModulation.SOTypes
     [CreateAssetMenu(menuName = "TDPG/Audio/Mod/Spectral Muffler")]
     public class SpectralMuffler : AudioModifier
     {
-        //adds an AudioLowPassFilter component to the object.
-        //This muffles the sound, removing high frequencies.
+        // Adds an AudioLowPassFilter component to the object.
+        // This muffles the sound, removing high frequencies.
         
         [Tooltip("Range of the Low Pass Cutoff. 22000 is open, 500 is very muffled. The minimum (X) and maximum (Y) cutoff frequency in Hertz.")]
         public Vector2 cutoffRange = new Vector2(500f, 22000f);
 
         public override void OnInitialize(AudioContext ctx)
         {
-            // Try to get existing filter or add a new one
+            // Try to get an existing filter or add a new one
             AudioLowPassFilter filter = ctx.Source.GetComponent<AudioLowPassFilter>();
             if (filter == null)
             {
                 filter = ctx.Source.gameObject.AddComponent<AudioLowPassFilter>();
             }
 
-            // Pick a value based on seed
+            // Pick a value based on a seed
             double r = ctx.Random.NextDouble();
             float selectedCutoff = Mathf.Lerp(cutoffRange.x, cutoffRange.y, (float)r);
 

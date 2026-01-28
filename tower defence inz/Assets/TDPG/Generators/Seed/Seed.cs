@@ -187,7 +187,7 @@ namespace TDPG.Generators.Seed
             if (IsBitBased) return;
             
             ulong normalizeSeedValue = value;
-            // if it's already long enough (>= 1_000_000_000), don't touch it
+            // If it's already long enough (>= 1_000_000_000), don't touch it
             if (normalizeSeedValue >= 1_000_000_000)
                 this.value = normalizeSeedValue;
 

@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using UnityEngine;
 
 namespace TDPG.EffectSystem.ElementLogic
 {
@@ -289,6 +288,4 @@ namespace TDPG.EffectSystem.ElementLogic
         }
 
     }
-
-    //TODO: LONG-TERM Write actual effects HERE
 }

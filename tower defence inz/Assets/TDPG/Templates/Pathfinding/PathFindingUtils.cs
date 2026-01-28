@@ -1,6 +1,5 @@
 using UnityEngine;
 using System.Collections.Generic;
-using TDPG.Templates.Grid;
 
 namespace TDPG.Templates.Pathfinding
 {

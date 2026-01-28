@@ -80,7 +80,6 @@ namespace TDPG.Templates.Enemies
         public void DealDamage(int damage)
         {
             CurrentHealth -= damage;
-            //Debug.Log($"DEAL {damage} DMG {CurrentHealth} HP");
         }
 
         /// <summary>

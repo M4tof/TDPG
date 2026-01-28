@@ -1,6 +1,5 @@
 namespace TDPG.TextGeneration.TrainingFiles
 {
-    // TODO: consider EmbeddedResource
     public class TrainingData
     {
         public static string DataElements = 

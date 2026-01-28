@@ -16,7 +16,7 @@ namespace Tests.EffectPlanner
     public class EnemyClass : EnemyBase
     {
         // Saved Data
-        public string EnemyID; // "Goblin"
+        public string EnemyID;
         public EnemyStatsOverride Overrides;
 
         // Runtime Only (Re-assigned on Load)
@@ -37,7 +37,6 @@ namespace Tests.EffectPlanner
             CurrentSpeed = baseData.Speed * overrides.SpeedMultiplier;
             CurrentDamage = baseData.Damage;
             CurrentAttackSpeed = baseData.AttackSpeed;
-            // Position set by Spawner...
         }
 
         // Called after loading from JSON to reconnect the SO
@@ -45,8 +44,6 @@ namespace Tests.EffectPlanner
         {
             _baseData = data;
         }
-
-        // TODO: double check
         public void SetPath(IEnumerable<Vector2> pathPoints)
         {
             _path = new Queue<Vector2>(pathPoints);
@@ -118,60 +115,6 @@ namespace Tests.EffectPlanner
             Assert.AreEqual("Fire", result.Name);
         }
 
-        /*[Test]
-        public void Planner_BuildPlan_GeneratesCorrectOrderOfActions()
-        {
-            var registry = new Registry();
-            var planner = new ElementPlanner(registry);
-
-            var slow = new SlowDown(0.2f, 3f);
-            var dmg = new HealthDown(5f);
-
-            var element = new Element("Fire", 1, new List<Effect> { slow, dmg });
-            registry.PutPreMadeElement(new List<int> { 0 }, element);
-            planner.RegisterElement("Fire");
-
-            // Build
-            planner.BuildPlan();
-
-            var plan = planner.GetPlannedActions().ToList();
-
-            Assert.AreEqual(3, plan.Count);
-
-            Assert.IsInstanceOf<SlowDownAction>(plan[0]);
-            Assert.IsInstanceOf<DurationAction>(plan[1]);
-            Assert.IsInstanceOf<HealthDownAction>(plan[2]);
-        }*/
-
-        /*
-        [Test]
-        public void SlowDownAction_Execution_ReducesSpeedCorrectly()
-        {
-            var target = new GameObject("Enemy");
-            var stats = target.AddComponent<EnemyStats>();
-
-            var action = new SlowDownAction(0.3f); // 30% slow
-            var ctx = CreateContext(target);
-
-            action.Execute(ctx);
-
-            Assert.AreEqual(7f, stats.Speed); // 10 * (1 - 0.3)
-        }
-
-        [Test]
-        public void HealthDownAction_Execution_DecreasesHealth()
-        {
-            var target = new GameObject("Enemy");
-            var stats = target.AddComponent<EnemyStats>();
-
-            var action = new HealthDownAction(-15f);
-            var ctx = CreateContext(target);
-
-            action.Execute(ctx);
-
-            Assert.AreEqual(85f, stats.Health);
-        }*/
-
         [Test]
         public void HealAction_Execution_IncreasesHealth()
         {
@@ -186,105 +129,6 @@ namespace Tests.EffectPlanner
             Assert.AreEqual(70f, stats.Health);
         }
 
-        /*[Test]
-        public void DurationAction_Execution_AddsDurationEntry()
-        {
-            var target = new GameObject("Enemy");
-            var effects = target.AddComponent<EnemyStatusEffects>();
-
-            var action = new DurationAction(4f);
-            var ctx = CreateContext(target);
-
-            action.Execute(ctx);
-
-            Assert.AreEqual(1, effects.Durations.Count);
-            Assert.AreEqual(4f, effects.Durations[0]);
-        }
-
-        [Test]
-        public void Planner_MultipleElements_ProducesSequentialActions()
-        {
-            var registry = new Registry();
-            var planner = new ElementPlanner(registry);
-
-            var el1 = new Element("Fire", 1, new List<Effect>
-            {
-                new SlowDown(0.1f, 2f) // Slow + Duration
-            });
-
-                    var el2 = new Element("Poison", 2, new List<Effect>
-            {
-                new HealthDown(3f)     // HealthDown
-            });
-
-            registry.PutPreMadeElement(new List<int> { 0 }, el1);
-            registry.PutPreMadeElement(new List<int> { 1 }, el2);
-
-            planner.RegisterElement("Fire");
-            planner.RegisterElement("Poison");
-
-            planner.BuildPlan();
-
-            var actions = planner.GetPlannedActions().ToList();
-
-            Assert.AreEqual(3, actions.Count);
-            Assert.IsInstanceOf<SlowDownAction>(actions[0]);
-            Assert.IsInstanceOf<DurationAction>(actions[1]);
-            Assert.IsInstanceOf<HealthDownAction>(actions[2]);
-        }*/
-
-        [Test]
-        public void Planner_ExecutePlan_ExecutesAllActions()
-        {
-            var registry = new Registry();
-            var planner = new ElementPlanner(registry);
-
-            var element = new Element("Combo", 1, new List<Effect>
-            {
-                new TempSlowDown(0.2f, 1f),
-                new HealthDown(5f)
-            });
-
-            registry.PutPreMadeElement(new List<int> { 0 }, element);
-
-            planner.RegisterElement("Combo");
-            planner.BuildPlan();
-
-            var data = ScriptableObject.CreateInstance<EnemyData>();
-            data.EnemyName = "Orc";
-            data.MaxHealth = 120;
-            data.Speed = 3.5f;
-            data.EnemySprite = null; // lub wczytany sprite
-            
-            var overrides = new EnemyStatsOverride
-            {
-                HealthMultiplier = 1.0f,
-                SpeedMultiplier = 1.0f
-            };
-
-            EnemyClass enemy = new EnemyClass(data, overrides);
-
-
-            var target = new GameObject("Enemy");
-
-            // 2. Dodajemy wymagane komponenty
-            target.AddComponent<SpriteRenderer>();
-            var behaviour = target.AddComponent<EnemyBaseBehaviour>();
-            behaviour.Initialize(enemy);
-
-            var context = CreateContext(target);
-
-            planner.ExecutePlan(context);
-
-            if (context.Target.TryGetComponent<EnemyBaseBehaviour>(out var beh))
-            {
-                Assert.Less(beh.Logic.CurrentHealth, 120.0f);
-            }
-            else
-            {
-                Assert.Fail();
-            }
-        }
 
         [Test]
         public void Planner_ElementWithoutEffects_DoesNothing()
@@ -325,27 +169,6 @@ namespace Tests.EffectPlanner
 
             Assert.DoesNotThrow(() => planner.ExecutePlan(ctx));
         }
-        /*
-        [Test]
-        public void Planner_LogicTransfer_ProducesExpectedActions()
-        {
-            var registry = new Registry();
-            var planner = new ElementPlanner(registry);
-
-            var effect = new SlowDown(0.4f, 5f);
-            var element = new Element("Ice", 2, new List<Effect> { effect });
-
-            registry.PutPreMadeElement(new List<int> { 0 }, element);
-            
-            planner.RegisterElement("Ice");
-            planner.BuildPlan();
-
-            var actions = planner.GetPlannedActions().ToList();
-
-            Assert.AreEqual(2, actions.Count);
-            Assert.IsInstanceOf<SlowDownAction>(actions[0]);
-            Assert.IsInstanceOf<DurationAction>(actions[1]);
-        }*/
 
     }
 

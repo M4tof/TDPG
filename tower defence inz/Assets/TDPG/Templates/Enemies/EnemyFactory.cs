@@ -16,7 +16,6 @@ namespace TDPG.Templates.Enemies
     {
         private Seed EnemySeed;
 
-        // private FloatGenerator Gen;
         public FloatGenerator speedGen;
         public FloatGenerator hpGen;
         private float Difficulty;
@@ -40,7 +39,6 @@ namespace TDPG.Templates.Enemies
             _creationStrategy = createStrategy;
             EnemySeed = gs.NextSubSeed(InitializerFromDate.QuickGenerate(slot).ToString());
             Difficulty = 1f;
-            // Gen = new FloatGenerator { mode = FloatGenerator.Mode.Uniform, min = 1f, max = Difficulty };
             speedGen = new FloatGenerator
                 {
                     mode = FloatGenerator.Mode.Uniform,
@@ -69,7 +67,6 @@ namespace TDPG.Templates.Enemies
             if (waveDifficulty != Difficulty)
             {
                 Difficulty = waveDifficulty;
-                // Gen = new FloatGenerator { mode = FloatGenerator.Mode.Uniform, min = 1f, max = Difficulty };
                 speedGen = new FloatGenerator
                 {
                     mode = FloatGenerator.Mode.Uniform,

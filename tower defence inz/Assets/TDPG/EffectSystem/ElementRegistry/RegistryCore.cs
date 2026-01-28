@@ -1,10 +1,8 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using QuikGraph;
 using TDPG.EffectSystem.ElementLogic;
 using TDPG.Generators.Seed;
-using static TDPG.Generators.Seed.Genetic;
 using UnityEngine;
 
 namespace TDPG.EffectSystem.ElementRegistry
@@ -62,7 +60,7 @@ namespace TDPG.EffectSystem.ElementRegistry
             registryGraph.AddVertex(rootElement);
         }
 
-        //Params modify
+        // Params modification
         
         /// <summary>
         /// Updates the mutation strategy used for future element generation.

@@ -49,11 +49,21 @@ namespace TDPG.Generators.AttackPatterns
             return Generate(local);
         }
 
+        /// <summary>
+        /// The implementation of the number-based generation.
+        /// <br/>
+        /// Invokes the abstract <see cref="Generate(IRandomSource)"/> from an instance of <see cref="SplitMix64Random"/> constructed from ulong as the argument.
+        /// </summary>
         public virtual AttackPattern Preview(ulong pseudo)
         {
             return Generate(new SplitMix64Random(pseudo));
         }
 
+        /// <summary>
+        /// Checks if the attributes are not null
+        /// <br/>
+        /// If so, the exception is raised.
+        /// </summary>
         public virtual void Validate()
         {
             if (DurationGenerator == null) throw new InvalidOperationException("DurationGenerator is null");

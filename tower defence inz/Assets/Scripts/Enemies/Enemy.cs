@@ -17,6 +17,7 @@ public class Enemy : EnemyBase
     private Vector2? _currentTarget;
 
     public Vector2? CurrentTarget => _currentTarget;
+#nullable enable
     public String? GeneratedName;
     
     public Enemy(EnemyData baseData, EnemyStatsOverride overrides) : base(baseData)

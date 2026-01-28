@@ -146,7 +146,7 @@ namespace TDPG.AudioModulation
             }
 
             // We use a simple C# Random initialized with the selectionSeed for picking
-            // This ensures if the seed is the same, the selection is the same.
+            // This ensures that if the seed is the same, the selection is the same.
             System.Random prng = new System.Random((int)selectionSeed);
 
             // 1. Select Clip
@@ -154,7 +154,7 @@ namespace TDPG.AudioModulation
             {
                 int clipIndex = prng.Next(clipPool.audioClips.Count);
                 _source.clip = clipPool.audioClips[clipIndex];
-                Debug.Log($"[ProceduralAudioController] source should have been set to {clipPool.audioClips[clipIndex].name}");
+                Debug.Log($"[ProceduralAudioController] source has been set to {clipPool.audioClips[clipIndex].name}");
             }
             else
             {
@@ -170,7 +170,7 @@ namespace TDPG.AudioModulation
                 {
                     int modIndex = prng.Next(modifierPool.allowedMods.Count);
                     modifiers.Add(modifierPool.allowedMods[modIndex]);
-                    Debug.Log($"[ProceduralAudioController] Mods should have been set to {modifierPool.allowedMods[modIndex].name}");
+                    Debug.Log($"[ProceduralAudioController] Mods have been set to {modifierPool.allowedMods[modIndex].name}");
                 }
             }
         }

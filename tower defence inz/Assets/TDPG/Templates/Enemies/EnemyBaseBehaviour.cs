@@ -1,14 +1,10 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using TDPG.VideoGeneration;
 using TDPG.AudioModulation;
 using UnityEngine;
 using UnityEngine.Audio;
-using static UnityEngine.EventSystems.EventTrigger;
 
 namespace TDPG.Templates.Enemies
 {
@@ -71,9 +67,8 @@ namespace TDPG.Templates.Enemies
         /// </summary>
         public virtual void Die()
         {
-            //EnemyCompendium.Instance.UnregisterEnemy(Logic);
             Logic.OnDeath();
-            Destroy(gameObject); // TODO: Replace with Object Pooling
+            Destroy(gameObject);
         }
 
         /// <summary>
@@ -82,23 +77,15 @@ namespace TDPG.Templates.Enemies
         /// <param name="damage">Amount of health to remove.</param>
         public virtual void DealDamage(int damage)
         {
-            //Debug.Log($"DEAL {damage} DMG");
             Logic.DealDamage(damage);
             colorSwapController.BlinkWhite();
             audioController.Play();
             
-            //Debug.Log($"HP {Logic.GetCurrentHealth()}");
             if (Logic.GetCurrentHealth() <= 0)
             {
                 Die();
             }
         }
-
-
-        /*public void Attack()
-        {
-            Debug.Log($"ENEMY ATTACK ({Logic.GetCurrentDamage()})");
-        }*/
         
 
         /// <summary>
@@ -117,7 +104,6 @@ namespace TDPG.Templates.Enemies
         public IEnumerator ApplyWait(float duration)
         {
             yield return new WaitForSeconds(duration);
-            // Kod po oczekiwaniu
         }
 
         /// <summary>
@@ -131,13 +117,13 @@ namespace TDPG.Templates.Enemies
         /// <param name="duration">Time in seconds to wait.</param>
         public void ApplyOrExtendEffect(string effectId, Action action, float duration)
         {
-            // Jeśli efekt już istnieje, zatrzymaj go
+            // If the effect already exists, stop it
             if (effectCoroutines.ContainsKey(effectId) && effectCoroutines[effectId] != null)
             {
                 StopCoroutine(effectCoroutines[effectId]);
             }
     
-            // Uruchom nową korutynę z łącznym czasem
+            // Start a new coroutine with a total duration
             effectCoroutines[effectId] = StartCoroutine(EffectRoutine(effectId, action, duration));
         }
 
@@ -159,13 +145,13 @@ namespace TDPG.Templates.Enemies
         /// <param name="interval">Seconds between ticks.</param>
         public void ApplyOrExtendIterableEffect(string effectId, Action<int> action, int iterations, float interval)
         {
-            // Jeśli efekt już istnieje, zatrzymaj go
+            // If the effect already exists, stop it
             if (effectCoroutines.ContainsKey(effectId) && effectCoroutines[effectId] != null)
             {
                 StopCoroutine(effectCoroutines[effectId]);
             }
 
-            // Uruchom nową korutynę
+            // Start a new coroutine
             effectCoroutines[effectId] = StartCoroutine(EffectRoutine(effectId, action, iterations, interval));
         }
 
@@ -174,23 +160,10 @@ namespace TDPG.Templates.Enemies
             for (int i = 0; i < iterations; i++)
             {
                 yield return new WaitForSeconds(interval);
-                action?.Invoke(i); // Przekazujemy numer iteracji (0-based)
+                action?.Invoke(i); // The number of the iteration is passed (0 -> based)
             }
     
             effectCoroutines.Remove(effectId);
         }
-
-        
-        
-        /*public void ApplyTempEffect(Action action, float duration)
-        {
-            StartCoroutine(DelayedActionRoutine(action, duration));
-        }
-
-        private IEnumerator DelayedActionRoutine(Action action, float duration)
-        {
-            yield return new WaitForSeconds(duration);
-            action?.Invoke();
-        }*/
     }
 }

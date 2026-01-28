@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace TDPG.EffectSystem.ElementPlanner
+﻿namespace TDPG.EffectSystem.ElementPlanner
 {
     /// <summary>
     /// Defines the mathematical strategy used when multiple effects modify the same parameter.

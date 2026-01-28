@@ -40,7 +40,7 @@ namespace TDPG.Templates.Turret
         [Tooltip("Upgrade List for turret")] public List<CardData> modifierList;
 
         [Header("Projectile")]
-        // We reference the GameObject containing BasicProjectile script
+        // Reference the GameObject containing BasicProjectile script
         [Tooltip("The bullet prefab spawned when firing.")] public GameObject ProjectilePrefab;
 
         [Header("Procedural Patterns")]
