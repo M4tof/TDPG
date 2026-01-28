@@ -96,7 +96,6 @@ namespace TDPG.Templates.Turret
             {
                 crystalRenderer.sprite = data.CrystalSprite;
                 crystalRenderer.transform.localPosition = data.CrystalOffset;
-                Debug.Log($"OFFSET CRYSTAL {data.CrystalOffset} vs {crystalRenderer.transform.localPosition}");
             }
             Debug.Log("OFFSET END");
         }

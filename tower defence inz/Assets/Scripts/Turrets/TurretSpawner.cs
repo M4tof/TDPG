@@ -47,6 +47,7 @@ public class TurretSpawner : MonoBehaviour
 
         // Setup Visualizer
         TurretVisualizer.gameObject.SetActive(true);
+        Debug.Log("Turret Visualizer");
         TurretVisualizer.Initialize(data);
     }
 
@@ -109,7 +110,10 @@ public class TurretSpawner : MonoBehaviour
         if (!string.IsNullOrEmpty(_selectedTurretID) && GridManager.Instance.IsOnGrid(mousePosition) && !IsMouseOverUIToIgnore() && !blockSpawnTurret)
         {
             Vector3 centerPos = CalculateTurretPosition(mousePosition);
+            Debug.Log($"CENTER POST: {centerPos}");
+            Debug.Log($"SCREEN POS: {TurretVisualizer.transform.position}");
             TurretVisualizer.transform.position = centerPos;
+            Debug.Log($"TRANSFORM POST: {TurretVisualizer.transform.position}");
             TurretVisualizer.gameObject.SetActive(true);
 
             if (GridManager.Instance.CanPlaceTurret(mousePosition, data.TileSize))

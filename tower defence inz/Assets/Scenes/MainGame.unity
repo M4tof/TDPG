@@ -341,7 +341,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &135894142
 RectTransform:
   m_ObjectHideFlags: 0
@@ -3398,7 +3398,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &843496300
 RectTransform:
   m_ObjectHideFlags: 0
@@ -3603,7 +3603,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &887593699
 RectTransform:
   m_ObjectHideFlags: 0
@@ -5874,7 +5874,7 @@ MonoBehaviour:
   centerGrid: {x: 0, y: 0}
   staticCameraPosition: {x: 0, y: 0}
   normalZoom: 20
-  zoomOut: 40
+  zoomOut: 60
 --- !u!114 &1727038323
 MonoBehaviour:
   m_ObjectHideFlags: 0
