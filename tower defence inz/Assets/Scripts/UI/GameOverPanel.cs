@@ -15,12 +15,14 @@ public class GameOverPanel : MonoBehaviour
     
     public void OpenGameOverMessage()
     {
+        Time.timeScale = 0f;
         panel.SetActive(true);
         WriteMessage();
     }
     
     public void GoToMainMenu()
     {
+        Time.timeScale = 1f;
         SceneManager.LoadScene("MainMenu");
         ResourceSystem.Instance.ResetResources();
     }

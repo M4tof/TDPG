@@ -1102,7 +1102,7 @@ MonoBehaviour:
     m_Top: 0
     m_Bottom: 0
   m_ChildAlignment: 3
-  m_Spacing: 100
+  m_Spacing: 150
   m_ChildForceExpandWidth: 1
   m_ChildForceExpandHeight: 1
   m_ChildControlWidth: 0
@@ -4988,7 +4988,6 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 1592841619}
   - {fileID: 516341258}
   m_Father: {fileID: 1241086773}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -5136,6 +5135,7 @@ Transform:
   - {fileID: 781605615}
   - {fileID: 1314182202}
   - {fileID: 1123943253}
+  - {fileID: 1592841619}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1339975575
@@ -8361,7 +8361,7 @@ PrefabInstance:
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 1301300356}
+    m_TransformParent: {fileID: 1339975573}
     m_Modifications:
     - target: {fileID: 1319371844496739613, guid: 4fca4a529726d284391e6ea462392829, type: 3}
       propertyPath: playerCardApplied.Array.size
@@ -8413,23 +8413,23 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4200692642733814082, guid: 4fca4a529726d284391e6ea462392829, type: 3}
       propertyPath: m_LocalScale.x
-      value: 0.95364237
+      value: 0.6322917
       objectReference: {fileID: 0}
     - target: {fileID: 4200692642733814082, guid: 4fca4a529726d284391e6ea462392829, type: 3}
       propertyPath: m_LocalScale.y
-      value: 0.95364237
+      value: 0.6322917
       objectReference: {fileID: 0}
     - target: {fileID: 4200692642733814082, guid: 4fca4a529726d284391e6ea462392829, type: 3}
       propertyPath: m_LocalScale.z
-      value: 0.95364237
+      value: 0.6322917
       objectReference: {fileID: 0}
     - target: {fileID: 4200692642733814082, guid: 4fca4a529726d284391e6ea462392829, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -715.23175
+      value: 497.25
       objectReference: {fileID: 0}
     - target: {fileID: 4200692642733814082, guid: 4fca4a529726d284391e6ea462392829, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -360
+      value: 227.625
       objectReference: {fileID: 0}
     - target: {fileID: 4200692642733814082, guid: 4fca4a529726d284391e6ea462392829, type: 3}
       propertyPath: m_LocalPosition.z
@@ -8465,7 +8465,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4200692642733814082, guid: 4fca4a529726d284391e6ea462392829, type: 3}
       propertyPath: m_ConstrainProportionsScale
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7917927103873970952, guid: 4fca4a529726d284391e6ea462392829, type: 3}
       propertyPath: m_Size.x

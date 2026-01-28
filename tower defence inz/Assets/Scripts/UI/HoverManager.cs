@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
@@ -35,13 +36,70 @@ public class HoverManager : MonoBehaviour
     {
         if (StatPanelUI.Instance == null) return;
 
+        
+        // Check for UI Blocking (Canvas)
+        /*if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject())
+        {
+            // Checking all objects under cursor
+            PointerEventData pointerData = new PointerEventData(EventSystem.current);
+            pointerData.position = Input.mousePosition;
+        
+            List<RaycastResult> results = new List<RaycastResult>();
+            EventSystem.current.RaycastAll(pointerData, results);
+        
+            bool shouldClosePanel = true;
+        
+            foreach (RaycastResult result in results)
+            {
+                // Check if object don't have component "Mouse Ignore"
+                if (result.gameObject.GetComponent<MouseIgnore>() != null)
+                {
+                    shouldClosePanel = false;
+                    break;
+                }
+            }
+            
+            if (shouldClosePanel)
+            {
+                StatPanelUI.Instance.Hide();
+                HideRangeIndicator();
+                _currentTarget = null;
+                return;
+            }
+            // W przeciwnym razie kontynuuj
+        }*/
         // Check for UI Blocking (Canvas)
         if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject())
         {
-            StatPanelUI.Instance.Hide();
-            HideRangeIndicator();
-            _currentTarget = null;
-            return;
+            // get Mouse posotion
+            Vector2 mousePosition = Mouse.current?.position.ReadValue() ?? Vector2.zero;
+        
+            // Checking all objects under cursor
+            PointerEventData pointerData = new PointerEventData(EventSystem.current);
+            pointerData.position = mousePosition; // Użyj pozycji z nowego Input System
+    
+            List<RaycastResult> results = new List<RaycastResult>();
+            EventSystem.current.RaycastAll(pointerData, results);
+    
+            bool shouldClosePanel = true;
+    
+            foreach (RaycastResult result in results)
+            {
+                // Check if object don't have component "Mouse Ignore"
+                if (result.gameObject.GetComponent<MouseIgnore>() != null)
+                {
+                    shouldClosePanel = false;
+                    break;
+                }
+            }
+
+            if (shouldClosePanel)
+            {
+                StatPanelUI.Instance.Hide();
+                HideRangeIndicator();
+                _currentTarget = null;
+                return;
+            }
         }
 
         // Physics Raycast

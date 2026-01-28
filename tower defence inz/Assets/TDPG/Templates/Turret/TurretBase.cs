@@ -97,7 +97,6 @@ namespace TDPG.Templates.Turret
                 crystalRenderer.sprite = data.CrystalSprite;
                 crystalRenderer.transform.localPosition = data.CrystalOffset;
             }
-            Debug.Log("OFFSET END");
         }
 
         /// <summary>
@@ -106,7 +105,6 @@ namespace TDPG.Templates.Turret
         /// <param name="damage">Amount of damage to apply.</param>
         public void DealDamage(int damage)
         {
-            Debug.Log("ATTACK TURRET");
             currentHealth -= damage;
             HealthChanged.Invoke();
             if (currentHealth <= 0)

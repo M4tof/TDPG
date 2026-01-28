@@ -69,6 +69,7 @@ public class BuildingMenu : MonoBehaviour
             turret.SetTurretSpawner(turretSpawner);
             turret.SetCardSelectionMenu(cardSelectionMenu);
             turret.SetTurretName(data.TurretID);
+            turret.SetCost(data.Cost);
             if (data.CrystalSprite != null)
             {
                 turret.SetImage(data.CrystalSprite);
