@@ -1,9 +1,13 @@
+using Codice.Utils;
+using QuikGraph;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using QuikGraph;
 using TDPG.EffectSystem.ElementLogic;
+using TDPG.Generators.Scalars;
 using TDPG.Generators.Seed;
+using TDPG.TextGeneration;
+using TDPG.TextGeneration.TrainingFiles;
 using UnityEngine;
 using static TDPG.Generators.Seed.Genetic;
 
@@ -295,12 +299,17 @@ namespace TDPG.EffectSystem.ElementRegistry
             if (operationLabel == "crossing over")
                 ApplySeedBoosts(childEffects, baseValue);
 
-            
-            // 7. Construct final Element
-            int currId = CountElements();
-            var child = new Element($"CustomElement:{currId}", currId, newSeed, childValues.ToArray());
+            //7. Generate a name for a new element
+            int length = (int)newSeed.GetBaseValue() % 4 + 5;
+            MarkovChain markov = new MarkovChain(length);
+            markov.Train(TrainingData.DataElements);
+            string name = markov.Generate(newSeed);
 
-            // 8. Register in graph
+            // 8. Construct final Element
+            int currId = CountElements();
+            var child = new Element(name, currId, newSeed, childValues.ToArray());
+
+            // 9. Register in graph
             if (!registryGraph.ContainsVertex(child))
                 registryGraph.AddVertex(child);
 
