@@ -135,6 +135,10 @@ public class PlayerInput : MonoBehaviour
                 return;
             }
             buildingMenu.SwitchBuildingPanel();
+            if (!buildingMenu.GetIsActive() && turretSpawner.GetTurretToSpawn() != null)
+            {
+                turretSpawner.SetTurretToSpawn(null);
+            }
             mainCamera.GetComponent<CameraController>().SetDynamicCameraMovement(!buildingMenu.GetIsActive(),false);
             inMenu = !inMenu;
         }
