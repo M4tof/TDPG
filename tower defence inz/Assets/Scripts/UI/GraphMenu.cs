@@ -34,6 +34,10 @@ public class GraphMenu : MonoBehaviour
     {
         menuActive = true;
         graphPage.SetActive(true);
+        if (registryHolder == null)
+        {
+            registryHolder = ElementCompendium.Instance;
+        }
         RedrawGraph();
     }
 

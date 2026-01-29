@@ -229,13 +229,13 @@ public class CardSelectionMenu : MonoBehaviour
                     ToPattern = new BurstAttackPatternGenerator();
                     break;
                 case 2:
-                    ToPattern = new BurstAttackPatternGenerator();
+                    ToPattern = new CrossAttackPatternGenerator();
                     break;
                 case 3:
-                    ToPattern = new BurstAttackPatternGenerator();
+                    ToPattern = new SpiralAttackPatternGenerator();
                     break;
                 default:
-                    ToPattern = new BurstAttackPatternGenerator();
+                    ToPattern = new FanAttackPatternGenerator();
                     break;
             }
         }
