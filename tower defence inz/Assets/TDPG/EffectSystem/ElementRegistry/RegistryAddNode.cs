@@ -351,7 +351,7 @@ namespace TDPG.EffectSystem.ElementRegistry
                 if (thisParents.Count == 1 && thisParents.Contains(rootElement.Id))
                     continue;
 
-                // If another element has the same parent set → duplicate → not allowed
+                // If another element has the same parent set -> duplicate -> not allowed
                 if (thisParents.SetEquals(parentIds))
                     return true;
             }

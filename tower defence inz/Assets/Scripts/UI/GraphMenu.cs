@@ -155,7 +155,7 @@ public class GraphMenu : MonoBehaviour
             : "No effects";
 
         detailsText.text =
-            $"<b>{element.Name}</b>\n\n{effectsText}";
+            $"<b>{element.Name}</b>\n{effectsText}";
     }
 
 }
