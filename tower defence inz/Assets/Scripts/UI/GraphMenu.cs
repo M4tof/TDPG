@@ -11,6 +11,7 @@ public class GraphMenu : MonoBehaviour
     [Header("Pages")]
     [SerializeField] private GameObject graphPage;
     [SerializeField] private GameObject detailsPage;
+    [SerializeField] private TextMeshProUGUI detailsText;
 
     [Header("Drawing container")]
     [SerializeField] private RectTransform graphContainer;
@@ -102,7 +103,7 @@ public class GraphMenu : MonoBehaviour
         if (tmp) tmp.text = element.Name;
 
         float angle = index * Mathf.PI * 2f / Mathf.Max(total, 1);
-        float radius = Mathf.Min(graphContainer.rect.width, graphContainer.rect.height) * 0.15f;
+        float radius = Mathf.Min(graphContainer.rect.width, graphContainer.rect.height) * 0.35f;
 
         Vector2 pos = new Vector2(Mathf.Cos(angle), Mathf.Sin(angle)) * radius;
 
@@ -140,17 +141,21 @@ public class GraphMenu : MonoBehaviour
 
     private void ShowDetails(Element element)
     {
+        if (detailsPage == null || detailsText == null)
+        {
+            Debug.LogError("DetailsPage or DetailsText not assigned!");
+            return;
+        }
+
         detailsPage.SetActive(true);
 
-        var text = detailsPage.GetComponentInChildren<TextMeshProUGUI>();
-        if (!text) return;
-
         var effects = element.GetEffects();
-        string effectsText = effects != null
+        string effectsText = (effects != null && effects.Count > 0)
             ? string.Join("\n", effects.Select(e => $"- {e.Name}: {e.Description}"))
-            : "None";
+            : "No effects";
 
-        text.text =
-            $"<b>{element.Name}</b>\n{effectsText}";
+        detailsText.text =
+            $"<b>{element.Name}</b>\n\n{effectsText}";
     }
+
 }

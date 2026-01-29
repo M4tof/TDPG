@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using TDPG.EffectSystem.ElementLogic;
+using TDPG.Generators.Scalars;
 using TDPG.Generators.Seed;
 using TDPG.TextGeneration;
 using TDPG.TextGeneration.TrainingFiles;
@@ -298,9 +299,9 @@ namespace TDPG.EffectSystem.ElementRegistry
 
             // 7. Generate a name for a new element
             int length = (int)newSeed.GetBaseValue() % 4 + 5;
-            MarkovChain markov = new MarkovChain(length);
+            MarkovChain markov = new MarkovChain(2);
             markov.Train(TrainingData.DataElements);
-            string name = markov.Generate(newSeed);
+            string name = markov.Generate(length, ""+(char)(newSeed.GetBaseValue()%26+65));
 
             // 8. Construct final Element
             int currId = CountElements();
