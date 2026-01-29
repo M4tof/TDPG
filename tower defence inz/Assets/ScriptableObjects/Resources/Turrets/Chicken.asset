@@ -15,7 +15,7 @@ MonoBehaviour:
   TurretID: Chicken
   BaseSprite: {fileID: -1515134823594722529, guid: ccaa28a09cade8dda8cd7fdb786d0609, type: 3}
   CrystalSprite: {fileID: -1493861469240322331, guid: 8b3353a0a94e47e4dbff64f918723be9, type: 3}
-  Cost: 0
+  Cost: 200
   TileSize: {x: 2, y: 2}
   BaseOffset: {x: 2.5, y: 1.5}
   CrystalOffset: {x: 2.5, y: 5}
