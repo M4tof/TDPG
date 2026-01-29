@@ -1,9 +1,13 @@
 using UnityEngine;
-using TDPG.Audio;
 
 namespace TDPG.AudioModulation.SOTypes
 {
-    [CreateAssetMenu(menuName = "TDPG/Audio/Bitwise Glitch")]
+    /// <summary>
+    /// Applies a 'Glitching' like effect to the audio source by rapidly toggling a pitch offset on and off.
+    /// <br/>
+    /// This creates a robotic stutter or signal interference sound using a high-frequency sine wave.
+    /// </summary>
+    [CreateAssetMenu(menuName = "TDPG/Audio/Mod/Bitwise Glitch")]
     public class BitwiseGlitch : AudioModifier
     {
         [Header("Activation Settings")]
@@ -14,6 +18,7 @@ namespace TDPG.AudioModulation.SOTypes
         public int triggerBitIndex = 5; 
 
         [Header("Effect Settings")]
+        [Tooltip("How strong the modifier should 'glitch' the audio.")]
         public float glitchIntensity = 0.5f;
 
         private bool _active;

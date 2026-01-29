@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using TDPG.Generators.FastNoiseLite;
+using TDPG.ExternalPlugins.FastNoiseLite;
 using TDPG.Generators.Seed;
 using UnityEngine;
 using TDPG.Templates.Pathfinding;
@@ -7,28 +7,39 @@ using static TDPG.Templates.Grid.Grid;
 
 namespace TDPG.Templates.Grid.MapGen
 {
+    /// <summary>
+    /// The core procedural engine for creating 2D grid maps.
+    /// <br/>
+    /// Orchestrates Noise generation, Terrain classification (Wall/Water/Ground), 
+    /// Point of Interest placement (Destination/Spawners), and Connectivity validation.
+    /// </summary>
     public class MapGenerator : MonoBehaviour
     {
-        [Header("Map Type")][SerializeField] private MapTypes mapType = MapTypes.Smooth;
+        [Header("Map Type")][SerializeField][Tooltip("The noise algorithm strategy to use.")] private MapTypes mapType = MapTypes.Smooth;
 
         [Header("Map Settings")]
         [SerializeField, Min(Minsize)]
+        [Tooltip("The width of the PLAYABLE area. (Internal padding will be added to this).")]
         private int width = 60;
-        [SerializeField, Min(Minsize)] private int height = 60;
-        [SerializeField] private float waterLevel = -0.5f;
-        [SerializeField] private float wallLevel = 0.5f;
+        
+        [SerializeField, Min(Minsize)] [Tooltip("The height of the PLAYABLE area. (Internal padding will be added to this).")]private int height = 60;
+        
+        [SerializeField][Tooltip("Noise threshold. Values below this become WATER.")] private float waterLevel = -0.5f;
+        [SerializeField][Tooltip("Noise threshold. Values above this become WALL.")] private float wallLevel = 0.5f;
 
 
         [Header("Points of Interest Settings")]
         [SerializeField, Range(1, 3)]
+        [Tooltip("How much empty space must be cleared around the Destination and Spawners.")]
         private int emptyCellsAroundPoints = 1;
 
-        [SerializeField, Min(1)] private int numOfEnemySpawners = 1;
-        [SerializeField, Min(1)] private int minimalDistance = 1;
-        [SerializeField] private bool assumeCanSwim;
+        [SerializeField, Min(1)] [Tooltip("Number of enemy spawn points to generate.")] private int numOfEnemySpawners = 1;
+        [SerializeField, Min(1)] [Tooltip("Minimum Manhattan Distance (dx + dy) required between Spawners and the Destination.")] private int minimalDistance = 1;
+        [SerializeField] [Tooltip("If true, Pathfinding validation considers Water traverseable.")] private bool assumeCanSwim;
 
         [Header("Debug Seed")]
         [SerializeField]
+        [Tooltip("Optional override to force a specific seed source.")]
         private GlobalSeedGameObject providedSeed;
 
         private TileType[,] _mapInit;
@@ -40,10 +51,10 @@ namespace TDPG.Templates.Grid.MapGen
 
         private const int Minsize = 20;
         private const int Fogland = 5;
-        private int _boundsW0; // playable start X
-        private int _boundsH0; // playable start Y
-        private int _boundsWX; // playable end X
-        private int _boundsHY; // playable end Y;
+        private int _boundsW0; // Playable start X
+        private int _boundsH0; // Playable start Y
+        private int _boundsWX; // Playable end X
+        private int _boundsHY; // Playable end Y;
         public float WaterLevel { get => waterLevel; set => waterLevel = value; }
         public float WallLevel { get => wallLevel; set => wallLevel = value; }
         public int MinimalDistance { get => minimalDistance; set => minimalDistance = value; }
@@ -55,11 +66,11 @@ namespace TDPG.Templates.Grid.MapGen
         public int NumOfEnemySpawners { get => numOfEnemySpawners; set => numOfEnemySpawners = value; }
         public MapTypes Type { get => mapType; set => mapType = value; }
 
-        public void Awake()
-        {
-           
-        }
-
+        /// <summary>
+        /// Calculates the internal boundaries of the map, adding "Fogland" padding around the requested playable area.
+        /// <br/>
+        /// This ensures the camera never sees the void edge of the grid.
+        /// </summary>
         public void Precalc()
         {
              int maxDistance = (width + height) / 2;
@@ -68,7 +79,7 @@ namespace TDPG.Templates.Grid.MapGen
             int playableWidth = width;
             int playableHeight = height;
 
-            // padding is at max FOGLAND, or 20% of size
+            // Padding is at max FOGLAND, or 20% of size
             int padX = Mathf.Max((int)(playableWidth * 0.20f), Fogland);
             int padY = Mathf.Max((int)(playableHeight * 0.20f), Fogland);
 
@@ -76,25 +87,35 @@ namespace TDPG.Templates.Grid.MapGen
             width = playableWidth + padX * 2;
             height = playableHeight + padY * 2;
 
-            // playable bounds inside the expanded map
-            _boundsW0 = padX;                     // start X
-            _boundsH0 = padY;                     // start Y
-            _boundsWX = padX + playableWidth;     // end X
-            _boundsHY = padY + playableHeight;    // end Y
+            // Playable bounds inside the expanded map
+            _boundsW0 = padX;                     // Start X
+            _boundsH0 = padY;                     // Start Y
+            _boundsWX = padX + playableWidth;     // End X
+            _boundsHY = padY + playableHeight;    // End Y
 
             Debug.Log($"[Map Generator]: Actual size = 0-{width} x 0-{height}, " +
                       $"Playable area = {_boundsW0}-{_boundsWX} x {_boundsH0}-{_boundsHY}");
         }
 
+        /// <summary>
+        /// Generates the raw TileType data for the map.
+        /// </summary>
+        /// <remarks>
+        /// <b>Pipeline:</b>
+        /// <list type="number">
+        /// <item><description>Parses the Seed string to derive Noise parameters (Frequency, Octaves, Gain).</description></item>
+        /// <item><description>Configures FastNoiseLite based on <see cref="MapTypes"/>.</description></item>
+        /// <item><description>Iterates (x,y) to assign Wall/Water/Empty based on thresholds.</description></item>
+        /// <item><description>Places the Destination based on seed digit 5.</description></item>
+        /// <item><description>Validates "Usability" (Flood Fill). If too low, adjusts thresholds and regenerates.</description></item>
+        /// </list>
+        /// </remarks>
+        /// <param name="seed">The source of entropy.</param>
+        /// <returns>2D Array of TileTypes.</returns>
         public TileType[,] GenerateMap(Seed seed)
         {
             _mapInit = new TileType[width, height];
             bool skipGeneration = false;
-
-            if (providedSeed != null)
-            {
-                seed = providedSeed.GetNextSeed();
-            }
 
             seed ??= new Seed(240_11_8, -1, "missingSeedInMapGen", false);
 
@@ -103,7 +124,7 @@ namespace TDPG.Templates.Grid.MapGen
             ulong seedVal = seed.GetBaseValue();
             string seedStr = seedVal.ToString();
 
-            // Use first 5 digits of seed for noise parameters
+            // Use the first 6 digits of seed for noise parameters
             int d0 = int.Parse(seedStr[0].ToString());
             int d1 = int.Parse(seedStr[1].ToString());
             int d2 = int.Parse(seedStr[2].ToString());
@@ -111,7 +132,7 @@ namespace TDPG.Templates.Grid.MapGen
             int d3 = int.Parse(seedStr[3].ToString());
             int d4 = int.Parse(seedStr[4].ToString());
 
-            //used in deciding destination point
+            // Used in deciding destination point
             int d5 = int.Parse(seedStr[5].ToString());
 
             // Initialize FastNoise
@@ -133,7 +154,7 @@ namespace TDPG.Templates.Grid.MapGen
             float gain = 0.3f + (d3 / 9f) * (0.7f - 0.3f);
             float weightedStrength = d4 / 9f;
 
-            Debug.Log($"[Map Generator]: Seed = {seedVal}");
+            Debug.Log($"[Map Generator]: Seed = {seedVal}, d0 = {d0}");
 
             // Configure per map type
             switch (mapType)
@@ -268,6 +289,10 @@ namespace TDPG.Templates.Grid.MapGen
             return _mapInit;
         }
 
+        /// <summary>
+        /// Performs a flood-fill (BFS) from the destination to calculate what percentage of the playable area is reachable and not unusable.
+        /// </summary>
+        /// <returns>Percentage (0.0 to 1.0) of reachable land.</returns>
         public float CalculateUsableMapPercentage()
         {
             int playableW = _boundsWX - _boundsW0;
@@ -322,7 +347,7 @@ namespace TDPG.Templates.Grid.MapGen
                         queue.Enqueue(new Vector2Int(nx, ny));
 
                         // We count "Usable Map" as actual land we can stand on.
-                        // If we swam here, the water tile itself isn't "land", but it allows us to reach more land.
+                        // If we swim here, the water tile itself isn't "land", but it allows us to reach more land.
                         if (t == TileType.EMPTY)
                             reachableLandCount++;
                     }
@@ -420,15 +445,15 @@ namespace TDPG.Templates.Grid.MapGen
 
         private Vector3Int FindCentralDestination()
         {
-            int cx = _boundsWX;
+            int cx = _boundsWX / 2;
             int cy = _boundsHY / 2;
 
             int[][] directions = new int[][]
             {
                 new[]{ 1, 0 },   // right
-                new[]{ 0, 1 },   // up
+                new[]{ 0,-1 },    // down
                 new[]{ -1,0 },   // left
-                new[]{ 0,-1 }    // down
+                new[]{ 0, 1 }   // up
             };
 
             int x = cx;
@@ -545,6 +570,9 @@ namespace TDPG.Templates.Grid.MapGen
             return destinationWorldPosition;
         }
 
+        /// <summary>
+        /// Injects the Grid reference and initializes pathfinding utilities.
+        /// </summary>
         public void setGrid(Grid grid)
         {
             this._grid = grid;
@@ -568,6 +596,12 @@ namespace TDPG.Templates.Grid.MapGen
             return true;
         }
 
+        /// <summary>
+        /// Analyzes the map to find all valid tiles where an enemy spawner could be placed.
+        /// <br/>
+        /// A valid candidate must be <see cref="TileType.EMPTY"/>, far enough from the destination, 
+        /// and have a valid path to the destination.
+        /// </summary>
         public void BuildValidSpawnerCandidates()
         {
             _reachableCandidates.Clear();
@@ -611,6 +645,12 @@ namespace TDPG.Templates.Grid.MapGen
             _reachableCandidates.Sort((a, b) => b.distanceFromDestination.CompareTo(a.distanceFromDestination));
         }
 
+        /// <summary>
+        /// Selects the best N positions for spawners from the reachable list.
+        /// <br/>
+        /// Prioritizes furthest distance and ensures minimal spacing between spawners.
+        /// Will select as many as possible, caped by count and world availability.
+        /// </summary>
         public Vector3Int[] SelectSpawnerPositions(int count)
         {
             SortCandidatesByDistance();
@@ -643,8 +683,20 @@ namespace TDPG.Templates.Grid.MapGen
             return result.ToArray();
         }
 
+        /// <summary>
+        /// Instantiates 2D physics walls (BoxCollider2D) around the boundaries of the map to confine physics objects.
+        /// </summary>
         public void CreateMapBounds()
         {
+            Transform oldBounds = transform.Find("MapBounds2D");
+            if (oldBounds != null)
+            {
+                if (Application.isPlaying) Destroy(oldBounds.gameObject);
+                else DestroyImmediate(oldBounds.gameObject);
+            }
+
+            if (_grid == null) return;
+            
             float cellSize = _grid.GetCellSize();
 
             // Convert grid bounds to world-space coordinates
@@ -653,8 +705,8 @@ namespace TDPG.Templates.Grid.MapGen
             float bottom = _boundsH0 * cellSize;
             float top = _boundsHY * cellSize;
 
-            float thickness = cellSize * 2f;   // wall thickness
-            float overlap = thickness;  // extension to avoid all gaps
+            float thickness = cellSize * 2f;   // Wall thickness
+            float overlap = thickness;  // Extension to avoid all gaps
 
             // Create parent object for organization
             GameObject wallsParent = new GameObject("MapBounds2D");
@@ -704,6 +756,12 @@ namespace TDPG.Templates.Grid.MapGen
             col.isTrigger = false;
         }
 
+        /// <summary>
+        /// <b>Fallback Strategy:</b> Forcefully carves open space around the destination to ensure connectivity.
+        /// <br/>
+        /// Called when the generated map is too tight and pathfinding fails.
+        /// </summary>
+        /// <param name="reach">The radius (Chebyshev distance) to clear around the destination.</param>
         public void SpawnersFallback(int reach) //otherwise known as fallback methode 2.
         {
             Vector3Int dest = GetDestinationPosition();
@@ -738,6 +796,23 @@ namespace TDPG.Templates.Grid.MapGen
         {
             return _mapInit;
         }
+        public void GetBoundsValues(out int minX, out int maxX, out int minY, out int maxY)
+        {
+            minX = _boundsW0;
+            maxX = _boundsWX;
+            minY = _boundsH0;
+            maxY = _boundsHY;
+        }
+
+        // Set values directly using primitives
+        public void RestoreBoundsValues(int minX, int maxX, int minY, int maxY)
+        {
+            _boundsW0 = minX;
+            _boundsWX = maxX;
+            _boundsH0 = minY;
+            _boundsHY = maxY;
+        }
 
     }
+    
 }

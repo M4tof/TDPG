@@ -1,9 +1,12 @@
+using QuikGraph;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using QuikGraph;
 using TDPG.EffectSystem.ElementLogic;
+using TDPG.Generators.Scalars;
 using TDPG.Generators.Seed;
+using TDPG.TextGeneration;
+using TDPG.TextGeneration.TrainingFiles;
 using UnityEngine;
 using static TDPG.Generators.Seed.Genetic;
 
@@ -11,7 +14,20 @@ namespace TDPG.EffectSystem.ElementRegistry
 {
     public partial class Registry
     { 
-    //Add elements to registry
+    
+        /// <summary>
+        /// Registers a pre-existing element into the graph under specific parents.
+        /// </summary>
+        /// <remarks>
+        /// <b>Constraints:</b>
+        /// <list type="bullet">
+        /// <item><description>Cannot add duplicate elements (ID collision).</description></item>
+        /// <item><description>Cannot add a new element if another element already exists with the exact same parent set (Genealogical Uniqueness), unless the only parent is Root.</description></item>
+        /// </list>
+        /// </remarks>
+        /// <param name="parentsId">List of existing Element IDs that will be the parents.</param>
+        /// <param name="newElement">The element instance to register.</param>
+        /// <returns>The ID of the successfully added element, or 0/False if failed.</returns>
         public int PutPreMadeElement(List<int> parentsId, Element newElement)
         {
             if (newElement == null)
@@ -34,7 +50,7 @@ namespace TDPG.EffectSystem.ElementRegistry
 
             var requestedParentSet = parentElements.Select(p => p.Id).ToHashSet();
             
-            // Detect element already exists
+            // Detect if the element already exists
             Element existingElement = registryGraph.Vertices
                 .FirstOrDefault(v => v.Id == newElement.Id);
 
@@ -73,7 +89,7 @@ namespace TDPG.EffectSystem.ElementRegistry
             }
 
             if (newElement.Id == 0)
-                newElement.Id = CountElements(); // only auto-assign if ID not set (RECOMMENDED NOT TO SET MANUALLY)
+                newElement.Id = CountElements(); // only auto-assign if ID not set (NOT RECOMMENDED TO SET MANUALLY)
 
             // Add new element if it's not already in the graph
             if (!registryGraph.ContainsVertex(newElement))
@@ -90,10 +106,26 @@ namespace TDPG.EffectSystem.ElementRegistry
             return newElement.Id;
         }
         
+        // -------------------------
+        // PROCEDURAL GENERATION
+        // -------------------------
+
+        /// <summary>
+        /// Creates a new child element via <b>Genetic Recombination</b> (XOR).
+        /// <br/>
+        /// <b>Strategy: Quality over Quantity (Specialization).</b>
+        /// <br/>
+        /// The child inherits traits unique to specific parents, discarding shared traits. 
+        /// <br/>
+        /// While the resulting element will have <b>fewer</b> active effects, the system applies a <b>Boost</b> to their intensity.
+        /// Use this to create powerful, specialized variants.
+        /// </summary>
+        /// <param name="parentsId">IDs of the parent elements.</param>
+        /// <returns>A specialized, high-intensity child Element.</returns>
         public Element GenerateChildElementFromParents_Recombine(List<int> parentsId)
         {
             return GenerateChildElementFromParentsCore(parentsId, 
-                combineSeeds: (seed, parentSeed) => seed ^ parentSeed,     // returns combined Seed
+                combineSeeds: (seed, parentSeed) => seed ^ parentSeed,     // Returns combined Seed
                 fallbackEffectSelector: effects => effects.First(),
                 finalEffectSelectorMode: (mode, effects) =>
                 {
@@ -109,10 +141,22 @@ namespace TDPG.EffectSystem.ElementRegistry
             );
         }
 
+        /// <summary>
+        /// Creates a new child element via <b>Genetic Addition</b> (OR).
+        /// <br/>
+        /// <b>Strategy: Quantity over Quality (Accumulation).</b>
+        /// <br/>
+        /// The child inherits <b>all</b> active traits from every parent, resulting in a dense DNA structure (potentially all bits set to 1).
+        /// <br/>
+        /// The effects are typically averages or direct copies of the parents without additional boosting.
+        /// Use this to gather multiple different traits into a single lineage before specializing.
+        /// </summary>
+        /// <param name="parentsId">IDs of the parent elements.</param>
+        /// <returns>A versatile, multi-effect child Element.</returns>
         public Element GenerateChildElementFromParents_Addition(List<int> parentsId)
         {
             return GenerateChildElementFromParentsCore(parentsId, 
-                combineSeeds: (seed, parentSeed) => seed + parentSeed,    // returns combined Seed
+                combineSeeds: (seed, parentSeed) => seed + parentSeed,    // Returns combined Seed
                 fallbackEffectSelector: effects => effects.Last(),
                 finalEffectSelectorMode: (mode, effects) =>
                 {
@@ -128,7 +172,14 @@ namespace TDPG.EffectSystem.ElementRegistry
         }
 
         
-        
+        /// <summary>
+        /// The core procedural generation pipeline.
+        /// </summary>
+        /// <param name="parentsId">Parent IDs.</param>
+        /// <param name="combineSeeds">Strategy for mixing Parent DNA (e.g. XOR vs OR).</param>
+        /// <param name="fallbackEffectSelector">Strategy for picking an effect if generation fails.</param>
+        /// <param name="finalEffectSelectorMode">Strategy for resolving effect conflicts (when multiple parents provide the same effect).</param>
+        /// <param name="operationLabel">Debug label.</param>
         private Element GenerateChildElementFromParentsCore(
             List<int> parentsId,
             Func<Seed, Seed, Seed> combineSeeds,
@@ -164,7 +215,7 @@ namespace TDPG.EffectSystem.ElementRegistry
     
             foreach (Element parent in parentElements)
             {
-                newSeed = combineSeeds(newSeed, parent.GetDna());   // <-- assign returned Seed
+                newSeed = combineSeeds(newSeed, parent.GetDna());   // <-- Assign returned Seed
                 Debug.Log($"{operationLabel}: After combining with parent {parent.Name} (dna={parent.GetDna().Value}) -> newSeed={newSeed.Value}");
 
                 List<Effect> parentEffects = parent.GetEffects();
@@ -173,7 +224,7 @@ namespace TDPG.EffectSystem.ElementRegistry
             }
 
 
-            // 3. mutate and normalize
+            // 3. Mutate and normalize
             newSeed = MutateSeed(newSeed, mutateType);
             ulong baseValue = newSeed.GetBaseValue();
             
@@ -246,12 +297,17 @@ namespace TDPG.EffectSystem.ElementRegistry
             if (operationLabel == "crossing over")
                 ApplySeedBoosts(childEffects, baseValue);
 
-            
-            // 7. Construct final Element
-            int currId = CountElements();
-            var child = new Element($"CustomElement:{currId}", currId, newSeed, childValues.ToArray());
+            // 7. Generate a name for a new element
+            int length = (int)newSeed.GetBaseValue() % 4 + 5;
+            MarkovChain markov = new MarkovChain(2);
+            markov.Train(TrainingData.DataElements);
+            string name = markov.Generate(length, ""+(char)(newSeed.GetBaseValue()%26+65));
 
-            // 8. Register in graph
+            // 8. Construct final Element
+            int currId = CountElements();
+            var child = new Element(name, currId, newSeed, childValues.ToArray());
+
+            // 9. Register in graph
             if (!registryGraph.ContainsVertex(child))
                 registryGraph.AddVertex(child);
 
@@ -270,10 +326,11 @@ namespace TDPG.EffectSystem.ElementRegistry
         }
         
         /// <summary>
-        /// Returns true if some element (non-root) already has exactly the same parents,
-        /// except the parent set { root } which is allowed to have duplicates.
+        /// Validates Genealogical Uniqueness.
+        /// <br/>
+        /// Returns true if a non-root element already exists with the exact same parent set.
         /// </summary>
-        private bool HasElementWithSameNonRootParents(HashSet<int> parentIds)
+        public bool HasElementWithSameNonRootParents(HashSet<int> parentIds)
         {
             // Allow duplicates if parents == { root }
             if (parentIds.Count == 1 && parentIds.Contains(rootElement.Id))

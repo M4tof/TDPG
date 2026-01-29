@@ -1,12 +1,19 @@
 using UnityEngine;
-using TDPG.Audio;
 
 namespace TDPG.AudioModulation.SOTypes
 {
-    [CreateAssetMenu(menuName = "TDPG/Audio/Clip Segmenter")]
+    /// <summary>
+    /// Restricts playback to a random, deterministically selected segment of the AudioClip.
+    /// <br/>
+    /// Useful for creating variations from a single long recording (e.g., picking a random bird chirp from a 1-minute forest ambience).
+    /// </summary>
+    [CreateAssetMenu(menuName = "TDPG/Audio/Mod/Clip Segmenter")]
     public class ClipSegmenter : AudioModifier
     {
+        [Tooltip("Minimal allowed duration for the clip. (in seconds)")]
         public float minDuration = 0.5f;
+        
+        [Tooltip("Maximum allowed duration for the clip. (in seconds)")]
         public float maxDuration = 2.0f;
 
         private float _startTime;
@@ -28,7 +35,7 @@ namespace TDPG.AudioModulation.SOTypes
             _startTime = Mathf.Lerp(0, maxStartTime, (float)randStart);
             _endTime = _startTime + duration;
 
-            // FORCE position update
+            // Force position update
             ctx.Source.time = _startTime;
         }
 
@@ -36,7 +43,7 @@ namespace TDPG.AudioModulation.SOTypes
         {
             if (!_hasClip) return;
             
-            // If we are essentially at 0 (start of clip) but our segment intends to start at 5.0s,
+            // If we are essentially at 0 (start of the clip), but our segment intends to start at 5.0s,
             // we force the jump.
             if (ctx.Source.time < _startTime - 0.05f) 
             {

@@ -10,30 +10,24 @@ public class UIManager : MonoBehaviour
 
     void Awake()
     {
-        // Singleton pattern to ensure only one instance exists
         if (Instance != null && Instance != this)
         {
-            // If another GameManager already exists, destroy this one
             Destroy(gameObject);
             Debug.LogWarning("Duplicate UIManager destroyed. Only one instance allowed.");
         }
         else
         {
-            // If this is the first GameManager, make it the instance
             Instance = this;
-            // Prevents the GameObject from being destroyed when reloading a scene
             DontDestroyOnLoad(gameObject);
             Debug.Log("UIManager created and set to not destroy on load.");
         }
     }
     
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         GM = GameManager.Instance;
     }
 
-    // Update is called once per frame
     void Update()
     {
         
@@ -42,18 +36,12 @@ public class UIManager : MonoBehaviour
     public void OnNewGamePress()
     {
         Debug.Log("New Game Pressed");
-        // Debug.Break();
         SceneManager.LoadScene("InitializeNewGame");
     }
 
     public void OnLoadPress(SaveLoadButton caller)
     {
         Debug.Log($"Load Pressed, loading {caller.SavePath}");
-        // TODO: Implement loading logic here
-        // GM.LoadGame(caller.SavePath);
-        // GM.SetSlot(caller.SlotNumber);
-        // Debug.Break();
-
         GM.PendingLoadPath = caller.SavePath;
         GM.PendingLoadSlot = caller.SlotNumber;
         SceneManager.LoadScene("MainGame");
@@ -65,6 +53,5 @@ public class UIManager : MonoBehaviour
         Debug.Log($"Save Pressed, saving to {caller.SavePath}");
         GM.SetSlot(caller.SlotNumber);
         GM.SaveGame(caller.SavePath);
-        // TODO: Implement saving logic here
     }
 }

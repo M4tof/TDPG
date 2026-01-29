@@ -1,28 +1,37 @@
 using System.Collections.Generic;
+using TDPG.AudioModulation;
 using TDPG.EffectSystem.ElementLogic;
 using TDPG.EffectSystem.ElementPlanner;
 using UnityEngine;
 
 public class EffectProjectile : BasicProjectile
 {
-    [SerializeField] private ElementPlanner planner;
     private EffectContext effectContext;
+    private ProceduralAudioController _audioController; 
     private bool hasHit = false;
     
-    void Start()
+    new void Start()
     {
         base.Start();
-        //TODO Zmienić aby nie hard codować elementów :)
-        //elements.Add(RegistryManager.Instance.GetRegistry().GetElement("Fire"));
-        planner = new ElementPlanner(RegistryManager.Instance.GetRegistry());
-        planner.RegisterElement("Fire");
-        planner.BuildPlan();
+        if (GetPlanner() == null)
+        {
+            SetPlanner(new ElementPlanner(RegistryManager.Instance.GetRegistry()));
+        }   
+        _audioController = GetComponent<ProceduralAudioController>();
+        if (_audioController != null)
+        {
+            _audioController.Play();
+        }
     }
     
-    private void OnTriggerEnter2D(Collider2D other)
+    public override void OnTriggerEnter2D(Collider2D other)
     {
+        Debug.Log("TRIGGER ENTER: EFFECT");
+        if (GetPlanner().GetPlannedActions().Count == 0)
+        {
+            AddElement("Root");
+        }
         if (hasHit) return;
-        
         if (other.GetComponent<EnemyBehavior>() != null)
         {
             hasHit = true;
@@ -32,40 +41,21 @@ public class EffectProjectile : BasicProjectile
             {
                 projectileCollider.enabled = false;
             }
-            
             effectContext = new EffectContext();
             effectContext.Target = other.gameObject;
-            planner.ExecutePlan(effectContext);
+            GetPlanner().ExecutePlan(effectContext);
         
             Destroy(gameObject);
         }
-        /*EnemyBehavior enemyBehavior = other.gameObject.GetComponent<EnemyBehavior>();
-        if (enemyBehavior != null)
-        {
-            //enemyBehavior.DealDamage(GetDamage());
-            
-            //Set Effect
-            if (enemyBehavior.GetCurrentHealth() > 0)
-            {
-                Debug.Log(planner.GetPlannedActions());
-                effectContext = new EffectContext();
-                effectContext.Target = other.gameObject;
-                planner.ExecutePlan(effectContext);
-            }
-             
-        }
-        Destroy(gameObject);*/
-    }
-
-    public void addElement(string ElementName)
-    {
-        planner.RegisterElement(ElementName);
-        planner.BuildPlan();
     }
     
-    public void addElement(int id)
+    public override void AddElement(string ElementName)
     {
-        //TODO zrobić po ID
-        //planner.RegisterElement(ElementName);
+        if (GetPlanner() == null)
+        {
+            SetPlanner(new ElementPlanner(RegistryManager.Instance.GetRegistry()));
+        }
+        base.AddElement(ElementName);
+        
     }
 }

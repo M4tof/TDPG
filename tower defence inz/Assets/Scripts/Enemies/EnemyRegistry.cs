@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
+using TDPG.Templates.Enemies;
 
 public class EnemyRegistry
 {
@@ -62,5 +63,10 @@ public class EnemyRegistry
 
         Debug.LogError($"[EnemyRegistry] Enemy ID '{id}' not found!");
         return null;
+    }
+
+    public List<string> ListIDs()
+    {
+        return _lookup.Keys.ToList();
     }
 }

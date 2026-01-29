@@ -2145,7 +2145,7 @@ MonoBehaviour:
   m_FillClockwise: 1
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 22
+  m_PixelsPerUnitMultiplier: 1
 --- !u!222 &1540347283
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -3479,6 +3479,14 @@ PrefabInstance:
     - target: {fileID: 3816456145246935751, guid: a010ffa40888912c7b79be26926245ad, type: 3}
       propertyPath: m_Name
       value: GameManager
+      objectReference: {fileID: 0}
+    - target: {fileID: 4636493272737365032, guid: a010ffa40888912c7b79be26926245ad, type: 3}
+      propertyPath: m_Volume
+      value: 0.375
+      objectReference: {fileID: 0}
+    - target: {fileID: 7165345709640181603, guid: a010ffa40888912c7b79be26926245ad, type: 3}
+      propertyPath: m_Volume
+      value: 0.1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

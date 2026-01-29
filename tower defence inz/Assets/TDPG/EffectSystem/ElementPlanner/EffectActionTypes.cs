@@ -1,38 +1,47 @@
 ﻿using TDPG.Templates.Enemies;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Numerics;
-using System.Text;
-using System.Threading.Tasks;
-using TDPG.EffectSystem.ElementPlanner;
-using TDPG.Templates.Enemies;
 using UnityEngine;
-using static UnityEngine.EventSystems.EventTrigger;
 
 namespace TDPG.EffectSystem.ElementPlanner
-{
-    // Example actions
+{ 
+    /// <summary>
+    /// Implements a permanent reduction of movement speed.
+    /// <br/>
+    /// Modifies <see cref="EnemyBaseBehaviour.Logic"/> directly.
+    /// </summary>
     public class SlowDownAction : IEffectAction
     {
-        private readonly float factor;
+        private float factor;
 
+        /// <summary>
+        /// Creates a permanent slow action.
+        /// </summary>
+        /// <param name="factor">Percentage to reduce speed (0.0 to 1.0).</param>
         public SlowDownAction(float factor)
         {
             this.factor = factor;
         }
 
         public string Name => "SlowDown";
+        /// <summary>
+        /// Returns the slowdown factor.
+        /// </summary>
         public float Intensity => factor;
 
+        /// <summary>
+        /// Multiplies the target's <see cref="EnemyBaseBehaviour.Logic.CurrentSpeed"/> by <c>(1 - factor)</c>.
+        /// </summary>
+        /// <param name="context">Must contain a Target with <see cref="EnemyBaseBehaviour"/>.</param>
         public void Execute(EffectContext context)
         {
+            if (factor > 1)
+            {
+                factor = 1 / factor;
+            }
+            
             if (context.Target == null) return;
 
             if (context.Target.TryGetComponent<EnemyBaseBehaviour>(out var behaviour))
             {
-                Debug.Log($"BEHAVIOUR {behaviour},LOGIC {behaviour.Logic}, FACTOR {factor}");
                 behaviour.Logic.CurrentSpeed *= (1f - factor);
             }
             else
@@ -42,11 +51,21 @@ namespace TDPG.EffectSystem.ElementPlanner
         }
     }
 
+    /// <summary>
+    /// Implements a temporary reduction of movement speed that automatically reverts after a duration.
+    /// <br/>
+    /// Uses the enemy's internal status effect system (<see cref="EnemyBaseBehaviour.ApplyOrExtendEffect"/>).
+    /// </summary>
     public class TempSlowDownAction : IEffectAction
     {
-        private readonly float factor;
+        private float factor;
         private readonly float duration;
 
+        /// <summary>
+        /// Creates a temporary slow action.
+        /// </summary>
+        /// <param name="factor">Percentage to reduce speed.</param>
+        /// <param name="duration">Duration in seconds.</param>
         public TempSlowDownAction(float factor, float duration)
         {
             this.factor = factor;
@@ -56,8 +75,16 @@ namespace TDPG.EffectSystem.ElementPlanner
         public string Name => "TempSlowDown";
         public float Intensity => factor;
 
+        /// <summary>
+        /// Applies the slow if it is stronger than the current slow, and registers a callback to restore speed.
+        /// </summary>
         public void Execute(EffectContext context)
         {
+            if (factor > 1)
+            {
+                factor = 1 / factor;
+            }
+            
             if (context.Target == null) return;
 
             if (context.Target.TryGetComponent<EnemyBaseBehaviour>(out var behaviour))
@@ -77,12 +104,21 @@ namespace TDPG.EffectSystem.ElementPlanner
         }
     }
 
+    /// <summary>
+    /// Implements a Damage over Time (DoT) effect using an interval ticker.
+    /// </summary>
     public class HealthDrainAction : IEffectAction
     {
         private readonly float healthPerDrain;
         private readonly int drainCount;
         private readonly float idleTime;
 
+        /// <summary>
+        /// Creates a DoT action.
+        /// </summary>
+        /// <param name="healthPerDrain">Damage per tick.</param>
+        /// <param name="drainCount">Total number of ticks.</param>
+        /// <param name="idleTime">Seconds between ticks.</param>
         public HealthDrainAction(float healthPerDrain, int drainCount, float idleTime)
         {
             this.healthPerDrain = healthPerDrain;
@@ -93,9 +129,11 @@ namespace TDPG.EffectSystem.ElementPlanner
         public string Name => "HealthDrain";
         public float Intensity => healthPerDrain;
 
+        /// <summary>
+        /// Registers an iterable effect on the <see cref="EnemyBaseBehaviour"/> that deals damage periodically.
+        /// </summary>
         public void Execute(EffectContext context)
         {
-            Debug.Log("DOTA");
             if (context.Target == null) return;
 
             if (drainCount <= 0) return; //meaningful drainCount is positive only
@@ -103,10 +141,9 @@ namespace TDPG.EffectSystem.ElementPlanner
             if (context.Target.TryGetComponent<EnemyBaseBehaviour>(out var behaviour))
             {
                 behaviour.ApplyOrExtendIterableEffect("dota", 
-                    (iteration) => behaviour.DealDamage((int) healthPerDrain), 
+                    (iteration) => behaviour.DealDamage(Mathf.CeilToInt(healthPerDrain)), 
                     drainCount, 
                     idleTime);
-                Debug.Log("BURN!!");
             }
             else
             {
@@ -115,6 +152,9 @@ namespace TDPG.EffectSystem.ElementPlanner
         }
     }
 
+    /// <summary>
+    /// Incapacitates the target by halting movement and logic execution.
+    /// </summary>
     public class StunAction : IEffectAction
     {
         private readonly float duration;
@@ -127,6 +167,9 @@ namespace TDPG.EffectSystem.ElementPlanner
         public string Name => "Stun";
         public float Intensity => duration;
 
+        /// <summary>
+        /// Sets speed to 0 and calls <see cref="EnemyBaseBehaviour.ApplyWait"/> to pause the behavior tree.
+        /// </summary>
         public void Execute(EffectContext context)
         {
             if (context.Target == null) return;
@@ -143,19 +186,19 @@ namespace TDPG.EffectSystem.ElementPlanner
                 Debug.LogWarning("StunAction: Target has no CurrentSpeed.");
             }
         }
-
-        /*private IEnumerator ApplyRoutine(EnemyBase logic)
-        {
-            logic.CurrentSpeed *= (1f - factor);
-            yield return new WaitForSeconds(duration);
-            logic.CurrentSpeed /= (1f - factor);
-        }*/
     }
 
+    /// <summary>
+    /// Modifies the local scale of the target's Transform.
+    /// </summary>
     public class ScaleAction : IEffectAction
     {
         private readonly float scale;
 
+        /// <summary>
+        /// Creates a scaling action.
+        /// </summary>
+        /// <param name="scale">The uniform scale factor for X and Y axes.</param>
         public ScaleAction(float scale)
         {
             this.scale = scale;
@@ -164,6 +207,9 @@ namespace TDPG.EffectSystem.ElementPlanner
         public string Name => "Scale";
         public float Intensity => scale;
 
+        /// <summary>
+        /// Sets <see cref="Transform.localScale"/> to (scale, scale, 1). Assumes 2D/Sprite context.
+        /// </summary>
         public void Execute(EffectContext context)
         {
             if (context.Target == null) return;
@@ -177,35 +223,42 @@ namespace TDPG.EffectSystem.ElementPlanner
             }
         }
 
-        /*private IEnumerator ApplyRoutine(EnemyBase logic)
-        {
-            logic.CurrentSpeed *= (1f - factor);
-            yield return new WaitForSeconds(duration);
-            logic.CurrentSpeed /= (1f - factor);
-        }*/
     }
 
+    /// <summary>
+    /// Applies immediate damage to the target.
+    /// </summary>
     public class HealthDownAction : IEffectAction
     {
         private readonly float amount;
 
+        /// <summary>
+        /// Creates a damage action.
+        /// </summary>
+        /// <param name="amount">
+        /// The raw value from the factory. 
+        /// <br/><b>Note:</b> This is typically negative coming from the Factory logic.
+        /// </param>
         public HealthDownAction(float amount)
         {
             this.amount = amount; // NEGATIVE
         }
 
         public string Name => "HealthDown";
+        /// <summary>
+        /// Absolute value of the damage.
+        /// </summary>
         public float Intensity => Mathf.Abs(amount);
 
+        /// <summary>
+        /// Inverts the negative amount to positive and calls <see cref="EnemyBaseBehaviour.DealDamage"/>.
+        /// </summary>
         public void Execute(EffectContext context)
         {
             if (context.Target == null) return;
-
             if (context.Target.TryGetComponent<EnemyBaseBehaviour>(out var behaviour))
             {
-                //behaviour.Logic.CurrentHealth += amount; // amount < 0
-                behaviour.DealDamage((int) -amount);
-                Debug.Log(behaviour.Logic.CurrentHealth);
+                behaviour.DealDamage(-Mathf.CeilToInt(amount));
             }
             else
             {
@@ -214,6 +267,9 @@ namespace TDPG.EffectSystem.ElementPlanner
         }
     }
 
+    /// <summary>
+    /// Applies immediate healing to the target. Supports both Ally and Enemy components.
+    /// </summary>
     public class HealAction : IEffectAction
     {
         private readonly float amount;
@@ -226,6 +282,9 @@ namespace TDPG.EffectSystem.ElementPlanner
         public string Name => "Heal";
         public float Intensity => amount;
 
+        /// <summary>
+        /// Adds health to <see cref="AllyStats"/> OR <see cref="EnemyStats"/>.
+        /// </summary>
         public void Execute(EffectContext context)
         {
             if (context.Target == null) return;
@@ -244,6 +303,5 @@ namespace TDPG.EffectSystem.ElementPlanner
             }
         }
     }
-    //TODO: long-term + change initial ones
 
 }

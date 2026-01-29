@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using QuikGraph;
 using TDPG.EffectSystem.ElementLogic;
-using TDPG.Generators.Seed;
 using UnityEngine;
 
 namespace TDPG.EffectSystem.ElementRegistry
@@ -11,6 +10,12 @@ namespace TDPG.EffectSystem.ElementRegistry
     public partial class Registry
     {
 		//Utils and Debug
+        
+        /// <summary>
+        /// Logs a flat textual representation of the entire registry graph to the Unity Console.
+        /// <br/>
+        /// format: [Name] (ID) | Parents: [...] | Children: [...]
+        /// </summary>
         public void PrintRegistryMap()
         {
             Debug.Log("=== REGISTRY MAP ===");
@@ -38,6 +43,12 @@ namespace TDPG.EffectSystem.ElementRegistry
 
             Debug.Log("=== END OF REGISTRY MAP ===");
         }
+        
+        /// <summary>
+        /// Recursive helper to print the hierarchy structure (Depth-First Search).
+        /// <br/>
+        /// Includes a <paramref name="visited"/> check to safely handle cycles in the graph.
+        /// </summary>
         private void PrintSubtree(Element element, int depth, HashSet<Element> visited) // Helper: recursively print the subtree structure (with visited set to avoid cycles)
         {
             if (element == null || visited.Contains(element))
@@ -60,6 +71,11 @@ namespace TDPG.EffectSystem.ElementRegistry
                 PrintSubtree(child, depth + 1, visited);
             }
         }
+        
+        /// <summary>
+        /// Logs comprehensive details about a specific element, including its full DNA, Effects, and genealogy.
+        /// </summary>
+        /// <param name="name">The name of the element to inspect.</param>
         public void PrintElementDetails(string name)
         {
             Element tmpRead = GetElement(name);
@@ -89,17 +105,33 @@ namespace TDPG.EffectSystem.ElementRegistry
                       $"Effect_Names: {string.Join(", ", tmpRead.GetEffects()?.Select(e => e.Name) ?? new List<string>())}\n" +
                       $"========================");
         }
+        
+        /// <summary>
+        /// Wipes the entire graph structure and restores the initial state (Root Element only).
+        /// </summary>
         public void ClearRegistry()
         {
             registryGraph = new BidirectionalGraph<Element, Edge<Element>>(true);
-            // re-add rootElement so API behaviour is consistent (root always present)
+            // Re-add rootElement so API behaviour is consistent (root always present)
             if (rootElement != null)
                 registryGraph.AddVertex(rootElement);
         }
+        
+        /// <summary>
+        /// Returns the total number of elements currently registered in the graph.
+        /// </summary>
         public int CountElements()
         {
             return registryGraph.VertexCount;
         }
+        
+        /// <summary>
+        /// Combines multiple effects of the same type into a single instance by averaging their numerical parameters.
+        /// <br/>
+        /// Uses reflection to find a compatible constructor for the Effect type.
+        /// </summary>
+        /// <param name="effects">A list of effects (must all be the same Type).</param>
+        /// <returns>A new Effect instance with averaged values.</returns>
         private Effect AverageEffects(List<Effect> effects)
         {
             if (effects == null || effects.Count == 0)
@@ -144,6 +176,15 @@ namespace TDPG.EffectSystem.ElementRegistry
             Debug.LogWarning($"No suitable constructor found for effect type {effectType.Name}. Returning first instance.");
             return baseEffect;
         }
+        
+        /// <summary>
+        /// Applies a deterministic "Boost" to effects based on the Seed value.
+        /// <br/>
+        /// This creates the "Quality over Quantity" behavior in Genetic Recombination by creating 
+        /// slightly stronger variants of the parent effects.
+        /// </summary>
+        /// <param name="effects">The list of effects to modify.</param>
+        /// <param name="seedValue">The source of deterministic noise.</param>
         private void ApplySeedBoosts(List<Effect> effects, ulong seedValue)
         {
             if (effects == null || effects.Count == 0)

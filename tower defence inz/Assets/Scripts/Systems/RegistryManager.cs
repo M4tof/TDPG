@@ -1,8 +1,7 @@
 using System.Collections.Generic;
+using System.Linq;
 using TDPG.EffectSystem.ElementLogic;
-using TDPG.EffectSystem.ElementPlanner;
 using TDPG.EffectSystem.ElementRegistry;
-using TDPG.Generators.Seed;
 using UnityEngine;
 
 public class RegistryManager : MonoBehaviour
@@ -11,6 +10,7 @@ public class RegistryManager : MonoBehaviour
     [SerializeField] private Registry registry;
     
     private static RegistryManager _instance;
+
     
     public static RegistryManager Instance
     {
@@ -18,7 +18,8 @@ public class RegistryManager : MonoBehaviour
         {
             if (_instance == null)
             {
-                _instance = FindObjectOfType<RegistryManager>();
+
+                _instance = FindFirstObjectByType<RegistryManager>();
                 
                 if (_instance == null)
                 {
@@ -31,28 +32,71 @@ public class RegistryManager : MonoBehaviour
         }
     }
     
-    
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+
     void Start()
     {
         registry = new Registry();
         
         var slow = new TempSlowDown(0.75f,1f);
-        var burn = new HealthDown(3f);
+        var dmg = new HealthDown(3f);
         var dota = new HealthDrain(1, 3, 1);
-        var effects = new List<Effect> { slow, burn, dota };
+        var DmgEffect = new HealthDown(1f);
+        var FireEffects = new List<Effect> { dmg, dota };
+        var WaterEffects = new List<Effect> { dmg, slow };
+        var PoisonEffects = new List<Effect> { dota };
 
-        var element = new Element("Fire", 1, effects);
-        var other_element = new Element("Water", 2, effects);
+        var FireElement = new Element("Fire", 1, FireEffects);
+        var WaterElement = new Element("Water", 2, WaterEffects);
+        var PoisonElement =  new Element("Poison", 3, PoisonEffects);
 
-        registry.PutPreMadeElement(new List<int> { 0 }, element);
-        registry.PutPreMadeElement(new List<int> { 1 }, other_element);
+        registry.PutPreMadeElement(new List<int> { 0 }, FireElement);
+        registry.PutPreMadeElement(new List<int> { 0 }, WaterElement);
+        registry.PutPreMadeElement(new List<int> { 0 }, PoisonElement);
     }
 
-    // Update is called once per frame
-    void Update()
+    public Element GetNewElementById(int elementId, string parentDNA)
     {
+        Element element = registry.GetElement(elementId);
+        if (element != null && elementId != 0)
+        {
+            return element;
+        }
         
+        int registrySize = registry.GetAllElements().Count();
+        int firstParent = int.Parse(parentDNA.Substring(0, 1)) % ( registrySize - 1 ) + 1;
+        int secondParent = int.Parse(parentDNA.Substring(1, 1)) % ( registrySize - 1 ) + 1;
+
+        if (firstParent == secondParent)
+        {
+            secondParent = (secondParent + 1) % ( registrySize - 1 ) + 1;
+        }
+        
+        List<int> parentList = new List<int> { firstParent, secondParent };
+
+        if (!registry.HasElementWithSameNonRootParents(new HashSet<int>(parentList)))
+        {
+            return registry.GenerateChildElementFromParents_Recombine(parentList);
+        }
+        List<Element> elementList = new List<Element> { registry.GetElement(firstParent), registry.GetElement(secondParent) };
+        return registry.GetElement(elementList);
+    }
+
+    private Element getNewElementFromParents(string parentDNA, int registrySize)
+    {
+        int firstParent = int.Parse(parentDNA.Substring(0, 1)) % ( registrySize - 1 ) + 1;
+        int secondParent = int.Parse(parentDNA.Substring(1, 1)) % ( registrySize - 1 ) + 1;
+
+        if (firstParent == secondParent)
+        {
+            secondParent = (secondParent + 1) % ( registrySize - 1 ) + 1;
+        }
+        
+        List<int> parentList = new List<int> { firstParent, secondParent };
+        if (registry.HasElementWithSameNonRootParents(new HashSet<int>(parentList)))
+        {
+            return registry.GenerateChildElementFromParents_Recombine(parentList);
+        }
+        return null;
     }
 
     public Registry GetRegistry()

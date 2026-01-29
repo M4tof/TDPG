@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using QuikGraph;
 using TDPG.EffectSystem.ElementLogic;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using TDPG.Generators.Seed;
 
 namespace TDPG.EffectSystem.ElementRegistry
@@ -15,7 +14,7 @@ namespace TDPG.EffectSystem.ElementRegistry
         {
             if (rootElement != null && registryGraph.ContainsVertex(rootElement))
             {
-                registryGraph.RemoveVertex(rootElement); // remove the old root
+                registryGraph.RemoveVertex(rootElement); // Remove the old root
             }
 
             rootElement = root;

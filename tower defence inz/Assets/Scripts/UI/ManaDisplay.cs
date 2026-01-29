@@ -2,7 +2,6 @@ using UnityEngine;
 using TMPro;
 public class ManaDisplay : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
     TextMeshProUGUI tmpText;
     void Start()
     {
@@ -20,7 +19,6 @@ public class ManaDisplay : MonoBehaviour
         }
     }
 
-    // Update is called once per frame
     void Update()
     {
         tmpText = GetComponentInChildren<TextMeshProUGUI>();

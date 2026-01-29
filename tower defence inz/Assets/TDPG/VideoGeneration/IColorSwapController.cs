@@ -22,7 +22,7 @@ namespace TDPG.VideoGeneration
         void SetPalette(ColorPaletteSO palette);
 
         /// <summary>
-        /// Blinks quickly as white
+        /// Blinks quickly as white, useful for debugging or indicating something
         /// </summary>
         void BlinkWhite();
     }

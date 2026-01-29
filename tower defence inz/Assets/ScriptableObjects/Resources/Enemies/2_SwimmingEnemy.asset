@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b2406adc81af4fc3d8c84aa22266b327, type: 3}
+  m_Name: 2_SwimmingEnemy
+  m_EditorClassIdentifier: 
+  EnemyName: Swimmer
+  GenName: 
+  MaxHealth: 25
+  Speed: 6
+  Damage: 0
+  AttackSpeed: 0
+  Reward: 10
+  EnemySprite: {fileID: -2671257429481893525, guid: dd86c6f8e86b33149b88354368b60c90, type: 3}
+  CanFly: 0
+  CanSwim: 1

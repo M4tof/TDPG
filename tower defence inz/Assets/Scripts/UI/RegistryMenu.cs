@@ -8,15 +8,14 @@ using System.Linq;
 public class RegistryMenu : MonoBehaviour
 {
     [Header("UI Pages")]
-    [SerializeField] private GameObject graphPage;    // g³ówny panel grafu
+    [SerializeField] private GameObject graphPage;    // gÅ‚Ã³wny panel grafu
     [SerializeField] private GameObject detailsPage;  // panel z opisem wybranego node'a
 
     [Header("Graph Drawing Handle")]
     [SerializeField] private RectTransform graphContainer;
-    // Tu rysujemy graf: linie, ikonki, nazwy
 
     [Header("Prefabs")]
-    public GameObject nodePrefab;       // przycisk/ikonka reprezentuj¹ca element
+    public GameObject nodePrefab;       // przycisk/ikonka reprezentujÄ…ca element
     public GameObject edgePrefab;       // najprostsza linia (UI Image)
 
     private bool menuActive = false;

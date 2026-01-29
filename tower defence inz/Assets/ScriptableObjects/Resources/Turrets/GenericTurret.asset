@@ -14,13 +14,25 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   TurretID: Normal
   BaseSprite: {fileID: -1515134823594722529, guid: ccaa28a09cade8dda8cd7fdb786d0609, type: 3}
-  CrystalSprite: {fileID: -3446471830066921269, guid: ccaa28a09cade8dda8cd7fdb786d0609, type: 3}
-  Cost: 25
+  CrystalSprite: {fileID: -3964856179284347504, guid: ccaa28a09cade8dda8cd7fdb786d0609, type: 3}
+  Cost: 50
   TileSize: {x: 1, y: 1}
-  Multiplayer: 1
+  BaseOffset: {x: 2.5, y: 1.5}
+  CrystalOffset: {x: 2.5, y: 5}
+  Scale: 1
   CanShoot: 1
-  Range: 6
-  Damage: 2
-  FireRate: 1
+  Range: 5
+  Damage: 1
+  FireRate: 0.3
   MaxHP: 5
-  ProjectilePrefab: {fileID: 1195895545647384619, guid: 54f1a2241ea8b704390fa0976c4ece48, type: 3}
+  modifierList:
+  - id: -1
+    damageMultiplayer: 1
+    fireRateMultiplayer: 1
+    hpMultiplayer: 1
+    rangeMultiplayer: 1
+    ResourceCost: 0
+    elementName: Root
+    PatternGenerator: {fileID: 0}
+  ProjectilePrefab: {fileID: 1195895545647384619, guid: b1fab52a54f5c3f4e9b9df79c84498a1, type: 3}
+  PatternGenerator: {fileID: 11400000, guid: d43d676e59e69454b90152a48cbcd98b, type: 2}

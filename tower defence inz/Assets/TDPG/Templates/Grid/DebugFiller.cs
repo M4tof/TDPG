@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using TDPG.Templates.Pathfinding;
 using UnityEngine;
@@ -163,8 +162,5 @@ namespace TDPG.Templates.Grid
                 }
             }
         }
-        
-        
-        
     }
 }

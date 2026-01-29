@@ -3,17 +3,91 @@ using TDPG.Generators.Interfaces;
 
 namespace TDPG.Generators.Scalars
 {
+    /// <summary>
+    /// A versatile generator for producing floating-point values using various statistical distributions.
+    /// <br/>
+    /// unlike a simple Random.Range, this allows for bell curves, weighted centers, or quantized steps.
+    /// </summary>
     [Serializable]
     public class FloatGenerator : IGenerator<float>
     {
-        public enum Mode { Uniform, Normal, Triangular, Step, Curve }
+        /// <summary>
+        /// Defines the mathematical distribution used to transform raw entropy into a value.
+        /// </summary>
+        public enum Mode
+        {
+            /// <summary>
+            /// Every number between Min and Max has an equal chance of being chosen. 
+            /// <br/>Standard "Random.Range" behavior.
+            /// </summary>
+            Uniform,
+            
+            /// <summary>
+            /// Generates values clustered around a <see cref="mean"/> (Bell Curve).
+            /// <br/>Useful for organic attributes (e.g., height, NPC intelligence) where extremes are rare.
+            /// </summary>
+            Normal,
+            
+            /// <summary>
+            /// Values are weighted towards the center (Average of Min/Max), but unlike Normal distribution, 
+            /// it never exceeds the Min/Max bounds strictly.
+            /// </summary>
+            Triangular,
+            
+            /// <summary>
+            /// Returns values snapped to a specific number of distinct steps between Min and Max.
+            /// <br/>Useful for "Tiered" stats (e.g., 1.0, 1.5, 2.0).
+            /// </summary>
+            Step,
+            
+            /// <summary>
+            /// Uses a custom <see cref="CurveFunc"/> to map the entropy (0..1) to the output range.
+            /// </summary>
+            Curve
+        }
+        
+        /// <summary>
+        /// The distribution logic used to generate the value.
+        /// </summary>
         public Mode mode;
-        public float min, max;
-        public float mean, stdDev;
+
+        /// <summary>
+        /// The absolute minimum value (Inclusive). Acts as a hard clamp for Normal distribution.
+        /// </summary>
+        public float min;
+        
+        /// <summary>
+        /// The absolute maximum value (Inclusive). Acts as a hard clamp for Normal distribution.
+        /// </summary>
+        public float max;
+
+        /// <summary>
+        /// The center peak of the bell curve. Only used in Normal Mode.
+        /// </summary>
+        public float mean;
+        
+        /// <summary>
+        /// The standard deviation (width) of the bell curve. Larger values = flatter curve. Only used in Normal Mode.
+        /// </summary>
+        public float stdDev;
+        
+        /// <summary>
+        /// How many distinct values exist between Min and Max. Only used in Step Mode.
+        /// </summary>
         public int steps;
+        
+        /// <summary>
+        /// An optional mathematical function to shape the probability.
+        /// <br/>Input is normalized entropy (0.0 to 1.0), Output should be normalized (0.0 to 1.0).
+        /// </summary>
         public Func<float, float> CurveFunc = null;
 
 
+        /// <summary>
+        /// Calculates the next float value by consuming entropy from the source and applying the selected <see cref="Mode"/>.
+        /// </summary>
+        /// <param name="source">The entropy source.</param>
+        /// <returns>A value between <see cref="min"/> and <see cref="max"/>.</returns>
         public float Generate(IRandomSource source)
         {
             switch (mode)
@@ -36,11 +110,19 @@ namespace TDPG.Generators.Scalars
                     return Uniform(source, min, max);
             }
         }
+        
+        /// <summary>
+        /// Generates a deterministic float based on the provided Seed object.
+        /// </summary>
         public float Generate(Seed.Seed seed, string context = null)
         {
             var local = new SplitMix64Random(seed.GetBaseValue());
             return Generate(local);
         }
+        
+        /// <summary>
+        /// Generates a quick preview float using a raw seed value.
+        /// </summary>
         public float Preview(ulong pseudo)
         {
             var local = new SplitMix64Random(pseudo);
@@ -55,12 +137,12 @@ namespace TDPG.Generators.Scalars
         // Box-Muller
         private static float Normal(IRandomSource source, float mean, float stdDev, float min, float max)
         {
-            // generate approximate normal via Box-Muller
+            // Generate approximate normal via Box-Muller
             double u1 = source.NextFloat();
             double u2 = source.NextFloat();
             double z0 = Math.Sqrt(-2.0 * Math.Log(Math.Max(1e-12, u1))) * Math.Cos(2.0 * Math.PI * u2);
             double val = mean + z0 * stdDev;
-            // clamp
+            // Clamp
             if (val < min) val = min;
             if (val > max) val = max;
             return (float)val;

@@ -15,12 +15,24 @@ MonoBehaviour:
   TurretID: Wall
   BaseSprite: {fileID: -1515134823594722529, guid: ccaa28a09cade8dda8cd7fdb786d0609, type: 3}
   CrystalSprite: {fileID: -690352682, guid: 71acbc7519fc62b4192c07d648f52b4b, type: 3}
-  Cost: 25
+  Cost: 0
   TileSize: {x: 1, y: 1}
-  Multiplayer: 1
+  BaseOffset: {x: 2.5, y: 1.5}
+  CrystalOffset: {x: 2.5, y: 5}
+  Scale: 1
   CanShoot: 1
   Range: 0
   Damage: 0
   FireRate: 1
   MaxHP: 30
+  modifierList:
+  - id: -1
+    damageMultiplayer: 1
+    fireRateMultiplayer: 1
+    hpMultiplayer: 1
+    rangeMultiplayer: 1
+    ResourceCost: 0
+    elementName: Root
+    PatternGenerator: {fileID: 0}
   ProjectilePrefab: {fileID: 0}
+  PatternGenerator: {fileID: 0}

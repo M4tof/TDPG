@@ -1,6 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
-using TMPro; // Assuming TextMeshPro for inputs
+using TMPro;
 using TDPG.Templates.Grid.MapGen;
 using System;
 using System.Linq;
@@ -38,8 +38,6 @@ public class NewGameMenu : MonoBehaviour
             mapTypeDropdown.AddOptions(options);
         }
     }
-
-    // Call this from your "Start Game" Button
     public void OnClickStartGame()
     {
         if (GameManager.Instance == null)
@@ -48,16 +46,12 @@ public class NewGameMenu : MonoBehaviour
             return;
         }
 
-        // 1. Validate & Parse Inputs
-        // (Using defaults if empty or invalid)
+        // Validate & Parse Inputs
 
         MapTypes type = MapTypes.Mountainous; // Default
         if (mapTypeDropdown != null)
         {
-            // Get the string text currently shown on the dropdown
             string selectedText = mapTypeDropdown.options[mapTypeDropdown.value].text;
-
-            // Convert string back to Enum
             type = (MapTypes)Enum.Parse(typeof(MapTypes), selectedText);
         }
         int w = ParseInt(widthInput.text, 50);
@@ -68,6 +62,7 @@ public class NewGameMenu : MonoBehaviour
         int m = ParseInt(minimalDistanceInput.text, 3);
         bool a = canSwimToggle != null && canSwimToggle.isOn;
         int e = ParseInt(emptyCellsInput.text, 2);
+
         // Limit constraints to prevent crashes
         w = Mathf.Max(w, 20);
         h = Mathf.Max(h, 20);
@@ -77,8 +72,8 @@ public class NewGameMenu : MonoBehaviour
         m = Mathf.Max(m, 1);
         e = Mathf.Max(e, 1);
 
-
-        // 2. Build Config
+        
+        // Build Config
         MapGenConfig config = new MapGenConfig
         {
             MapType = MapTypes.Mountainous,
@@ -92,11 +87,10 @@ public class NewGameMenu : MonoBehaviour
             EmptyCellsAroundPoints = e
         };
         Debug.Log($"[NewGameMenu]: \n{Newtonsoft.Json.JsonConvert.SerializeObject(config, Newtonsoft.Json.Formatting.Indented)}");
-        // 3. Launch
+        // Launch
         GameManager.Instance.StartNewGame(selectedSlot, config);
     }
 
-    // Helper for safe parsing
     private int ParseInt(string text, int fallback)
     {
         if (string.IsNullOrEmpty(text)) return fallback;
@@ -111,7 +105,6 @@ public class NewGameMenu : MonoBehaviour
         return fallback;
     }
 
-    // Link this to Slot Selection Buttons (if any)
     public void SetSlot(int slot)
     {
         selectedSlot = slot;

@@ -117,6 +117,7 @@ namespace Tests.GeneratorTests.SeedTests
              gs.NextSubSeed("thirdKey");
 
              // Act
+             ulong currentBase = gs.GetBaseValue();
              string jsonSave = gs.Serialize();
     
              // Assert
@@ -131,12 +132,12 @@ namespace Tests.GeneratorTests.SeedTests
              StringAssert.Contains("currIndex", jsonSave);
     
              // Verify specific values are in JSON
-             StringAssert.Contains("123456789", jsonSave);
+             StringAssert.Contains(currentBase.ToString(), jsonSave);
              StringAssert.Contains("TestSeed", jsonSave);
              StringAssert.Contains("A test seed for serialization", jsonSave);
              
              // Verify subSeed in JSOn
-             StringAssert.Contains("Child of global seed", jsonSave);
+             StringAssert.Contains("CHILD_OF_GLOBAL_SEED", jsonSave);
     
              Debug.Log($"Serialized JSON: {jsonSave}");
          }
@@ -152,6 +153,7 @@ namespace Tests.GeneratorTests.SeedTests
              gs.NextSubSeed("secondKey");
              gs.NextSubSeed("thirdKey");
 
+             ulong currentBase = gs.GetBaseValue();
              // Act
              string jsonSave = gs.Serialize();
 
@@ -162,7 +164,7 @@ namespace Tests.GeneratorTests.SeedTests
              
              Assert.That(newGs.Description, Is.EqualTo("A test seed for serialization"),"Should hold same description as pre-serialized");
              
-             Assert.That(newGs.Base, Is.EqualTo(123456789UL),"Should hold same base as pre-serialized");
+             Assert.That(newGs.Base, Is.EqualTo(currentBase),"Should hold same base as pre-serialized");
              
              Debug.Log($"thirdSubSeed: {newGs.GetSubSeed(2).Value} {newGs.GetSubSeed(2).Id}");
              Assert.NotNull(newGs.GetSubSeed(2),"Should be some subSeed 3");

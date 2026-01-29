@@ -1,44 +1,28 @@
 using UnityEngine;
+using TDPG.AudioModulation;
+using TDPG.Templates.Turret;
 
 [RequireComponent(typeof(Rigidbody2D))]
 [RequireComponent(typeof(Collider2D))]
-public class BasicProjectile : MonoBehaviour
+public class BasicProjectile : Projectile
 {
-    [SerializeField] private float speed = 10;
-    [SerializeField] private float lifeTime = 2;
-    private int damage = 1;
-
-    private Rigidbody2D rb;
+    private ProceduralAudioController _audioController;
     private float timeRemaining = 0f;
 
-    public void Start()
+    new public void Start()
     {
-        rb = GetComponent<Rigidbody2D>();
-        timeRemaining = lifeTime; 
-    }
-    
-    void FixedUpdate()
-    {
-        MoveProjectile();
-        timeRemaining -= Time.deltaTime;
-        if (timeRemaining <= 0)
+        base.Start();
+
+        _audioController = GetComponent<ProceduralAudioController>();
+
+        if (_audioController != null)
         {
-            OnDestroy();
+            _audioController.Play();
         }
     }
-
-    public void MoveProjectile()
+    public override void OnTriggerEnter2D(Collider2D other)
     {
-        rb.linearVelocity = transform.right * speed;
-    }
-
-    public void OnDestroy()
-    {
-        Destroy(gameObject);
-    }
-    
-    private void OnTriggerEnter2D(Collider2D other)
-    {
+        Debug.Log("TRIGGER ENTER: BASIC");
         EnemyBehavior enemyBehavior = other.gameObject.GetComponent<EnemyBehavior>();
         if (enemyBehavior != null)
         {
@@ -51,7 +35,7 @@ public class BasicProjectile : MonoBehaviour
     {
         this.damage = damage;
     }
-    
+
     public int GetDamage()
     {
         return damage;

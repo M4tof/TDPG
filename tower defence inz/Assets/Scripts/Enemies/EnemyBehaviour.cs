@@ -1,23 +1,34 @@
 using TDPG.Templates.Enemies;
 using TDPG.Templates.Pathfinding;
+using TDPG.Templates.Turret;
 using UnityEngine;
 
 [RequireComponent(typeof(EnemyPathFollower))]
 public class EnemyBehavior : EnemyBaseBehaviour
 {
-    public Enemy Logic { get; private set; }
+    new public Enemy Logic { get; private set; }
+    [SerializeField] private HPBarVisualisation hpBarVisualiation;
+    
     private SpriteRenderer _renderer;
     private EnemyPathFollower _enemyPathFollower;
     
     private Vector2 direction = Vector2.zero;
 
+    private bool isDestroyingBuilding = false;
+    private GameObject buildingToDestroy;
+    
+    //Attack Cooldown
+    private float passedTime = 0;
+
     public void Initialize(Enemy logic)
     {
+        logic.Data.MaxHealth = Mathf.CeilToInt(logic.Data.MaxHealth);
         base.Initialize(logic);
         
         Logic = logic;
         _renderer = GetComponent<SpriteRenderer>();
         _enemyPathFollower = GetComponent<EnemyPathFollower>();
+        _enemyPathFollower.attackBuilding.AddListener(StartDestroyBuilding);
 
         // 1. Setup Visuals
         _renderer.sprite = Logic.Data.EnemySprite;
@@ -28,10 +39,29 @@ public class EnemyBehavior : EnemyBaseBehaviour
 
         // 3. Trigger Creation Logic
         Logic.OnCreation();
+        
+        // 4. Set HP Bar Value
+        hpBarVisualiation.Init(logic.Data.MaxHealth);
+        Debug.Log($"{Logic._baseData.GenName} the {Logic._baseData.EnemyName} has spawned!");
     }
 
     void Update()
     {
+        if (isDestroyingBuilding)
+        {
+            if (buildingToDestroy == null)
+            {
+                FinishDestroyingBuilding();
+                return;
+            }
+            passedTime += Time.deltaTime;
+            if (passedTime > Logic.GetCurrentAttackSpeed())
+            {
+                AttackTurret();
+                passedTime = 0;
+            }
+            return;
+        }
         Vector3 target = _enemyPathFollower.GetTargetPosition();
         direction = Vector2.MoveTowards(transform.position, target, Logic.GetCurrentSpeed() * Time.deltaTime);
         transform.position = direction;
@@ -54,7 +84,33 @@ public class EnemyBehavior : EnemyBaseBehaviour
     public override void Die()
     {
         EnemyCompendium.Instance.UnregisterEnemy(Logic);
+        ResourceSystem.Instance.mana.Grant(Logic.GetReward());
         base.Die();
+    }
+
+    public override void DealDamage(int damage)
+    {
+        base.DealDamage(damage);
+        hpBarVisualiation.SetValue(GetCurrentHealth());
+    }
+
+    public void AttackTurret()
+    {
+        //_enemyPathFollower.
+        
+        if (buildingToDestroy == null)
+        {
+            FinishDestroyingBuilding();
+            return;
+        }
+
+        TurretBase turret = buildingToDestroy.GetComponent<TurretBase>();
+        if (turret != null)
+        {
+            turret.DealDamage(Logic.Data.Damage);
+            return;
+        }
+        FinishDestroyingBuilding();
     }
     
     public override void SetCurrentSpeed(float speed)
@@ -65,6 +121,20 @@ public class EnemyBehavior : EnemyBaseBehaviour
     public float GetCurrentHealth()
     {
         return Logic.GetCurrentHealth();
+    }
+
+    private void StartDestroyBuilding()
+    {
+        buildingToDestroy = _enemyPathFollower.GetBuildingToDestroy();
+        isDestroyingBuilding = true;
+    }
+
+    private void FinishDestroyingBuilding()
+    {
+        isDestroyingBuilding = false;
+        buildingToDestroy = null;
+        passedTime = 0;
+        _enemyPathFollower.SetIsDestroyingBuilding(false);
     }
     
     void OnDrawGizmos()
