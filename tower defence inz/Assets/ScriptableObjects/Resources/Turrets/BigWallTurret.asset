@@ -15,7 +15,7 @@ MonoBehaviour:
   TurretID: Wall2x2
   BaseSprite: {fileID: -1515134823594722529, guid: ccaa28a09cade8dda8cd7fdb786d0609, type: 3}
   CrystalSprite: {fileID: -690352682, guid: 71acbc7519fc62b4192c07d648f52b4b, type: 3}
-  Cost: 75
+  Cost: 15
   TileSize: {x: 2, y: 2}
   BaseOffset: {x: 2.5, y: 1.5}
   CrystalOffset: {x: 2.5, y: 5}

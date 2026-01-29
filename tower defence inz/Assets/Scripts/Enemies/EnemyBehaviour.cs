@@ -41,7 +41,7 @@ public class EnemyBehavior : EnemyBaseBehaviour
         Logic.OnCreation();
         
         // 4. Set HP Bar Value
-        hpBarVisualiation.Init(logic.Data.MaxHealth);
+        hpBarVisualiation.Init(logic.GetCurrentHealth());
         Debug.Log($"{Logic._baseData.GenName} the {Logic._baseData.EnemyName} has spawned!");
     }
 
