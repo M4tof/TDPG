@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b8577eaa9994a00802d79bf5f958124, type: 3}
+  m_Name: RainbowDebug
+  m_EditorClassIdentifier: 
+  colors:
+  - {r: 0.98823535, g: 0.19607845, b: 0.19607845, a: 0}
+  - {r: 1, g: 0.4666667, b: 0.20000002, a: 0}
+  - {r: 1, g: 0.73333335, b: 0.20000002, a: 0}
+  - {r: 1, g: 1, b: 0.20000002, a: 0}
+  - {r: 0.7490196, g: 1, b: 0.20000002, a: 0}
+  - {r: 0.47450984, g: 1, b: 0.20000002, a: 0}
+  - {r: 0.20000002, g: 1, b: 0.20000002, a: 0}
+  - {r: 0.20000002, g: 1, b: 0.4666667, a: 0}
+  - {r: 0.20000002, g: 1, b: 0.73333335, a: 0}
+  - {r: 0.20000002, g: 1, b: 1, a: 0}
+  - {r: 0.20000002, g: 0.7568628, b: 1, a: 0}
+  - {r: 0.20000002, g: 0.4901961, b: 1, a: 0}
+  - {r: 0.20000002, g: 0.20000002, b: 1, a: 0}
+  - {r: 0.45098042, g: 0.20000002, b: 1, a: 0}
+  - {r: 0.7254902, g: 0.20000002, b: 1, a: 0}
+  - {r: 1, g: 0.20000002, b: 0.7568628, a: 0}
