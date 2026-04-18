@@ -1,5 +1,10 @@
 # TDPG - Tower Defense Procedural Generation
 
+## Project Status: Archive & Migration Note
+**EN:** This repository is a port/migration from an internal GitLab instance. Due to the migration process, the contributor statistics on GitHub may not accurately reflect the original development history. This project was co-authored by **four contributors**.
+
+**PL:** To repozytorium jest migracją z wewnętrznej instancji GitLab. Ze względu na proces portowania, statystyki współtwórców na GitHubie mogą nie odzwierciedlać w pełni oryginalnej historii zmian. Projekt był współtworzony przez **czterech autorów**.
+
 ## Description | Opis
 **EN:** Engineering project focused on creating a procedural generation system for Tower Defense games. This repository contains the full Unity project, including the source code for the TDPG library and a functional tech demo.
 
