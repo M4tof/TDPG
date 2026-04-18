@@ -12,7 +12,7 @@
 
 ---
 
-## 🇺🇸 English Version
+## 🇬🇧 English Version
 
 ### Project Structure
 - **`tower_defence_inz/`**: The complete Unity project source code for the tech demo.
